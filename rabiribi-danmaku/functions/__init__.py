@@ -8,8 +8,10 @@ from random import *
 def snipe(origin_sprite, enemy_sprite):
     """
     snipe function here:
-    snipe(Sprite, Sprite)
-    it return a rad number
+
+        snipe(Sprite, Sprite): return int
+
+        return a rad value
     """
     delta_x = enemy_sprite.center[0] - origin_sprite.center[0]
     delta_y = enemy_sprite.center[1] - origin_sprite.center[1]

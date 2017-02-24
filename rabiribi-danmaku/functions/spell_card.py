@@ -44,7 +44,7 @@ class SpellCard():
         """
         self.type = False
         self.range = 0
-        self.time = spell_time
+        self.spell_time = spell_time
         self.timer = 0
         if illustration:
             self.type = True
@@ -60,15 +60,16 @@ class SpellCard():
         if self.timer == 0:
             effects_group.add(IllustrationAttack(self.illustration))
 
-    def spell_card(self, erina, boss_group, danmaku_group, effects_group):
+    def spell_card(self, erina, boss, boss_group, birth_group, effects_group):
         """
         check type.
         """
         if self.type:
             self.illustration_attack(effects_group)
-        self.spell
+        if self.timer < self.spell_time:
+            self.spell(erina, boss, boss_group, birth_group, effects_group)
 
-    def spell(self, erina, boss_group, danmaku_group, effects_group):
+    def spell(self, erina, boss, boss_group, birth_group, effects_group):
         """
         define this in objects
         """

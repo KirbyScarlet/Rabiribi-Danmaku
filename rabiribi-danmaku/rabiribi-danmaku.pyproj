@@ -38,6 +38,15 @@
     <Compile Include="character\erina.py" />
     <Compile Include="character\ribbon.py" />
     <Compile Include="character\__init__.py" />
+    <Compile Include="data\tmp\bg\temp file with background cache.txt">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="data\tmp\imgs\temp file with image cache.txt">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="data\tmp\mid\temp file with elfs.txt">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="functions\all_badges.py" />
     <Compile Include="functions\buff_debuff.py">
       <SubType>Code</SubType>
@@ -75,7 +84,6 @@
     <Folder Include="data\tmp\bg\" />
     <Folder Include="data\tmp\bf\" />
     <Folder Include="data\tmp\mid\" />
-    <Folder Include="data\tmp\dmk\" />
     <Folder Include="functions\" />
     <Folder Include="images\" />
     <Folder Include="images\boss images\" />
@@ -130,6 +138,12 @@
     <Content Include="boss\section1\stage1a\__pycache__\run.cpython-35.pyc" />
     <Content Include="boss\section1\stage1a\__pycache__\__init__.cpython-35.pyc" />
     <Content Include="data\chara\sec1\Cocoa.rbrb" />
+    <Content Include="data\tmp\bf\temp file with buff cache.txt">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="data\tmp\misc\temp file with music cache.txt">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="images\boss images\aruraune.png" />
     <Content Include="images\boss images\ashiri.png" />
     <Content Include="images\boss images\chocolate.png" />
