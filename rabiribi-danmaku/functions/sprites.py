@@ -167,7 +167,7 @@ class Boss(pygame.sprite.Sprite):
             if self.__pixel_frame >= self.__pixel_count:
                 self.__pixel_frame = 0
         self.image = self.__pixel[self.__pixel_frame]
- 
+    
     def Frame_Count(self):
         """
         some animations spell a time
@@ -177,14 +177,16 @@ class Boss(pygame.sprite.Sprite):
             self.frame_count = 0
 
     def load_source(self, file_name):
-        sources = pickle.load(open(file_name, 'rb'))
+        f = open(file_name, 'rb')
+        sources = pickle.load(f)
+        f.close()
         self.images = {'illustration':[], 'pixel':[], 'special':[]}
         for i in range(len(sources['illustration'])):
             img_name = 'data/tmp/imgs/' + self.name + '_illustration_' + str(i) + '.tmp'
             try:
                 img_file = open(img_name, 'wb')
             except:
-                os.mkdir('data/tmp/imgs/')
+                os.makedirs('data/tmp/imgs/')
                 img_file = open(img_name, 'wb')
             img_file.write(sources['illustration'][i])
             img_file.close()
@@ -194,7 +196,7 @@ class Boss(pygame.sprite.Sprite):
             try:
                 img_file = open(img_name, 'wb')
             except:
-                os.makedirs('data/tmp/imgs')
+                os.makedirs('data/tmp/imgs/')
                 img_file = open(img_name, 'wb')
             img_file.write(sources['pixel'][i])
             img_file.close()
@@ -252,7 +254,7 @@ class Danmaku(pygame.sprite.Sprite):
         """
         # music not specify
 
-    def SetImage(self, pixel, birth_pixel):
+    def SetImage(self, file_name):
         """
         specify the pictures that danmaku sprite used.
         danmaku size will locked on a square shape
@@ -262,9 +264,11 @@ class Danmaku(pygame.sprite.Sprite):
 
         birth image will not at a size
         """
-        self.__pixel = pixel
-        self.__pixel_count = len(pixel)
-        self.__birth_pixel = birth_pixel
+        self.load_source(file_name)
+        self.__pixel = self.images['live']
+        self.__pixel_count = len(self.images['live'])
+        self.__birth_pixel = self.images['birth']
+        self.__birth_pixel_count = 10
 
         self.image = self.__birth_pixel[0] # sometimes have more than 1 frame
         self.rect = self.image.get_rect()
@@ -291,7 +295,33 @@ class Danmaku(pygame.sprite.Sprite):
         self.collide_delete = True
         self.delete = False
         self.inscreen = True
-
+        
+    def load_source(self, file_name):
+        f = open(file_name, 'rb')
+        sources = pickle.load(f)
+        f.close()
+        self.images = {'birth':[], 'live':[]}
+        for i in range(len(sources['birth'])):
+            img_name = 'data/tmp/imgs/' + self.name + '_rank_' + str(i) + '.tmp'
+            try:
+                f = open(img_name, 'wb')
+            except:
+                os.makedirs('data/tmp/imgs/')
+                f = open(img_name, 'wb')
+            f.write(sources['birth'][i])
+            f.close()
+            self.images['birth'].append(pygame.image.load(img_name).convert_alpha())
+        for i in range(len(sources['live'])):
+            img_name = 'data/tmp/imgs/' + self.name + '_rank_' + str(i) + '.tmp'
+            try:
+                f = open(img_name, 'wb')
+            except:
+                os.makedirs('data/tmp/imgs/')
+                f = open(img_name, 'wb')
+            f.write(sources['live'][i])
+            f.close()
+            self.images['live'].append(pygame.image.load(img_name).convert_alpha())
+        
     def SetLiveCheck(self, left, right, top, bottom):
         """
         when danmaku move out of this area,
