@@ -9,8 +9,11 @@ class cocoa_danmaku_1(Danmaku):
     cocoa danmaku 1 
     use orange circle
     """
-    def __init__(self):
+    def __init__(self, emitter):
         super().__init__('orange_circle')
+        self.SetImage('data/images/danmaku/orange_circle.rbrb')
+        self.SetValue(7,50,4,emitter)
+        self.SetLiveCheck(-20,400,-10,500)
 
 class Cocoa(Boss):
     """
