@@ -2,6 +2,15 @@ import pygame
 import math
 import random
 from functions.sprites import Boss
+from functions.sprites import Danmaku
+
+class cocoa_danmaku_1(Danmaku):
+    """
+    cocoa danmaku 1 
+    use orange circle
+    """
+    def __init__(self):
+        super().__init__('orange_circle')
 
 class Cocoa(Boss):
     """
