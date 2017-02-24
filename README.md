@@ -1,2 +1,2 @@
 # Rabiribi-Danmaku
-# Kirby Scarlet
+  Kirby Scarlet
