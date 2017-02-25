@@ -14,7 +14,7 @@ class cocoa_danmaku_1(Danmaku):
     """
     def __init__(self, emitter):
         super().__init__('orange_circle')
-        self.SetImage('data/images/danmaku/orange_circle.rbrb')
+        self.SetImage('data/danmaku/mid_orange_circle.rbrb')
         self.SetValue(7,50,4,emitter)
         self.SetLiveCheck(-20,400,-10,500)
 
@@ -23,7 +23,7 @@ class Spell_1(SpellCard):
     no-spell
     """
     def __init__(self):
-        super().__init__(1800)
+        super().__init__(1,1800)
 
     def spell(self, erina, boss, boss_group, birth_group, effects_group):
         temp_time = self.timer % 120
@@ -51,4 +51,5 @@ class Cocoa(Boss):
         self.SetValue(1000, 18, 400)
         self.SetSpell(1800)
         self.SetSource('data/chara/sec1/Cocoa.rbrb')
+        self.spell_group = SpellGroup()
         

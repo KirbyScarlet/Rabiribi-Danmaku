@@ -74,10 +74,11 @@
     <Folder Include="boss\section1\stage1a\__pycache__\" />
     <Folder Include="boss\section2\" />
     <Folder Include="character\" />
-    <Folder Include="data\chara\" />
-    <Folder Include="data\chara\ext\" />
-    <Folder Include="data\chara\sec2\" />
-    <Folder Include="data\chara\sec1\" />
+    <Folder Include="data\character\" />
+    <Folder Include="data\character\ext\" />
+    <Folder Include="data\character\sec2\" />
+    <Folder Include="data\character\sec1\" />
+    <Folder Include="data\danmaku\" />
     <Folder Include="data\tmp\" />
     <Folder Include="data\tmp\imgs\" />
     <Folder Include="data\tmp\misc\" />
@@ -137,7 +138,8 @@
     <Content Include="boss\section1\stage1a\__pycache__\cocoa.cpython-35.pyc" />
     <Content Include="boss\section1\stage1a\__pycache__\run.cpython-35.pyc" />
     <Content Include="boss\section1\stage1a\__pycache__\__init__.cpython-35.pyc" />
-    <Content Include="data\chara\sec1\Cocoa.rbrb" />
+    <Content Include="data\character\sec1\Cocoa.rbrb" />
+    <Content Include="data\danmaku\mid_orange_circle.rbrb" />
     <Content Include="data\tmp\bf\temp file with buff cache.txt">
       <SubType>Code</SubType>
     </Content>

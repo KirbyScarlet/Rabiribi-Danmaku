@@ -33,7 +33,7 @@ class SpellCard():
         spell_attack(difficulty, me_erina, boss_group, birth_group, effects_group): return none
 
     """
-    def __init__(self, spell_time, *illustration):
+    def __init__(self, range, spell_time, *illustration):
         """
         __init__(spell_type, spell_range[, illustration]):
 
@@ -43,7 +43,7 @@ class SpellCard():
             spell_range:    range of spell, type int
         """
         self.type = False
-        self.range = 0
+        self.range = range
         self.spell_time = spell_time
         self.timer = 0
         if illustration:
@@ -58,7 +58,8 @@ class SpellCard():
             effects_group:    any effects sprites group
         """
         if self.timer == 0:
-            effects_group.add(IllustrationAttack(self.illustration))
+            illus = IllustrationAttack(self.illustration)
+            effects_group.add(illus)
 
     def spell_card(self, erina, boss, boss_group, birth_group, effects_group):
         """
