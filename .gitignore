@@ -252,6 +252,7 @@ paket-files/
 *.sln.iml
 
 # local python cache
+*.tmp
 png2rbrb.py
 *.aep
 *.pyc
