@@ -5,11 +5,18 @@ import functions
 from pygame.locals import *
 
 class Erina(pygame.sprite.Sprite):
-    """ Erina kawaii
-        Erina ore no yome!!
-        """
+    """ 
+    Erina kawaii
+    Erina ore no yome!!
+
+    player control character
+        
+    """
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
+
+        self.name = 'Erina'
+
         if platform.system()=='Windows':
             oimage = pygame.image.load("images\\character\\Erina\\Erina.png").convert_alpha()
         if platform.system()=='Linux':

@@ -1,9 +1,6 @@
-import math
-import random
-import os
-
-from math import *
-from random import *
+from math import sqrt
+from math import asin
+from os import remove
 
 def snipe(origin_sprite, enemy_sprite):
     """
@@ -27,8 +24,12 @@ def snipe(origin_sprite, enemy_sprite):
     return snipe
 
 def clear_cache(*dir):
-    for each in dir:
-        pass
+    if dir:
+        for each in dir:
+            ch = 'data/tmp/' + each + '/*.tmp'
+            remove(ch)
+    else:
+        remove('del data/tmp/*/*.tmp')
     
 """
 some local static number here.

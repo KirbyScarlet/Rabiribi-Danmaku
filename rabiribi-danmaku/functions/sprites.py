@@ -133,6 +133,7 @@ class Boss(pygame.sprite.Sprite):
         self.center[1] += self.direction[1] * self.speed
         self.rect.left = self.center[0] - 35
         self.rect.top = self.center[1] - 35 + 5*math.sin(6.28*self.frame_count/100)
+        self.change_image()
         self.Frame_Count()
 
     def collide_check(self, shouting_group):
@@ -155,7 +156,7 @@ class Boss(pygame.sprite.Sprite):
         else:
             self.defense = 1
 
-    def spell_attack(self, difficulty, me_erina, boss_group, birth_group, effects_group):
+    def spell_attack(self, difficulty, erina, boss_group, birth_group, effects_group):
         """
         prepared for every instance.
         """
@@ -268,7 +269,7 @@ class Danmaku(pygame.sprite.Sprite):
         self.__pixel = self.images['live']
         self.__pixel_count = len(self.images['live'])
         self.__birth_pixel = self.images['birth']
-        self.__birth_pixel_count = 10
+        self.__birth_pixel_count = 9
 
         self.image = self.__birth_pixel[0] # sometimes have more than 1 frame
         self.rect = self.image.get_rect()
@@ -291,6 +292,7 @@ class Danmaku(pygame.sprite.Sprite):
         """
         special value
         """
+        self.live_time = -1
         self.collide = True
         self.collide_delete = True
         self.delete = False
@@ -322,7 +324,12 @@ class Danmaku(pygame.sprite.Sprite):
             f.close()
             self.images['live'].append(pygame.image.load(img_name).convert_alpha())
         
-    def SetLiveCheck(self, left, right, top, bottom):
+    def SetLiveCheck(self, 
+                     left = SCREEN_LEFT, 
+                     right = SCREEN_RIGHT, 
+                     top = SCREEN_TOP, 
+                     bottom = SCREEN_BOTTOM
+                     ):
         """
         when danmaku move out of this area,
         change delete count
@@ -339,9 +346,9 @@ class Danmaku(pygame.sprite.Sprite):
         """
         if not self.live_time:
             self.delete = True
-        elif self.center[0] < self.left_border or self.center[0] > self.right_border:
+        elif self.rect.right < self.left_border or self.rect.left > self.right_border:
             self.delete = True
-        elif self.center[1] < self.top_border or self.center[1] > self.bottom_border:
+        elif self.rect.bottom < self.top_border or self.rect.top > self.bottom_border:
             self.delete = True
         else:
             self.delete = False
@@ -392,6 +399,7 @@ class Elf(pygame.sprite.Sprite):
         self.bonus_energy = bonus_energy
         self.collide = True
         self.in_screen = False
+        self.live_time = -1
         self.speed = 0
         self.radius = 8
         self.defense = 1.0

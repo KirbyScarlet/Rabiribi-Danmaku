@@ -53,3 +53,4 @@ class Cocoa(Boss):
         self.SetSource('data/chara/sec1/Cocoa.rbrb')
         self.spell_group = SpellGroup()
         
+        

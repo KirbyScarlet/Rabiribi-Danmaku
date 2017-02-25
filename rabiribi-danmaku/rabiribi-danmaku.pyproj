@@ -34,7 +34,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="boss\__init__.py" />
-    <Compile Include="character\control.py" />
     <Compile Include="character\erina.py" />
     <Compile Include="character\ribbon.py" />
     <Compile Include="character\__init__.py" />

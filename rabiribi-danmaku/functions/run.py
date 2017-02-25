@@ -39,7 +39,15 @@ def effects_del(effects_group):
             effects_group.remove(each)
 
 def sprites_del(*sprites_group):
-    pass
+    for group in sprites_group:
+        for sprite in group:
+            if hasattr(sprite, 'live_time'):
+                if sprite.live_time == 0:
+                    group.remove(sprite)
+            if hasattr(sprite, 'delete'):
+                if sprite.delete:
+                    group.remove(sprite)
+            
 
 def sprites_move(*sprites_group):
     for group in sprites_group:
