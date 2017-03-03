@@ -2,9 +2,9 @@
     rabiribi-danmaku 游戏企划  
 ================================
 
-本作由同名游戏rabiribi改编
-暂未获得授权
-@KirbyScarlet
+	本作由同名游戏rabiribi改编
+	暂未获得授权
+	@KirbyScarlet
 
 此游戏类型为纵版弹幕通关类游戏
 
