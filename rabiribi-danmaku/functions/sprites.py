@@ -3,7 +3,6 @@ import math
 import functions
 import pickle
 import os
-from functions import *
 
 class Boss(pygame.sprite.Sprite):
     """
@@ -222,11 +221,12 @@ class Boss(pygame.sprite.Sprite):
             misc_file.write(sources['music'])
             misc_file.close()
             self.bgm.load(misc_name)
-    
+        except:
+            pass
+
     def clear_cache(self):
         os.system("del data/tmp/imgs/*.tmp")
         os.system("del data/tmp/misc/*.tmp")
-    
 
 class Danmaku(pygame.sprite.Sprite):
     """
@@ -325,15 +325,15 @@ class Danmaku(pygame.sprite.Sprite):
             self.images['live'].append(pygame.image.load(img_name).convert_alpha())
         
     def SetLiveCheck(self, 
-                     left = SCREEN_LEFT, 
-                     right = SCREEN_RIGHT, 
-                     top = SCREEN_TOP, 
-                     bottom = SCREEN_BOTTOM
+                     left = functions.SCREEN_LEFT, 
+                     right = functions.SCREEN_RIGHT, 
+                     top = functions.SCREEN_TOP, 
+                     bottom = functions.SCREEN_BOTTOM
                      ):
         """
         when danmaku move out of this area,
         change delete count
-        free this sprite to save ram space
+        free this sprite for save ram space
         """
         self.left_border = left - self.rect.width/2
         self.right_border = right + self.rect.width/2
@@ -366,7 +366,7 @@ class Danmaku(pygame.sprite.Sprite):
         self.rect.top = self.center[1] - self.rect.height/2
         if self.live_time > 0:
             self.live_time -= 1
-		self.live_check()
+        self.live_check()
 
 ###
 

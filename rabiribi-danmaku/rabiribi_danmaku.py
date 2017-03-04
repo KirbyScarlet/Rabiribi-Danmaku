@@ -4,22 +4,20 @@
 # project starts on Oct 25 2016
 # rabiribi danmaku
 
-
-import os
-import sys
 import pygame
-import traceback
-import platform
-import ui
-import boss
-import character
-import functions
-
-from pygame.locals import *
-from random import *
 
 pygame.init()
 pygame.mixer.init()
+
+import os
+import sys
+import traceback
+import ui
+import boss
+import character
+
+from pygame.locals import *
+from random import *
 
 bg_size = width, height = 640, 480
 screen = pygame.display.set_mode(bg_size)

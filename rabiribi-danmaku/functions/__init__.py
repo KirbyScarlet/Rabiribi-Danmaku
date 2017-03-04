@@ -1,3 +1,7 @@
+from functions import buff_debuff
+from functions import run
+from functions import spell_card
+from functions import sprites
 from math import sqrt
 from math import asin
 from os import remove
@@ -34,13 +38,13 @@ def clear_cache(*dir):
 """
 some local static number here.
 """
-# screen range:
+# Screen border
 SCREEN_LEFT = 35
 SCREEN_RIGHT = 415
 SCREEN_TOP = 15
 SCREEN_BOTTOM = 465
 
-# default key:
+# Control
 MOVE_LEFT = 'K_LEFT'
 MOVE_RIGHT = 'K_RIGHT'
 MOVE_UP = 'K_UP'
