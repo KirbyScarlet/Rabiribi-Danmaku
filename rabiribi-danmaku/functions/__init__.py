@@ -1,9 +1,11 @@
-from functions import buff_debuff
-from functions import run
-from functions import spell_card
-from functions import sprites
+import functions.buff_debuff
+import functions.run
+import functions.spell_card
+import functions.sprites
+import functions.values
 from math import sqrt
 from math import asin
+from os import system
 from os import remove
 
 def snipe(origin_sprite, enemy_sprite):
@@ -30,30 +32,12 @@ def snipe(origin_sprite, enemy_sprite):
 def clear_cache(*dir):
     if dir:
         for each in dir:
-            ch = 'data/tmp/' + each + '/*.tmp'
-            remove(ch)
+            ch = "del data\\tmp\\" + each + "\\*.tmp"
+            system(ch)
     else:
-        remove('del data/tmp/*/*.tmp')
+        system("del data\\tmp\\bf\\*.tmp")
+        system("del data\\tmp\\bg\\*.tmp")
+        system("del data\\tmp\\imgs\\*.tmp")
+        system("del data\\tmp\\mid\\*.tmp")
+        system("del data\\tmp\\misc\\*.tmp")
     
-"""
-some local static number here.
-"""
-# Screen border
-SCREEN_LEFT = 35
-SCREEN_RIGHT = 415
-SCREEN_TOP = 15
-SCREEN_BOTTOM = 465
-
-# Control
-MOVE_LEFT = 'K_LEFT'
-MOVE_RIGHT = 'K_RIGHT'
-MOVE_UP = 'K_UP'
-MOVE_DOWN = 'K_DOWN'
-
-MOVE_SLOW = 'L_SHIFT'
-SHOUTING = 'K_z'
-AMULET = 'K_x'
-BOOST = 'K_c'
-
-SWITCH_MAGIC_LEFT = 'K_a'
-SWITCH_MAGIC_RIGHT = 'K_s'

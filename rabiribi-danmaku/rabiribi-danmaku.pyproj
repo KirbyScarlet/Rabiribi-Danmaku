@@ -56,6 +56,9 @@
     <Compile Include="functions\sprites.py" />
     <Compile Include="functions\all_buff_debuff.py" />
     <Compile Include="functions\run.py" />
+    <Compile Include="functions\values.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="functions\__init__.py" />
     <Compile Include="rabiribi_danmaku.py" />
     <Compile Include="ui\face.py" />

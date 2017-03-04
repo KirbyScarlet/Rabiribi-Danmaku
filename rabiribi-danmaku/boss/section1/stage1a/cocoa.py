@@ -50,7 +50,7 @@ class Cocoa(Boss):
         super().__init__('Cocoa')
         self.SetValue(1000, 18, 400)
         self.SetSpell(1800)
-        self.SetSource('data/chara/sec1/Cocoa.rbrb')
+        self.SetSource('data/boss/sec1/Cocoa.rbrb')
         self.spell_group = SpellGroup()
         
         

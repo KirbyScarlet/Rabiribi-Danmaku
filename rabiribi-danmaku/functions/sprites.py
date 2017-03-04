@@ -1,8 +1,9 @@
 import pygame
 import math
-import functions
 import pickle
 import os
+import functions
+from functions.values import SCREEN_BOTTOM, SCREEN_LEFT, SCREEN_RIGHT, SCREEN_TOP
 
 class Boss(pygame.sprite.Sprite):
     """
@@ -116,7 +117,7 @@ class Boss(pygame.sprite.Sprite):
             and use temp_position and center (last frame)
             to calculate the direction and speed
         """
-        distance = sqrt( \
+        distance = math.sqrt(
                         (self.center[0] - self.temp_position[0]) ** 2 + \
                         (self.center[1] - self.temp_position[1]) ** 2 )
         if distance:
@@ -325,10 +326,10 @@ class Danmaku(pygame.sprite.Sprite):
             self.images['live'].append(pygame.image.load(img_name).convert_alpha())
         
     def SetLiveCheck(self, 
-                     left = functions.SCREEN_LEFT, 
-                     right = functions.SCREEN_RIGHT, 
-                     top = functions.SCREEN_TOP, 
-                     bottom = functions.SCREEN_BOTTOM
+                     left = functions.values.SCREEN_LEFT, 
+                     right = functions.values.SCREEN_RIGHT, 
+                     top = functions.values.SCREEN_TOP, 
+                     bottom = functions.values.SCREEN_BOTTOM
                      ):
         """
         when danmaku move out of this area,

@@ -15,6 +15,7 @@ import traceback
 import ui
 import boss
 import character
+import functions
 
 from pygame.locals import *
 from random import *
@@ -45,5 +46,6 @@ if __name__ == "__main__":
     except:
         traceback.print_exc()
         pygame.quit()
+        functions.clear_cache()
         input()
         

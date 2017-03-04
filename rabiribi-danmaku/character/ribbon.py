@@ -115,7 +115,7 @@ class Ribbon(pygame.sprite.Sprite):
                 self.shouting_delay += 1
         except:
             self.shouting_delay += 1
-        if shouting_danmaku_delay > 15:
+        if self.shouting_delay > 15:
             self.shouting_delay = 0
 
     def red_attack(self, shouting_group):
@@ -133,9 +133,9 @@ class Ribbon(pygame.sprite.Sprite):
     def carrot_attack(self, shouting_group):
         pass
 
-    def attack(self, shouting_group):
+    def attack(self, shouting_group, key_pressed):
         if self.danmaku_type == "purple":
-            self.purple_attack(shouting_group)
+            self.purple_attack(shouting_group, key_pressed)
         elif self.danmaku_type == "red":
             self.red_attack(shouting_group)
         elif self.danmaku_type == "blue":
