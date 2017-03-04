@@ -230,9 +230,9 @@ class Boss(pygame.sprite.Sprite):
 
 class Danmaku(pygame.sprite.Sprite):
     """
-    specify most any danmaku type.
+    specify most of danmaku type.
     only danmaku be defined there.
-    lazer danmaku next
+    lazer next
     """
     def __init__(self, name):
         pygame.sprite.Sprite.__init__(self)
@@ -335,10 +335,10 @@ class Danmaku(pygame.sprite.Sprite):
         change delete count
         free this sprite to save ram space
         """
-        self.left_border = left
-        self.right_border = right
-        self.top_border = top
-        self.bottom_border = bottom 
+        self.left_border = left - self.rect.width/2
+        self.right_border = right + self.rect.width/2
+        self.top_border = top - self.rect.height/2
+        self.bottom_border = bottom + self.rect.height/2
 
     def live_check(self):
         """
@@ -366,6 +366,7 @@ class Danmaku(pygame.sprite.Sprite):
         self.rect.top = self.center[1] - self.rect.height/2
         if self.live_time > 0:
             self.live_time -= 1
+		self.live_check()
 
 ###
 
