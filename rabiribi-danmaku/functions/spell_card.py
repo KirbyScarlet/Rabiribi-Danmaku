@@ -10,11 +10,13 @@ class IllustrationAttack(pygame.sprite.Sprite):
         IllustrationAttack([illustration_list]): return none.
     """
     def __init__(self, illustration_list):
-        self._illustration = random.choice(illustration_list)
-        self.image = self._illustration
+        pygame.sprite.Sprite.__init__(self)
+        self._illustration = random.choice(list(illustration_list))
+        self.image = self._illustration[0]
         self.rect = self.image.get_rect()
-        self.rect.left = 200
-        self.rect.top = 200
+        self.center = [200.0, 200.0]
+        self.rect.left = self.center[0] - 100
+        self.rect.top = self.center[1] - 100
         self.timer = 0
         self.delete = False
 
@@ -29,7 +31,8 @@ class SpellCard():
     """
     specify any spell attack.
 
-        __init__(spell_type, spell_range):
+        SpellCard(range, spell_time, *illustration):
+
         spell_attack(difficulty, me_erina, boss_group, birth_group, effects_group): return none
 
     """
@@ -72,7 +75,7 @@ class SpellCard():
 
     def spell(self, erina, boss, boss_group, birth_group, effects_group):
         """
-        define this in objects
+        define this in instance
         """
         pass
 
@@ -113,7 +116,7 @@ class SpellGroup():
         return self.__class__(self.spells())
 
     def __iter__(self):
-        return iter(self,spells())
+        return iter(self.spells())
 
     def __contains__(self, spell):
         return self.has_internal(spell)

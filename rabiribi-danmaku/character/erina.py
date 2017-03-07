@@ -47,8 +47,8 @@ class Erina(pygame.sprite.Sprite):
 
         self.invincible = 0
 
-    def moveSpeed(self, control):
-        if control:
+    def moveSpeed(self):
+        if self.key_pressed[K_LSHIFT]:
             self.speed = self.slow
         else:
             self.speed = self.fast
@@ -120,6 +120,7 @@ class Erina(pygame.sprite.Sprite):
         pass
 
     def move(self):
+        self.moveSpeed()
         if self.key_pressed[K_UP] or self.key_pressed[K_DOWN]:  
             if self.key_pressed[K_UP] and self.key_pressed[K_DOWN]:
                 if self.UD_control:
@@ -158,13 +159,19 @@ class Erina(pygame.sprite.Sprite):
         self.moveLeftRight()
 
     def collide_check(self, danmaku_group, boss_group):
-        if pygame.sprite.spritecollide(self, danmaku_group, False, pygame.sprite.collide_circle):
-            self.invincible = 180
         if not self.invincible:
             pass
-            self.erina_collide_check(danmaku_group, boss_group)
+            self.damage_check(danmaku_group, boss_group)
         else:
             self.invincible -= 1
             pygame.sprite.spritecollide(self, danmaku_group, True, pygame.sprite.collide_circle)
 
-    
+    def damage_check(self, danmaku_group, boss_group):
+        temp_danmaku = pygame.sprite.spritecollide(self, danmaku_group, False, pygame.sprite.collide_circle) 
+        temp_boss = pygame.sprite.spritecollide(self, boss_group, False, pygame.sprite.collide_circle)
+        if temp_danmaku or temp_boss:
+            self.invincible = 180
+            for each in temp_danmaku:
+                self.hp -= each.damage
+            for each in temp_boss:
+                self.hp -= each.crash_damage

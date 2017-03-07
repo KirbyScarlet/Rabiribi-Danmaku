@@ -48,15 +48,15 @@ class Boss(pygame.sprite.Sprite):
         each boss have their own file.
         """
         self.load_source(file_name)
-        self.__illustration_count = len(self.images['illustration'])
-        self.__pixel_count = len(self.images['pixel'])
-        self.__illustration = self.images['illustration']
-        self.__pixel = self.images['pixel']
-        self.__pixel_frame = 0
+        self.illustration_count = len(self.images['illustration'])
+        self.pixel_count = len(self.images['pixel'])
+        self.illustration = self.images['illustration']
+        self.pixel = self.images['pixel']
+        self.pixel_frame = 0
         """
         define image information and default position
         """
-        self.image = self.__pixel[self.__pixel_frame]   # image will use in a list
+        self.image = self.pixel[self.pixel_frame]   # image will use in a list
         self.rect = self.image.get_rect()
         self.direction = [0,-1]
         self.center = [-35.0, 35.0]
@@ -89,12 +89,14 @@ class Boss(pygame.sprite.Sprite):
         the number will be different by local difficulty
         all spell and not-spell will all mark as spell card
         """
+        self.spell_group = functions.spell_card.SpellGroup()
         self.spell_count = len(spell_list)
         """
         specify the time for each spell
         use a list to store spell time (second*frames)
         """
         self.spell_time = list(spell_list)
+        self.spell_now = 1
     
     def InScreenCheck(self):
         """
@@ -124,7 +126,7 @@ class Boss(pygame.sprite.Sprite):
             self.direction = [
                             (self.temp_position[0] - self.center[0]) / distance, 
                             (self.temp_position[1] - self.center[1]) / distance ]
-            self.speed = math.log(distance + 1.0)/3
+            self.speed = math.log(distance + 1.0)
         else:
             self.speed = 0
         if self.in_screen:
@@ -137,9 +139,10 @@ class Boss(pygame.sprite.Sprite):
         self.Frame_Count()
 
     def collide_check(self, shouting_group):
-        if self.collide:
-            temp = pygame.sprite.spritecollide(each, self, True, pygame.sprite.collide_circle)
-            each.damage(temp)
+        for each in shouting_group:
+            if self.collide:
+                temp = pygame.sprite.spritecollide(self, each, True, pygame.sprite.collide_circle)
+                self.damage(temp)
 
     def damage(self, shouting_group):
         """
@@ -147,27 +150,31 @@ class Boss(pygame.sprite.Sprite):
         when hp<0, spell count minus 1 and 3 seconds in invincible
         """
         
-        if self.buff.defense_large_boost:
+        if 'defense_large_boost' in self.buff:
             self.defense = 0.1
-        elif self.buff.defense_boost:
+        elif 'defense_boost' in self.buff:
             self.defense = 0.5
-        elif self.buff.defense_up:
+        elif 'defense_up' in self.buff:
             self.defense = 0.75
         else:
             self.defense = 1
+        for each in shouting_group:
+            self.hp -= each.damage * self.defense
 
     def spell_attack(self, difficulty, erina, boss_group, birth_group, effects_group):
         """
         prepared for every instance.
         """
-        pass
+        for s in self.spell_group:
+            if self.spell_now == s.range:
+                s.spell_card(erina, self, boss_group, birth_group, effects_group)
 
     def change_image(self):
         if not self.frame_count % 12:
-            self.__pixel_frame += 1
-            if self.__pixel_frame >= self.__pixel_count:
-                self.__pixel_frame = 0
-        self.image = self.__pixel[self.__pixel_frame]
+            self.pixel_frame += 1
+            if self.pixel_frame >= self.pixel_count:
+                self.pixel_frame = 0
+        self.image = self.pixel[self.pixel_frame]
     
     def Frame_Count(self):
         """
@@ -241,7 +248,7 @@ class Danmaku(pygame.sprite.Sprite):
         """
         to distinguish with other type of danmaku
         """
-        self.buff_catch = functions.buff_debuff.Buff()
+        self.buff_catch = functions.buff_debuff.BuffGroup()
         """
         specify when miss opponite will have some buff or debuff
         """
@@ -354,6 +361,9 @@ class Danmaku(pygame.sprite.Sprite):
         else:
             self.delete = False
 
+    def birth_check(self):
+        pass
+
     def move(self):
         """
         move function:
@@ -376,7 +386,7 @@ class Elf(pygame.sprite.Sprite):
     use for almost all mid boss
     """
     def __init__(self, file_name):
-        pygame.sprite.Sprite.__init__()
+        pygame.sprite.Sprite.__init__(self)
         self.buff = functions.buff_debuff.BuffGroup()
         self.invincible = 0
         self.frame_count = 0

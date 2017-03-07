@@ -180,7 +180,7 @@ def stage_boss(screen, me_erina, me_ribbon, difficulty, stage_boss):
 
         #damage check here:
         me_erina.collide_check(danmaku_group, boss_group)
-        stage_boss.collide_check(shouting_group, boss_group)
+        stage_boss.collide_check(shouting_group)
         
 
         # printing screen here:
@@ -202,7 +202,5 @@ def stage_boss(screen, me_erina, me_ribbon, difficulty, stage_boss):
         
         pygame.display.flip()
         #pygame.display.update()
-        
-        Frame_Count()
         
         clock.tick(60)
