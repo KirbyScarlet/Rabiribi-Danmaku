@@ -5,6 +5,7 @@ import functions.sprites
 import functions.values
 from math import sqrt
 from math import asin
+from math import pi
 from os import system
 from os import remove
 

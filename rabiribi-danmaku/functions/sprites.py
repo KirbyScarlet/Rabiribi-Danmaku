@@ -64,6 +64,39 @@ class Boss(pygame.sprite.Sprite):
         self.rect.top = self.center[0] - 35
         self.rect.left = self.center[1] - 35
     
+    def SetDanmakuUse(self, *danmaku_name):
+        """
+        specify danmaku that boss used
+        """
+        temp_image = {'birth':[], 'live':[]}
+        self.danmaku_images = {}
+        for each in danmaku_name:
+            file_name = "data/danmaku/" + each + ".rbrb"
+            f = open(file_name, 'rb')
+            sources = pickle.load(f)
+            f.close()
+            self.danmaku_images[each] = temp_image
+            for i in range(len(sources['birth'])):
+                img_name = 'data/tmp/imgs/' + each + '_rank_' + str(i) + '.tmp'
+                try:
+                    f = open(img_name, 'wb')
+                except:
+                    os.makedirs('data/tmp/imgs/')
+                    f = open(img_name, 'wb')
+                f.write(sources['birth'][i])
+                f.close()
+                self.danmaku_images[each]['birth'].append(pygame.image.load(img_name).convert_alpha())
+            for i in range(len(sources['live'])):
+                img_name = 'data/tmp/imgs/' + each + '_rank_' + str(i) + '.tmp'
+                try:
+                    f = open(img_name, 'wb')
+                except:
+                    os.makedirs('data/tmp/imgs/')
+                    f = open(img_name, 'wb')
+                f.write(sources['live'][i])
+                f.close()
+                self.danmaku_images[each]['live'].append(pygame.image.load(img_name).convert_alpha())
+        
     def SetValue(self, max_hp, crash_damage, bonus_energy):
         """
         define the local property for every boss.
@@ -230,7 +263,7 @@ class Boss(pygame.sprite.Sprite):
             misc_file.close()
             self.bgm.load(misc_name)
         except:
-            pass
+            del self.bgm
 
     def clear_cache(self):
         os.system("del data/tmp/imgs/*.tmp")
@@ -263,7 +296,7 @@ class Danmaku(pygame.sprite.Sprite):
         """
         # music not specify
 
-    def SetImage(self, file_name):
+    def SetImage(self, image_list):
         """
         specify the pictures that danmaku sprite used.
         danmaku size will locked on a square shape
@@ -273,13 +306,13 @@ class Danmaku(pygame.sprite.Sprite):
 
         birth image will not at a size
         """
-        self.load_source(file_name)
+        self.images = image_list
         self.__pixel = self.images['live']
         self.__pixel_count = len(self.images['live'])
         self.__birth_pixel = self.images['birth']
         self.__birth_pixel_count = 9
 
-        self.image = self.__birth_pixel[0] # sometimes have more than 1 frame
+        self.image = self.__birth_pixel[8] # sometimes have more than 1 frame
         self.rect = self.image.get_rect()
 
         self.speed = 0
@@ -306,38 +339,12 @@ class Danmaku(pygame.sprite.Sprite):
         self.delete = False
         self.inscreen = True
         
-    def load_source(self, file_name):
-        f = open(file_name, 'rb')
-        sources = pickle.load(f)
-        f.close()
-        self.images = {'birth':[], 'live':[]}
-        for i in range(len(sources['birth'])):
-            img_name = 'data/tmp/imgs/' + self.name + '_rank_' + str(i) + '.tmp'
-            try:
-                f = open(img_name, 'wb')
-            except:
-                os.makedirs('data/tmp/imgs/')
-                f = open(img_name, 'wb')
-            f.write(sources['birth'][i])
-            f.close()
-            self.images['birth'].append(pygame.image.load(img_name).convert_alpha())
-        for i in range(len(sources['live'])):
-            img_name = 'data/tmp/imgs/' + self.name + '_rank_' + str(i) + '.tmp'
-            try:
-                f = open(img_name, 'wb')
-            except:
-                os.makedirs('data/tmp/imgs/')
-                f = open(img_name, 'wb')
-            f.write(sources['live'][i])
-            f.close()
-            self.images['live'].append(pygame.image.load(img_name).convert_alpha())
-        
     def SetLiveCheck(self, 
                      left = functions.values.SCREEN_LEFT, 
                      right = functions.values.SCREEN_RIGHT, 
                      top = functions.values.SCREEN_TOP, 
-                     bottom = functions.values.SCREEN_BOTTOM
-                     ):
+                     bottom = functions.values.SCREEN_BOTTOM,
+                     *live_time):
         """
         when danmaku move out of this area,
         change delete count
@@ -347,11 +354,17 @@ class Danmaku(pygame.sprite.Sprite):
         self.right_border = right + self.rect.width/2
         self.top_border = top - self.rect.height/2
         self.bottom_border = bottom + self.rect.height/2
+        if live_time:
+            self.live_time = live_time[0]
+        else:
+            self.live_time = -1
 
     def live_check(self):
         """
         most danmaku have a constant moving area.
         """
+        if self.live_time > 0:
+            self.live_time -= 1
         if not self.live_time:
             self.delete = True
         elif self.rect.right < self.left_border or self.rect.left > self.right_border:
@@ -362,7 +375,8 @@ class Danmaku(pygame.sprite.Sprite):
             self.delete = False
 
     def birth_check(self):
-        pass
+        if self.birth_time > 0:
+            self.birth_time -= 1
 
     def move(self):
         """
@@ -375,8 +389,6 @@ class Danmaku(pygame.sprite.Sprite):
         self.center[1] += self.speed * self.direction[1]
         self.rect.left = self.center[0] - self.rect.width/2
         self.rect.top = self.center[1] - self.rect.height/2
-        if self.live_time > 0:
-            self.live_time -= 1
         self.live_check()
 
 ###

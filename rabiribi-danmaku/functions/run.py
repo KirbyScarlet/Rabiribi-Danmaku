@@ -87,17 +87,19 @@ def print_screen(screen,
     
     if debug:
         debug_words_pos_left = 430
-        debug_words_pos_top = 360
+        debug_words_pos_top = 300
         
         erina_position = "erina position: " + str(round(me_erina.center[0], 2)) + " , " + str(round(me_erina.center[1], 2))
         ribbon_position = "ribbon position: " + str(round(me_ribbon.center[0], 2)) + " , " + str(round(me_ribbon.center[1], 2))
         erina_health = "erina hp: " + str(me_erina.hp) + "/" + str(me_erina.max_hp)
         boss_health = "boss hp: " + str(stage_boss.hp) + "/" + str(stage_boss.max_hp)
-        
+        danmaku_count = "danmaku count:" + str(len(danmaku_group) + len(birth_group))
+
         screen.blit(font.render(erina_position, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top))
         screen.blit(font.render(ribbon_position, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 20))
         screen.blit(font.render(erina_health, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 40))
         screen.blit(font.render(boss_health, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 60))
+        screen.blit(font.render(danmaku_count, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 100))
 
 def stage_mid(screen, me_erina, me_ribbon, difficulty):
     pass
@@ -166,17 +168,18 @@ def stage_boss(screen, me_erina, me_ribbon, difficulty, stage_boss):
                      )
         
         for each in birth_group:
-            if each.birth_life == 0:
+            each.birth_check()
+            if each.birth_time == 0:
                 birth_group.remove(each)
                 danmaku_group.add(each)
-            else:
-                each.birth_life -= 1
         
         # sprite del here:
-        danmaku_del(danmaku_group)
-        shouting_del(shouting_group)
-        effects_del(effects_group)
-        boss_del(boss_group)
+        sprites_del(danmaku_group, 
+                    shouting_group, 
+                    effects_group, 
+                    energy_group, 
+                    boss_group
+                    )
 
         #damage check here:
         me_erina.collide_check(danmaku_group, boss_group)

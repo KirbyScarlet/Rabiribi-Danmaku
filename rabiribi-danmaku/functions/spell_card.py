@@ -15,16 +15,16 @@ class IllustrationAttack(pygame.sprite.Sprite):
         self.image = self._illustration[0]
         self.rect = self.image.get_rect()
         self.center = [200.0, 200.0]
-        self.rect.left = self.center[0] - 100
-        self.rect.top = self.center[1] - 100
+        self.rect.left = self.center[0] - 512
+        self.rect.top = self.center[1] - 512
         self.timer = 0
         self.delete = False
 
     def move(self):
-        self.rect.top += 2
-        self.image.set_alpha(1020 - abs(17/4*(self.timer - 30)) - abs(17/4*(self.timer - 150)))
+        self.rect.top += 1
+        self.image.set_alpha(10)
         self.timer += 1
-        if self.timer == 300:
+        if self.timer == 180:
             self.delete = True
 
 class SpellCard():

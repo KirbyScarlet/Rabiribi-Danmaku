@@ -9,6 +9,12 @@ import pygame
 pygame.init()
 pygame.mixer.init()
 
+bg_size = width, height = 640, 480
+screen = pygame.display.set_mode(bg_size)
+pygame.display.set_caption("RabiRibi-Danmaku demo")
+icon = pygame.image.load("images/ribbon cover.png")
+pygame.display.set_icon(icon)
+
 import os
 import sys
 import traceback
@@ -16,15 +22,6 @@ import ui
 import boss
 import character
 import functions
-
-from pygame.locals import *
-from random import *
-
-bg_size = width, height = 640, 480
-screen = pygame.display.set_mode(bg_size)
-pygame.display.set_caption("RabiRibi-Danmaku demo")
-icon = pygame.image.load("images/ribbon cover.png")
-pygame.display.set_icon(icon)
 
 me_erina = character.erina.Erina()
 me_ribbon = character.ribbon.Ribbon()
@@ -46,6 +43,6 @@ if __name__ == "__main__":
     except:
         traceback.print_exc()
         pygame.quit()
-        functions.clear_cache()
         input()
-        
+    else:
+        functions.clear_cache()
