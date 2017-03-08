@@ -15,7 +15,6 @@ pygame.display.set_caption("RabiRibi-Danmaku demo")
 icon = pygame.image.load("images/ribbon cover.png")
 pygame.display.set_icon(icon)
 
-import os
 import sys
 import traceback
 import ui
