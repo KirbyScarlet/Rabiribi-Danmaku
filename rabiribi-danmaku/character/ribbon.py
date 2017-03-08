@@ -31,6 +31,9 @@ class green_danmaku(pygame.sprite.Sprite):
         self.rect.top = self.center[0] - 10
         self.rect.left = self.center[1] - 10
 
+    def print_screen(self, screen):
+        screen.blit(self.image, self.rect)
+
 class purple_danmaku(pygame.sprite.Sprite):
     def __init__(self, me_ribbon):
         pygame.sprite.Sprite.__init__(self)
@@ -56,6 +59,9 @@ class purple_danmaku(pygame.sprite.Sprite):
         self.center[1] += self.speed * self.direction[1]
         self.rect.top = self.center[0] - 5
         self.rect.left = self.center[1] - 5
+
+    def print_screen(self, screen):
+        screen.blit(self.image, self.rect)
 
 class Ribbon(pygame.sprite.Sprite):
     def __init__(self):

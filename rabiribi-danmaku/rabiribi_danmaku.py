@@ -31,6 +31,7 @@ global difficulty
 def main():
     #ui.welcome.opening(screen)
     #ui.menu.menu_switch(screen)
+    input()
     difficulty = 1
     functions.run.stage_boss(screen, me_erina, me_ribbon, difficulty, boss.section1.stage1a.cocoa.Cocoa())
     

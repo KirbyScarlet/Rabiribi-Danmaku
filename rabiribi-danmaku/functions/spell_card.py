@@ -22,10 +22,17 @@ class IllustrationAttack(pygame.sprite.Sprite):
 
     def move(self):
         self.rect.top += 1
-        self.image.set_alpha(10)
+        self.image.set_alpha(100)
         self.timer += 1
-        if self.timer == 180:
+        if self.timer == 120:
             self.delete = True
+
+    def print_screen(self, screen):
+        temp_screen = pygame.Surface((640,480)).convert()
+        temp_screen.blit(screen, (0,0))
+        temp_screen.blit(self.image, self.rect)
+        temp_screen.set_alpha(-255/60*(abs(30-self.timer)+abs(90-self.timer))+510)
+        screen.blit(temp_screen,(0,0))
 
 class SpellCard():
     """
@@ -63,14 +70,15 @@ class SpellCard():
         if self.timer == 0:
             illus = IllustrationAttack(self.illustration)
             effects_group.add(illus)
+        self.timer += 1
 
     def spell_card(self, erina, boss, boss_group, birth_group, effects_group):
         """
         check type.
         """
-        if self.type:
+        if self.type and self.timer < 150:
             self.illustration_attack(effects_group)
-        if self.timer < self.spell_time:
+        elif self.timer < self.spell_time:
             self.spell(erina, boss, boss_group, birth_group, effects_group)
 
     def spell(self, erina, boss, boss_group, birth_group, effects_group):

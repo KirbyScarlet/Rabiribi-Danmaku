@@ -171,6 +171,9 @@ class Boss(pygame.sprite.Sprite):
         self.change_image()
         self.Frame_Count()
 
+    def print_screen(self, screen):
+        screen.blit(self.image, self.rect)
+
     def collide_check(self, shouting_group):
         for each in shouting_group:
             if self.collide:
@@ -391,6 +394,9 @@ class Danmaku(pygame.sprite.Sprite):
         self.rect.top = self.center[1] - self.rect.height/2
         self.live_check()
 
+    def print_screen(self, screen):
+        screen.blit(self.image, self.rect)
+
 ###
 
 class Elf(pygame.sprite.Sprite):
@@ -444,3 +450,6 @@ class Elf(pygame.sprite.Sprite):
         self.rect.left = self.center[0] - 35
         self.rect.top = self.center[1] - 35 + 5*math.sin(6.28*self.frame_count/100)
         self.Frame_Count()
+
+    def print_screen(self, screen):
+        screen.blit(self.image, self.rect)

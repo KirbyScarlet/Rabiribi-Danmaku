@@ -54,7 +54,7 @@ def sprites_move(*sprites_group):
         for each in group:
             each.move()           
 
-def print_screen(screen,
+def printscreen(screen,
                     background,
                     boss_group,
                     stage_boss,
@@ -69,20 +69,20 @@ def print_screen(screen,
                     debug):
     screen.blit(background, (0,0))
     for temp in boss_group:
-        screen.blit(temp.image, temp.rect)
+        temp.print_screen(screen)
     screen.blit(stage_boss.image, stage_boss.rect)
     screen.blit(me_erina.image, me_erina.rect)
     screen.blit(me_ribbon.image, me_ribbon.rect)
     for temp in shouting_group:
-        screen.blit(temp.image, temp.rect)
+        temp.print_screen(screen)
     for temp in effects_group:
-        screen.blit(temp.image, temp.rect)
+        temp.print_screen(screen)
     for remp in energy_group:
-        screen.blit(temp.image, temp.rect)
+        temp.print_screen(screen)
     for temp in birth_group:
-        screen.blit(temp.image, temp.rect)
+        temp.print_screen(screen)
     for temp in danmaku_group:
-        screen.blit(temp.image, temp.rect)
+        temp.print_screen(screen)
     screen.blit(face.face, (0,0))
     
     if debug:
@@ -187,7 +187,7 @@ def stage_boss(screen, me_erina, me_ribbon, difficulty, stage_boss):
         
 
         # printing screen here:
-        print_screen(screen,
+        printscreen(screen,
                     face.background,
                     boss_group,
                     stage_boss, 
