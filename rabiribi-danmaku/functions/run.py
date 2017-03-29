@@ -207,3 +207,5 @@ def stage_boss(screen, me_erina, me_ribbon, difficulty, stage_boss):
         #pygame.display.update()
         
         clock.tick(60)
+
+
