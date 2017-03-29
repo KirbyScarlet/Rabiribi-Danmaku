@@ -278,12 +278,8 @@ class Danmaku(pygame.sprite.Sprite):
     only danmaku be defined there.
     lazer next
     """
-    def __init__(self, name):
+    def __init__(self, lazer=-1):
         pygame.sprite.Sprite.__init__(self)
-        self.name = name
-        """
-        to distinguish with other type of danmaku
-        """
         self.buff_catch = functions.buff_debuff.BuffGroup()
         """
         specify when miss opponite will have some buff or debuff
@@ -293,10 +289,15 @@ class Danmaku(pygame.sprite.Sprite):
         any danmaku have their birth time.
         before birth time have no damage.
         """
-        self.live_time = -1
+        self.live_time = lazer
         """
         some lazer will use this
         """
+        self.layer = 0
+        """
+        layer 0 will on the top.
+        """
+
         # music not specify
 
     def SetImage(self, image_list):
@@ -347,7 +348,7 @@ class Danmaku(pygame.sprite.Sprite):
                      right = functions.values.SCREEN_RIGHT, 
                      top = functions.values.SCREEN_TOP, 
                      bottom = functions.values.SCREEN_BOTTOM,
-                     *live_time):
+                     live_time = -1):
         """
         when danmaku move out of this area,
         change delete count
@@ -357,10 +358,7 @@ class Danmaku(pygame.sprite.Sprite):
         self.right_border = right + self.rect.width/2
         self.top_border = top - self.rect.height/2
         self.bottom_border = bottom + self.rect.height/2
-        if live_time:
-            self.live_time = live_time[0]
-        else:
-            self.live_time = -1
+        self.live_time = live_time
 
     def live_check(self):
         """

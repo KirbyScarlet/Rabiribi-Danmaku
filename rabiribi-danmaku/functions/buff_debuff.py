@@ -2,13 +2,11 @@ import pygame
 import pickle
 from _operator import truth
 
-class Buff(pygame.sprite.Sprite):
+class Buff():
     """
     use this to define buffs and debuffs
     """
-    def __init__(self, name, owner='boss'):
-        pygame.sprite.Sprite.__init__()
-        self.name = name
+    def __init__(self, owner='boss'):
         # if timer > 10 or timer == -1, it's buff time
         self.timer = 0
         # if active is true, changing value now
@@ -16,6 +14,22 @@ class Buff(pygame.sprite.Sprite):
         # if owner is erina, something different
         self.owner = owner
     
+    def buff_check(self, owner):
+        """
+        Buff.buff_check(origin, *enemy): Return None
+
+        origin is buff who owned
+        *enemy store opponity(s)
+        """    
+        pass
+
+class BuffImage(pygame.sprite.Sprite()):
+    """
+    specify image of a buff(s)
+    """
+    def __init__(self, name):
+        super().__init__()
+
     def SetImage(self, file_name):
         """
         set buff icon
@@ -35,16 +49,6 @@ class Buff(pygame.sprite.Sprite):
         self.temp_right = 0
         self.temp_top = 0
 
-
-    def buff_check(self, owner):
-        """
-        Buff.buff_check(origin, *enemy): Return None
-
-        origin is buff who owned
-        *enemy store opponity(s)
-        """    
-        pass
-            
 class BuffGroup():
     """
     use this to restore buffs

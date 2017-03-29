@@ -166,9 +166,11 @@ class Erina(pygame.sprite.Sprite):
             self.invincible -= 1
             pygame.sprite.spritecollide(self, danmaku_group, True, pygame.sprite.collide_circle)
 
-    def damage_check(self, danmaku_group, boss_group):
-        temp_danmaku = pygame.sprite.spritecollide(self, danmaku_group, False, pygame.sprite.collide_circle) 
-        temp_boss = pygame.sprite.spritecollide(self, boss_group, False, pygame.sprite.collide_circle)
+    def damage_check(self, danmaku_layer_group, boss_layer_group):
+        for danmaku_layer in danmaku_layer_group:
+            temp_danmaku = pygame.sprite.spritecollide(self, danmaku_layer, False, pygame.sprite.collide_circle) 
+        for boss_layer in boss_layer_group:
+            temp_boss = pygame.sprite.spritecollide(self, boss_group, False, pygame.sprite.collide_circle)
         if temp_danmaku or temp_boss:
             self.invincible = 180
             for each in temp_danmaku:
