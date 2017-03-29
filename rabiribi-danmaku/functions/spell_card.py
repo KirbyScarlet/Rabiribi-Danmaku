@@ -56,6 +56,7 @@ class SpellCard():
         self.range = range
         self.spell_time = spell_time
         self.timer = 0
+        self.difficulty = 1
         if illustration:
             self.type = True
             self.illustration = illustration
@@ -72,16 +73,16 @@ class SpellCard():
             effects_group.add(illus)
         self.timer += 1
 
-    def spell_card(self, erina, boss, boss_group, birth_group, effects_group):
+    def spell_card(self, difficulty, erina, boss, boss_group, birth_group, effects_group):
         """
         check type.
         """
         if self.type and self.timer < 150:
             self.illustration_attack(effects_group)
         elif self.timer < self.spell_time:
-            self.spell(erina, boss, boss_group, birth_group, effects_group)
+            self.spell = self.__getattribute__('spell_' + difficulty)(erina, boss, boss_group, birth_group, effects_group)
 
-    def spell(self, erina, boss, boss_group, birth_group, effects_group):
+    def spell_normal(self, erina, boss, boss_group, birth_group, effects_group):
         """
         define this in instance
         """

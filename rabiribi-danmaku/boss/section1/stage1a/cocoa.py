@@ -21,7 +21,7 @@ class Spell_1(SpellCard):
     """
     no-spell
     """
-    def spell(self, erina, boss, boss_group, birth_group, effects_group):
+    def spell_normal(self, erina, boss, boss_group, birth_group, effects_group):
         temp_time = self.timer % 120
         if temp_time:
             if temp_time%10 == 1 and temp_time<62:
