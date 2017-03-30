@@ -278,13 +278,13 @@ class Danmaku(pygame.sprite.Sprite):
     only danmaku be defined there.
     lazer next
     """
-    def __init__(self, lazer=-1):
+    def __init__(self, lazer=-1, birth_time=10):
         pygame.sprite.Sprite.__init__(self)
         self.buff_catch = functions.buff_debuff.BuffGroup()
         """
         specify when miss opponite will have some buff or debuff
         """
-        self.birth_time = 10
+        self.birth_time = birth_time
         """
         any danmaku have their birth time.
         before birth time have no damage.

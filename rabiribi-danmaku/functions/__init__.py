@@ -1,3 +1,4 @@
+import pygame
 import functions.buff_debuff
 import functions.run
 import functions.spell_card
@@ -8,6 +9,14 @@ from math import asin
 from math import pi
 from os import system
 from os import remove
+from sys import exit
+
+def ExitCheck():
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            pygame.quit()
+            functions.clear_cache()
+            exit()
 
 def snipe(origin_sprite, enemy_sprite):
     """

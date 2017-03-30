@@ -68,6 +68,7 @@ def printscreen(screen,
                     face,
                     debug):
     screen.blit(background, (0,0))
+
     for temp in boss_group:
         temp.print_screen(screen)
     screen.blit(stage_boss.image, stage_boss.rect)
@@ -77,7 +78,7 @@ def printscreen(screen,
         temp.print_screen(screen)
     for temp in effects_group:
         temp.print_screen(screen)
-    for remp in energy_group:
+    for temp in energy_group:
         temp.print_screen(screen)
     for temp in birth_group:
         temp.print_screen(screen)

@@ -7,28 +7,26 @@ class BossBattle():
     """
     stage end boss here
     """
-    def __init__(self, erina, ribbon, difficulty, *boss):
+    def __init__(self, erina, ribbon, difficulty, danmaku_layer_count, *boss):
         self.erina = erina
         self.ribbon = ribbon
         self.difficulty = difficulty
         self.clock = pygame.time.Clock()
         self.face = ui.face.Face()
-        if len(boss) == 1:
-            self.boss = boss
-        else:
-            self.boss = len(boss)
-            for b in self.boss:
-                self.__setattr__('boss'+str(b), boss[b])
-                
+        self.boss = len(boss)
+        self.pause = False
+        for b in self.boss:
+            self.__setattr__('boss_'+str(b), boss[b])
+        self.GroupInit(danmaku_layer_count)
 
-    def GroupInit(self, number=0):
+    def GroupInit(self, number):
         """
         specify group counts.
 
-            GroupInit(number=0): return none
+            GroupInit(number): return none
 
         static layer:
-            birth_layer: 6 frame have no damage.
+            birth_layer: birth frame have no damage.
             shouting_layer: ribbon attack.
             boost_layer: ribbon boost attack and amulet attack
             illustration_layer: illustration attack before spell attack
@@ -49,6 +47,8 @@ class BossBattle():
         self.birth_layer = pygame.sprite.Group()
         self.illustration_layer = pygame.sprite.Group()
         self.boss_layer = pygame.sprite.Group()
+        for n in self.boss:
+            self.boss_layer.add(self.__getattribute__('boss_'+str(n)))
         self.energy_layer = pygame.sprite.Group()
         self.shouting_layer = pygame.sprite.Group()
         self.boost_layer = pygame.sprite.Group()
@@ -65,8 +65,10 @@ class BossBattle():
 
         bgm will automatic specify on boss_group
         """
-        if isinstance(self.boss, functions.sprites.Boss) and hasattr(self.boss, bgm):
-            self.bgm = self.boss.bgm
+        for b in boss_layer:
+            if hasattr(self.boss, bgm):
+                self.bgm = self.boss.bgm
+                break
 
     def BuffCheck(self, erina, boss_group):
         """
@@ -87,13 +89,13 @@ class BossBattle():
         self.ui = self.face.face
         self.background = self.face.background
         
-    def spell_card(self):
+    def SpellCard(self):
         """
         active spell attack
         """
         for b in boss_layer:
             if hasattr(b, 'spell_attack'):
-                b.spell_attack(self.defficulty, erina, boss, boss_group, birth_group, effects_group)
+                b.spell_attack(self.difficulty, self.erina, self.boss_layer, self.birth_layer, self.energy_layer)
 
     def KeyPress(self):
         """
@@ -142,16 +144,54 @@ class BossBattle():
             for each in self.__getattribute__('danmaku_layer_' + str(num)):
                 each.delete(each)
 
-    def CollideCheck(self, erina, boss_group):
-        self.erina.collide_check(self.danmaku_group, boss_group)
+    def CollideCheck(self):
+        self.erina.collide_check(self.danmaku_layer, boss_layer)
         for b in self.boss_layer:
             b.collide_check(shouting_layer)
 
-    def print_screen(self, screen):
+    def PrintScreen(self, screen):
         screen.blit(self.background, (0,0))
+        for sprite in energy_layer:
+            sprite.print_screen(screen)
+        for sprite in shouting_layer:
+            sprite.print_screen(screen)
+        for sprite in illustration_layer:
+            sprite.print_screen(screen)
+        screen.blit(self.erina.image, self.erina.rect)
+        screen.blit(self.ribbon.image, self.ribbon.rect)
+        for sprite in boss_layer:
+            sprite.print_screen(screen)
+        for sprite in item_layer:
+            sprite.print_screen(screen)
+        for sprite in birth_layer:
+            sprite.print_screen(screen)
+        for sprite in danmaku_layer:
+            sprite.print_screen(screen)
+        for sprite in boost_layer:
+            sprite.print_screen(screen)
 
-    def run(self):
-        pass
+    def Debug(self):
+        debug_words_pos_left = 430
+        debug_words_pos_top = 300
+        
+        erina_position = "erina position: " + str(round(me_erina.center[0], 2)) + " , " + str(round(me_erina.center[1], 2))
+        ribbon_position = "ribbon position: " + str(round(me_ribbon.center[0], 2)) + " , " + str(round(me_ribbon.center[1], 2))
+        erina_health = "erina hp: " + str(me_erina.hp) + "/" + str(me_erina.max_hp)
+        boss_health = "boss hp: " + str(stage_boss.hp) + "/" + str(stage_boss.max_hp)
+        danmaku_count = "danmaku count:" + str(len(danmaku_group) + len(birth_group))
+
+        screen.blit(font.render(erina_position, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top))
+        screen.blit(font.render(ribbon_position, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 20))
+        screen.blit(font.render(erina_health, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 40))
+        screen.blit(font.render(boss_health, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 60))
+        screen.blit(font.render(danmaku_count, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 100))
+
+    def __repr__(self):
+        return 'stage boss attack'
+
+    def __call__(self, screen, debug = False):
+        while not self.pause:
+            functions.ExitCheck()
 
 class Pause():
     pass
