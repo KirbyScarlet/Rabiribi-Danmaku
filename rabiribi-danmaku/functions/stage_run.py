@@ -176,9 +176,9 @@ class BossBattle():
         
         erina_position = "erina position: " + str(round(me_erina.center[0], 2)) + " , " + str(round(me_erina.center[1], 2))
         ribbon_position = "ribbon position: " + str(round(me_ribbon.center[0], 2)) + " , " + str(round(me_ribbon.center[1], 2))
-        erina_health = "erina hp: " + str(me_erina.hp) + "/" + str(me_erina.max_hp)
-        boss_health = "boss hp: " + str(stage_boss.hp) + "/" + str(stage_boss.max_hp)
-        danmaku_count = "danmaku count:" + str(len(danmaku_group) + len(birth_group))
+        erina_health = "erina hp: " + str(self.erina.hp) + "/" + str(self.erina.max_hp)
+        boss_health = self.boss_1.__name__ + " hp: " + str(self.boss_1.hp) + "/" + str(self.boss_1.max_hp)
+        danmaku_count = "danmaku count:" + str(len(danmaku_layer) + len(birth_layer))
 
         screen.blit(font.render(erina_position, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top))
         screen.blit(font.render(ribbon_position, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 20))
