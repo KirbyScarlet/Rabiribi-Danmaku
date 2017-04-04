@@ -23,7 +23,7 @@ class Buff():
         """    
         pass
 
-class BuffImage(pygame.sprite.Sprite()):
+class BuffImage(pygame.sprite.Sprite):
     """
     specify image of a buff(s)
     """

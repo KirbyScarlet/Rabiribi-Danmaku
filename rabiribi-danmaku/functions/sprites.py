@@ -203,7 +203,7 @@ class Boss(pygame.sprite.Sprite):
         """
         for s in self.spell_group:
             if self.spell_now == s.range:
-                s.spell_card(erina, self, boss_group, birth_group, effects_group)
+                s.spell_card(difficulty, erina, self, boss_group, birth_group, effects_group)
 
     def change_image(self):
         if not self.frame_count % 12:
@@ -278,7 +278,7 @@ class Danmaku(pygame.sprite.Sprite):
     only danmaku be defined there.
     lazer next
     """
-    def __init__(self, lazer=-1, birth_time=10):
+    def __init__(self, birth_time=10, lazer=-1):
         pygame.sprite.Sprite.__init__(self)
         self.buff_catch = functions.buff_debuff.BuffGroup()
         """

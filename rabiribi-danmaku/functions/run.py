@@ -136,7 +136,7 @@ def stage_boss(screen, me_erina, me_ribbon, difficulty, stage_boss):
                 sys.exit()
         
         #key pressed here:
-        me_erina.key_pressed = pygame.key.get_pressed()
+        key_pressed = pygame.key.get_pressed()
 
         #buff check here:
         for b in boss_group:
@@ -149,9 +149,9 @@ def stage_boss(screen, me_erina, me_ribbon, difficulty, stage_boss):
         stage_boss.spell_attack(1, me_erina, boss_group, birth_group, effects_group)
         
         if not miss:
-            me_erina.move()
+            me_erina.move(key_pressed)
             me_ribbon.move(me_erina)
-            me_ribbon.attack(shouting_group, me_erina.key_pressed)
+            me_ribbon.attack(shouting_group, key_pressed)
         else:
             for each in danmaku_group:
                 danmaku_group.remove(each)

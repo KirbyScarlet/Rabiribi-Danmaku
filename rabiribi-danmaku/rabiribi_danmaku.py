@@ -24,16 +24,17 @@ import functions
 
 me_erina = character.erina.Erina()
 me_ribbon = character.ribbon.Ribbon()
-serface = ui.face.Face()
 
 global difficulty
 
 def main():
     #ui.welcome.opening(screen)
     #ui.menu.menu_switch(screen)
-    difficulty = 1
-    functions.run.stage_boss(screen, me_erina, me_ribbon, difficulty, boss.section1.stage1a.cocoa.Cocoa())
-    
+    difficulty = 'normal'
+    #functions.run.stage_boss(screen, me_erina, me_ribbon, difficulty, boss.section1.stage1a.cocoa.Cocoa())
+    stage1boss = functions.stage_run.BossBattle(me_erina, me_ribbon, difficulty, 2, boss.section1.stage1a.cocoa.Cocoa())
+    stage1boss(screen, debug=True)
+
 if __name__ == "__main__":
     try:
         main()

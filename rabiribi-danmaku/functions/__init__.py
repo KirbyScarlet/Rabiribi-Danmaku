@@ -4,6 +4,7 @@ import functions.run
 import functions.spell_card
 import functions.sprites
 import functions.values
+import functions.stage_run
 from math import sqrt
 from math import asin
 from math import pi
@@ -11,9 +12,11 @@ from os import system
 from os import remove
 from sys import exit
 
+debug_font = pygame.font.Font(None, 20)
+
 def ExitCheck():
     for event in pygame.event.get():
-        if event.type == QUIT:
+        if event.type == pygame.QUIT:
             pygame.quit()
             functions.clear_cache()
             exit()
