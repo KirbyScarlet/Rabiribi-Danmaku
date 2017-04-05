@@ -175,10 +175,9 @@ class Boss(pygame.sprite.Sprite):
         screen.blit(self.image, self.rect)
 
     def collide_check(self, shouting_group):
-        for each in shouting_group:
-            if self.collide:
-                temp = pygame.sprite.spritecollide(self, each, True, pygame.sprite.collide_circle)
-                self.damage(temp)
+        if self.collide:
+            temp = pygame.sprite.spritecollide(self, shouting_group, True, pygame.sprite.collide_circle)
+            self.damage(temp)
 
     def damage(self, shouting_group):
         """

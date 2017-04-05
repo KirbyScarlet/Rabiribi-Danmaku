@@ -174,8 +174,9 @@ class BossBattle():
         screen.blit(functions.debug_font.render(ribbon_position, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 20))
         screen.blit(functions.debug_font.render(erina_health, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 40))
         for num in range(self.boss):
-            screen.blit(functions.debug_font.render(self.__getattribute__("boss_"+str(num)).__class__.__name__, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 60 + num*20))
-        screen.blit(functions.debug_font.render(danmaku_count, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 100))
+            b = self.__getattribute__("boss_"+str(num))
+            screen.blit(functions.debug_font.render(b.__class__.__name__ + ": " + str(b.hp) + "/" + str(b.max_hp), True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 60 + num*20))
+        screen.blit(functions.debug_font.render(danmaku_count, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 80 + num*20))
 
 
     def PrintScreen(self, screen):

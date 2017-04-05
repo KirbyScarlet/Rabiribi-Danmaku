@@ -83,7 +83,7 @@ class SpellCard():
         if self.type and self.illustration_attack_time and self.timer == -150:
             self.illustration_attack(illustration_group)
         elif 0 < self.timer < self.spell_time:
-            self.spell = self.__getattribute__('spell_' + difficulty)(erina, birth_group, illustration_group)
+            self.spell = self.__getattribute__('spell_' + difficulty)(erina, birth_group, boss_group, illustration_group)
         self.timer += 1
 
     def spell_normal(self, erina, birth_group, boss_group, illustration_group):

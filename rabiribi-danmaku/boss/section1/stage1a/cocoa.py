@@ -56,5 +56,5 @@ class Cocoa(Boss):
         self.SetSpell(1800)
         self.SetSource('data/boss/sec1/Cocoa.rbrb')
         self.SetDanmakuUse('mid_orange_circle')
-        self.spell_group.add(Spell_1(self,1,1800))
+        self.spell_group.add(Spell_1(self,1,1800,self.illustration))
     

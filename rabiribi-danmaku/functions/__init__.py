@@ -5,6 +5,7 @@ import functions.spell_card
 import functions.sprites
 import functions.values
 import functions.stage_run
+import platform
 from math import sqrt
 from math import asin
 from math import pi
@@ -61,14 +62,25 @@ def angle(direction):
     return rad
 
 def clear_cache(*dir):
-    if dir:
-        for each in dir:
-            ch = "del data\\tmp\\" + each + "\\*.tmp"
-            system(ch)
-    else:
-        system("del data\\tmp\\bf\\*.tmp")
-        system("del data\\tmp\\bg\\*.tmp")
-        system("del data\\tmp\\imgs\\*.tmp")
-        system("del data\\tmp\\mid\\*.tmp")
-        system("del data\\tmp\\misc\\*.tmp")
-    
+    if platform.system() == "Windows":
+        if dir:
+            for each in dir:
+                ch = "del data\\tmp\\" + each + "\\*.tmp"
+                system(ch)
+        else:
+            system("del data\\tmp\\bf\\*.tmp")
+            system("del data\\tmp\\bg\\*.tmp")
+            system("del data\\tmp\\imgs\\*.tmp")
+            system("del data\\tmp\\mid\\*.tmp")
+            system("del data\\tmp\\misc\\*.tmp")
+    elif platform.system() == "Linux":
+        if dir:
+            for each in dir:
+                ch = "rm data/tmp/" + each + "/*.tmp"
+                system(ch)
+        else:
+            system("rm data/tmp/bf/*.tmp")
+            system("rm data/tmp/bg/*.tmp")
+            system("rm data/tmp/imgs/*.tmp")
+            system("rm data/tmp/mid/*.tmp")
+            system("rm data/tmp/misc/*.tmp")
