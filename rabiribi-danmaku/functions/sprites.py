@@ -390,6 +390,7 @@ class Danmaku(pygame.sprite.Sprite):
         self.center[1] += self.speed * self.direction[1]
         self.rect.left = self.center[0] - self.rect.width/2
         self.rect.top = self.center[1] - self.rect.height/2
+        self.birth_check()
         self.live_check()
 
     def print_screen(self, screen):

@@ -138,12 +138,9 @@ class BossBattle():
     def SpriteDel(self):
         def delete(layer):
             for sprite in layer:
-                if hasattr(sprite, 'live_time'):
-                    if sprite.live_time == 0:
-                        sprite.remove(layer)
-                elif hasattr(sprite, 'delete'):
+                if hasattr(sprite, 'delete'):
                     if sprite.delete:
-                        sprite.remove(layer)
+                        sprite.kill()
                 else:
                     pass
 
@@ -158,9 +155,6 @@ class BossBattle():
                       self.item_layer,
                       self.boost_layer,
                       self.danmaku_layer)
-        for num in range(self.danmaku_layer_count):
-            for each in self.__getattribute__('danmaku_layer_' + str(num)):
-                each.delete(each)
 
     def CollideCheck(self):
         self.erina.collide_check(self.danmaku_layer, self.boss_layer)
@@ -182,6 +176,7 @@ class BossBattle():
         for num in range(self.boss):
             screen.blit(functions.debug_font.render(self.__getattribute__("boss_"+str(num)).__class__.__name__, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 60 + num*20))
         screen.blit(functions.debug_font.render(danmaku_count, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 100))
+
 
     def PrintScreen(self, screen):
         screen.blit(self.background, (0,0))
