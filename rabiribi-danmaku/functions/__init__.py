@@ -42,6 +42,24 @@ def snipe(origin_sprite, enemy_sprite):
         snipe = temp_snipe
     return snipe
 
+def angle(direction):
+    """
+    return rad of a direction:
+
+        angle(direction): return int
+
+        return a rad value
+    """
+    temp_rad = asin(direction[1])
+    if direction[0] < 0:
+        if direction[1] > 0:
+            rad = pi - temp_rad
+        elif direction[1] < 0:
+            rad = -pi - temp_rad
+    else:
+        rad = temp_rad
+    return rad
+
 def clear_cache(*dir):
     if dir:
         for each in dir:

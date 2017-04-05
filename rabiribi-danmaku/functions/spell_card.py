@@ -43,7 +43,7 @@ class SpellCard():
         spell_attack(difficulty, me_erina, boss_group, birth_group, effects_group): return none
 
     """
-    def __init__(self, range, spell_time, *illustration):
+    def __init__(self, boss, range, spell_time, *illustration):
         """
         __init__(spell_type, spell_range[, illustration]):
 
@@ -55,35 +55,38 @@ class SpellCard():
         self.type = False
         self.range = range
         self.spell_time = spell_time
-        self.timer = 0
-        self.spell_attack_time = 150
+        self.timer = -270
+        self.illustration_attack_time = 150
         self.difficulty = 1
+        self.boss = boss
         if illustration:
             self.type = True
             self.illustration = illustration
+        if not self.type: self.timer = -150
 
-    def illustration_attack(self, effects_group):
+    def illustration_attack(self, illustration_group):
         """
         show illustration before attack
 
             illustration:       boss illustration list.
             effects_group:    any effects sprites group
         """
-        if self.spell_attack_time == 150:
+        if self.illustration_attack_time == 150:
             illus = IllustrationAttack(self.illustration)
-            effects_group.add(illus)
-        self.spell_attack_time -= 1
+            illustration_group.add(illus)
+        self.illustration_attack_time -= 1
 
-    def spell_card(self, difficulty, erina, boss, boss_group, birth_group, effects_group):
+    def spell_card(self, difficulty, erina, birth_group, boss_group, illustration_group):
         """
         check type.
         """
-        if self.type and self.spell_attack_time:
-            self.illustration_attack(effects_group)
-        elif self.timer < self.spell_time:
-            self.spell = self.__getattribute__('spell_' + difficulty)(erina, boss, boss_group, birth_group, effects_group)
+        if self.type and self.illustration_attack_time and self.timer == -150:
+            self.illustration_attack(illustration_group)
+        elif 0 < self.timer < self.spell_time:
+            self.spell = self.__getattribute__('spell_' + difficulty)(erina, birth_group, illustration_group)
+        self.timer += 1
 
-    def spell_normal(self, erina, boss, boss_group, birth_group, effects_group):
+    def spell_normal(self, erina, birth_group, boss_group, illustration_group):
         """
         define this in instance
         """

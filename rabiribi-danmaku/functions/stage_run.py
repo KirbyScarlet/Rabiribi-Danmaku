@@ -105,7 +105,7 @@ class BossBattle():
         """
         for b in self.boss_layer:
             if hasattr(b, 'spell_attack'):
-                b.spell_attack(self.difficulty, self.erina, self.boss_layer, self.birth_layer, self.energy_layer)
+                b.spell_attack(self.difficulty, self.erina, self.birth_layer, self.boss_layer, self.illustration_layer)
 
     def KeyPress(self):
         """

@@ -197,13 +197,13 @@ class Boss(pygame.sprite.Sprite):
         for each in shouting_group:
             self.hp -= each.damage * self.defense
 
-    def spell_attack(self, difficulty, erina, boss_group, birth_group, effects_group):
+    def spell_attack(self, difficulty, erina, birth_group, boss_group, illustration_group):
         """
         prepared for every instance.
         """
         for s in self.spell_group:
             if self.spell_now == s.range:
-                s.spell_card(difficulty, erina, self, boss_group, birth_group, effects_group)
+                s.spell_card(difficulty, erina, birth_group, boss_group, illustration_group)
 
     def change_image(self):
         if not self.frame_count % 12:
@@ -416,6 +416,7 @@ class Elf(pygame.sprite.Sprite):
         self.__pixel_frame = 0
         self.image = self.__pixel[self.__pixel_count]
         self.rect = self.image.get_rect()
+        self.direction = [0,-1]
         self.temp_position = [-10.0,-10.0]
         self.center = [-10.0, 10.0]
         self.rect.top = self.center[0] - 10
