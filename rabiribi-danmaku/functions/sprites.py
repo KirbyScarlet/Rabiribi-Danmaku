@@ -296,6 +296,7 @@ class Danmaku(pygame.sprite.Sprite):
         """
         layer 0 will on the top.
         """
+        self.timer = 0
 
         # music not specify
 
@@ -378,6 +379,12 @@ class Danmaku(pygame.sprite.Sprite):
         if self.birth_time > 0:
             self.birth_time -= 1
 
+    def time_rip(self):
+        """
+        change value
+        """
+        pass
+
     def move(self):
         """
         move function:
@@ -385,12 +392,14 @@ class Danmaku(pygame.sprite.Sprite):
             it's different from boss sprite.
             it only can controled by speed and direction!
         """
+        self.time_rip()
         self.center[0] += self.speed * self.direction[0]
         self.center[1] += self.speed * self.direction[1]
         self.rect.left = self.center[0] - self.rect.width/2
         self.rect.top = self.center[1] - self.rect.height/2
         self.birth_check()
         self.live_check()
+        self.timer += 1
 
     def print_screen(self, screen):
         screen.blit(self.image, self.rect)
