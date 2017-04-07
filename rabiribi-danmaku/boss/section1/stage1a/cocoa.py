@@ -67,13 +67,15 @@ class Spell_2(SpellCard):
                 self.temp_snipe = snipe(self.boss, erina)
             if temp_time % 2 == 1:
                 for i in range(10):
-                    temp_danmaku = mid_orange_circle(self.boss.center, self.boss.danmaku_images)
-                    temp_danmaku.layer = 0
-                    temp_danmaku.center = list(self.boss.center)
-                    temp_danmaku.time_rip = lambda: 1
-                    temp_danmaku.speed = 4
-                    temp_danmaku.direction = [math.cos(self.temp_snipe + 2*math.pi/10*i), math.sin(self.temp_snipe + 2*math.pi/10*i)]
-                    birth_group.add(temp_danmaku)
+                    for j in -1,1:
+                        temp_danmaku = mid_orange_circle(self.boss.center, self.boss.danmaku_images)
+                        temp_danmaku.layer = 0
+                        temp_danmaku.center = list(self.boss.center)
+                        temp_danmaku.time_rip = lambda: 1
+                        temp_danmaku.speed = 4
+                        temp_danmaku.direction = [math.cos(self.temp_snipe + 2*math.pi/10*i + 2*math.pi/128*temp_time*j), 
+                                                  math.sin(self.temp_snipe + 2*math.pi/10*i + 2*math.pi/128*temp_time*j)]
+                        birth_group.add(temp_danmaku)
         else:
             self.boss.temp_position[0] = 225
             self.boss.temp_position[1] = 100
