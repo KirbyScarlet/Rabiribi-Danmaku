@@ -20,3 +20,11 @@ BOOST = 'K_c'
 
 SWITCH_MAGIC_LEFT = 'K_a'
 SWITCH_MAGIC_RIGHT = 'K_s'
+
+# Local difficulty
+easy = 'easy'
+normal = 'normal'
+hard = 'hard'
+hell = 'hell'
+bunny = 'bunny'
+extra = 'extra'

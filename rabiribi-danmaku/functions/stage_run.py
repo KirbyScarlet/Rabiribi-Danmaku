@@ -3,24 +3,25 @@ import functions
 import sys
 import ui
 
-class BossBattle():
+class Battle():
     """
-    stage end boss here
+    stage run
     """
-    def __init__(self, erina, ribbon, difficulty, danmaku_layer_count, *boss):
+    def __init__(self, erina, ribbon, difficulty, danmaku_layer_count, *args, **kwargs):
+        """
+        specify erina instance, ribbon instance, local difficulty and faces
+        """
         self.erina = erina
         self.ribbon = ribbon
         self.difficulty = difficulty
         self.clock = pygame.time.Clock()
         self.face = ui.face.Face()
-        self.boss = len(boss)
-        self.pause = False
+        self.boss = len(args)
+        self.pause = 0
+        self.esc = 0
         self.set_bgm = True
         self.play_bgm = False
-        functions.debug_font = pygame.font.Font(None, 20)
-        for b in range(self.boss):
-            self.__setattr__('boss_'+str(b), boss[b])
-        self.GroupInit(danmaku_layer_count)
+        self.stage_run = True
 
     def GroupInit(self, number):
         """
@@ -60,7 +61,7 @@ class BossBattle():
         for n in range(self.danmaku_layer_count):
             self.__setattr__('danmaku_layer_'+str(n), pygame.sprite.Group())
 
-    def BackgroundMusic(self):
+    def BackgroundMusic(self, *music):
         """
         specify background music
 
@@ -69,11 +70,17 @@ class BossBattle():
         bgm will automatic specify on boss_group
         """
         if self.set_bgm:
-            for b in self.boss_layer:
-                if hasattr(b, 'bgm'):
-                    self.bgm = b.bgm
-                    self.set_bgm = False
-                    break
+            if music:
+                self.bgm = music(0)
+                self.set_bgm = False
+            else:
+                for b in self.boss_layer:
+                    if hasattr(b, 'bgm'):
+                        self.bgm = b.bgm
+                        self.set_bgm = False
+                        break
+
+    def PlayBgm(self):
         if self.play_bgm:
             pass
         else:
@@ -99,13 +106,13 @@ class BossBattle():
         self.ui = self.face.face
         self.background = self.face.background
         
-    def SpellCard(self):
+    def BossAttack(self):
         """
         active spell attack
         """
         for b in self.boss_layer:
-            if hasattr(b, 'spell_attack'):
-                b.spell_attack(self.difficulty, self.erina, self.birth_layer, self.boss_layer, self.illustration_layer)
+            if hasattr(b, 'attack'):
+                b.attack(self.difficulty, self.erina, self.birth_layer, self.boss_layer, self.illustration_layer)
 
     def KeyPress(self):
         """
@@ -135,20 +142,14 @@ class BossBattle():
                 self.danmaku_layer.add(sprite)
                 self.__getattribute__('danmaku_layer_' + str(sprite.layer)).add(sprite)
 
-    def SpriteDel(self):
-        def delete(layer):
+    def sprite_del(self, *layers):
+        for layer in layers:
             for sprite in layer:
-                if hasattr(sprite, 'delete'):
-                    if sprite.delete:
-                        sprite.kill()
-                else:
-                    pass
+                if sprite.delete:
+                    sprite.kill()
 
-        def sprite_delete(*screen_layer):
-            for layer in screen_layer:
-                delete(layer)
-
-        sprite_delete(
+    def SpriteDel(self):
+        self.sprite_del(
                       self.illustration_layer,
                       self.shouting_layer,
                       self.energy_layer,
@@ -203,29 +204,70 @@ class BossBattle():
             sprite.print_screen(screen)
         screen.blit(self.face.face, (0,0))
 
-    def __repr__(self):
-        return 'stage boss attack'
+    def PauseCheck(self):
+        if self.esc == 0:
+            if self.pause == 0:
+                if self.key_pressed[K_ESC]: self.pause += 1
+                self.esc = 1
+            elif self.pause == 60:
+                if self.key_pressed[K_ESC]: self.pause -= 1
+                self.esc = -1
+        elif self.esc == 1:
+            if self.pause == 60:
+                self.esc = 0
+            else:
+                self.pause += 1
+        elif self.esc == -1:
+            if self.pause == 0:
+                self.esc = 0
+            else:
+                self.pause -= 1
+
+    def run(self):
+        self.BackgroundMusic()
+        self.BuffCheck()
+        self.BossAttack()
+        self.erina.move(self.key_pressed)
+        self.ribbon.move(self.erina)
+        self.ribbon.attack(self.shouting_layer, self.key_pressed)
+        self.SpriteMove()
+        self.CollideCheck()
+        self.SwitchLayer()
+        self.SpriteDel()
+        self.UIAnimation()
+        self.PrintScreen(screen)
+        if debug: self.Debug(screen)
+        screen.blit(functions.debug_font.render(str(round(self.clock.get_fps(), 2)), True, (255,0,0)), (600,460))
+        pygame.display.update()
 
     def __call__(self, screen, debug = False):
-        while not self.pause:
+        while self.stage_run:
             functions.ExitCheck()
-            self.BackgroundMusic()
             self.KeyPress()
-            self.BuffCheck()
-            self.SpellCard()
-            self.erina.move(self.key_pressed)
-            self.ribbon.move(self.erina)
-            self.ribbon.attack(self.shouting_layer, self.key_pressed)
-            self.SpriteMove()
-            self.CollideCheck()
-            self.SwitchLayer()
-            self.SpriteDel()
-            self.UIAnimation()
-            self.PrintScreen(screen)
-            if debug: self.Debug(screen)
-            screen.blit(functions.debug_font.render(str(round(self.clock.get_fps(), 2)), True, (255,0,0)), (600,460))
-            pygame.display.update()
+            self.PauseCheck()
+            if self.pause == 0:
+                self.run()
+            else:
+                pass
             self.clock.tick(60)
+
+class BossBattle(Battle):
+    """
+    stage end boss here
+    """
+    def __init__(self, erina, ribbon, difficulty, danmaku_layer_count, *boss):
+        super().__init__(self, erina, ribbon, difficulty, danmaku_layer_count)
+        for b in range(self.boss):
+            self.__setattr__('boss_'+str(b), boss[b])
+        self.GroupInit(danmaku_layer_count)
+        
+    def SpellCard(self):
+        """
+        active spell attack
+        """
+        for b in self.boss_layer:
+            if hasattr(b, 'spell_attack'):
+                b.spell_attack(self.difficulty, self.erina, self.birth_layer, self.boss_layer, self.illustration_layer)
 
 class Pause():
     pass
