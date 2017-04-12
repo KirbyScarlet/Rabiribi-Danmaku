@@ -196,13 +196,21 @@ class Boss(pygame.sprite.Sprite):
         for each in shouting_group:
             self.hp -= each.damage * self.defense
 
-    def spell_attack(self, difficulty, erina, birth_group, boss_group, illustration_group):
+    def spell_attack(self, difficulty, erina, birth_group, boss_group, illustration_group, danmaku_group):
         """
         prepared for every instance.
         """
-        for s in self.spell_group:
-            if self.spell_now == s.range:
-                s.spell_card(difficulty, erina, birth_group, boss_group, illustration_group)
+        if self.hp > 0 and self.spell_group.__getattribute__('spell_' + str(self.spell_now)).timer < self.spell_group.__getattribute__('spell_' + str(self.spell_now)).spell_time:
+            self.spell_group.__getattribute__('spell_' + str(self.spell_now))(difficulty, erina, birth_group, boss_group, illustration_group)
+        elif self.hp <= 0 or self.spell_group.__getattribute__('spell_' + str(self.spell_now)).timer == self.spell_group.__getattribute__('spell_' + str(self.spell_now)).spell_time:
+            for sprite in danmaku_group:
+                sprite.kill()
+            for sprite in birth_group:
+                sprite.kill()
+            self.hp = self.max_hp
+            self.spell_now += 1
+        if self.spell_now > self.spell_group.count:
+            self.death()
 
     def change_image(self):
         if not self.frame_count % 12:
@@ -218,6 +226,9 @@ class Boss(pygame.sprite.Sprite):
         self.frame_count += 1
         if self.frame_count == 300:
             self.frame_count = 0
+
+    def death(self):
+        self.kill()
 
     def load_source(self, file_name):
         f = open(file_name, 'rb')

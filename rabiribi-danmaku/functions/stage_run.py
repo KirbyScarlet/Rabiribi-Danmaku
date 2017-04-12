@@ -87,6 +87,11 @@ class Battle():
             self.play_bgm = True
             self.bgm.play(-1)
 
+    def PauseBgm(self):
+        if self.play_bgm:
+            self.bgm.pause()
+            self.play_bgm = False
+
     def BuffCheck(self):
         """
         buff check
@@ -170,6 +175,7 @@ class Battle():
         ribbon_position = "ribbon position: " + str(round(self.ribbon.center[0], 2)) + " , " + str(round(self.ribbon.center[1], 2))
         erina_health = "erina hp: " + str(self.erina.hp) + "/" + str(self.erina.max_hp)
         danmaku_count = "danmaku count:" + str(len(self.danmaku_layer) + len(self.birth_layer))
+        shouting_count = "shouting count:" + str(len(self.shouting_layer))
 
         screen.blit(functions.debug_font.render(erina_position, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top))
         screen.blit(functions.debug_font.render(ribbon_position, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 20))
@@ -177,16 +183,16 @@ class Battle():
         for num in range(self.boss):
             b = self.__getattribute__("boss_"+str(num))
             screen.blit(functions.debug_font.render(b.__class__.__name__ + ": " + str(b.hp) + "/" + str(b.max_hp), True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 60 + num*20))
-        screen.blit(functions.debug_font.render(danmaku_count, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 80 + num*20))
-
+        screen.blit(functions.debug_font.render(danmaku_count, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 60 + self.boss*20))
+        screen.blit(functions.debug_font.render(shouting_count, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 80 + self.boss*20))
 
     def PrintScreen(self, screen):
         screen.blit(self.background, (0,0))
+        for sprite in self.illustration_layer:
+            sprite.print_screen(screen)
         for sprite in self.energy_layer:
             sprite.print_screen(screen)
         for sprite in self.shouting_layer:
-            sprite.print_screen(screen)
-        for sprite in self.illustration_layer:
             sprite.print_screen(screen)
         screen.blit(self.erina.image, self.erina.rect)
         screen.blit(self.ribbon.image, self.ribbon.rect)
@@ -199,19 +205,19 @@ class Battle():
         for num in range(self.danmaku_layer_count-1,-1,-1):
             for sprite in self.__getattribute__('danmaku_layer_' + str(num)):
                 sprite.print_screen(screen)
-            sprite.print_screen(screen)
         for sprite in self.boost_layer:
             sprite.print_screen(screen)
         screen.blit(self.face.face, (0,0))
 
     def PauseCheck(self):
         if self.esc == 0:
-            if self.pause == 0:
-                if self.key_pressed[K_ESC]: self.pause += 1
-                self.esc = 1
-            elif self.pause == 60:
-                if self.key_pressed[K_ESC]: self.pause -= 1
-                self.esc = -1
+            if self.key_pressed[pygame.K_ESCAPE]:
+                if self.pause == 0:
+                    self.pause += 1
+                    self.esc = 1
+                elif self.pause == 60:
+                    self.pause -= 1
+                    self.esc = -1
         elif self.esc == 1:
             if self.pause == 60:
                 self.esc = 0
@@ -223,7 +229,7 @@ class Battle():
             else:
                 self.pause -= 1
 
-    def run(self):
+    def run(self, screen, debug):
         self.BackgroundMusic()
         self.BuffCheck()
         self.BossAttack()
@@ -246,17 +252,17 @@ class Battle():
             self.KeyPress()
             self.PauseCheck()
             if self.pause == 0:
-                self.run()
+                self.run(screen, debug)
             else:
                 pass
-            self.clock.tick(60)
+            self.clock.tick_busy_loop(60)
 
 class BossBattle(Battle):
     """
     stage end boss here
     """
     def __init__(self, erina, ribbon, difficulty, danmaku_layer_count, *boss):
-        super().__init__(self, erina, ribbon, difficulty, danmaku_layer_count)
+        super().__init__(erina, ribbon, difficulty, danmaku_layer_count, *boss)
         for b in range(self.boss):
             self.__setattr__('boss_'+str(b), boss[b])
         self.GroupInit(danmaku_layer_count)
@@ -267,7 +273,17 @@ class BossBattle(Battle):
         """
         for b in self.boss_layer:
             if hasattr(b, 'spell_attack'):
-                b.spell_attack(self.difficulty, self.erina, self.birth_layer, self.boss_layer, self.illustration_layer)
+                b.spell_attack(self.difficulty, 
+                               self.erina, 
+                               self.birth_layer, 
+                               self.boss_layer, 
+                               self.illustration_layer, 
+                               self.danmaku_layer)
+
+    def BossAttack(self):
+        self.PlayBgm()
+        self.SpellCard()
+        return super().BossAttack()
 
 class Pause():
     pass

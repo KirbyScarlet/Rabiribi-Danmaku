@@ -76,7 +76,7 @@ class SpellCard():
             illustration_group.add(illus)
         self.illustration_attack_time -= 1
 
-    def spell_card(self, difficulty, erina, birth_group, boss_group, illustration_group):
+    def __call__(self, difficulty, erina, birth_group, boss_group, illustration_group):
         """
         check type.
         """
@@ -86,12 +86,24 @@ class SpellCard():
             self.spell = self.__getattribute__('spell_' + difficulty)(erina, birth_group, boss_group, illustration_group)
         self.timer += 1
 
-    def spell_normal(self, erina, birth_group, boss_group, illustration_group):
-        """
-        define this in instance
-        """
+    def spell_easy(self, erina, birth_group, boss_group, illustration_group):
         pass
 
+    def spell_normal(self, erina, birth_group, boss_group, illustration_group):
+        pass
+
+class SpellGroup():
+    """
+    spell card group
+    """
+    def __init__(self):
+        self.count = 0
+
+    def add(self, *args):
+        for spell in args:
+            self.__setattr__(spell.__class__.__name__.lower(), spell)
+            self.count += 1
+'''
 class SpellGroup():
     """
     some spell card won't used in some local difficulty
@@ -235,3 +247,4 @@ class SpellGroup():
     def __repr__(self):
         return "<%s(%d spell cards)>" % (self.__class__.__name__, len(self))
 
+'''

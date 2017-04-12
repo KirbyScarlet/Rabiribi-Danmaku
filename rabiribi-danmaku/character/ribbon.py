@@ -2,6 +2,8 @@ import pygame
 import math
 import platform
 import character.erina
+import functions.values
+import random
 from math import *
 from pygame.locals import *
 
@@ -16,20 +18,26 @@ class green_danmaku(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         
         self.radius = 10
-        self.damage = 15
+        self.damage = 10+random.randint(0,1)
         
         self.center = [me_ribbon.center[0], me_ribbon.center[1]]
         self.direction = [0,-1]
         self.rect.left = self.center[0] - 10
         self.rect.top = self.center[1] - 10
+        self.delete = False
         
-        self.speed = 16
+        self.speed = 8 + random.random()*2
     
     def move(self):
         self.center[0] += self.speed * self.direction[0]
         self.center[1] += self.speed * self.direction[1]
         self.rect.top = self.center[0] - 10
         self.rect.left = self.center[1] - 10
+        if self.rect.top < functions.values.SCREEN_TOP or \
+           self.rect.left < functions.values.SCREEN_LEFT or \
+           self.rect.right > functions.values.SCREEN_RIGHT or \
+           self.rect.bottom > functions.values.SCREEN_BOTTOM:
+            self.delete = True
 
     def print_screen(self, screen):
         screen.blit(self.image, self.rect)
@@ -51,6 +59,7 @@ class purple_danmaku(pygame.sprite.Sprite):
         self.direction = [0,-1]
         self.rect.left = self.center[0] - 5
         self.rect.top = self.center[1] - 5
+        self.delete = False
         
         self.speed = 10
         
@@ -59,6 +68,11 @@ class purple_danmaku(pygame.sprite.Sprite):
         self.center[1] += self.speed * self.direction[1]
         self.rect.top = self.center[0] - 5
         self.rect.left = self.center[1] - 5
+        if self.rect.top < functions.values.SCREEN_TOP or \
+           self.rect.left < functions.values.SCREEN_LEFT or \
+           self.rect.right > functions.values.SCREEN_RIGHT or \
+           self.rect.bottom > functions.values.SCREEN_BOTTOM:
+            self.delete = True
 
     def print_screen(self, screen):
         screen.blit(self.image, self.rect)
@@ -82,7 +96,7 @@ class Ribbon(pygame.sprite.Sprite):
         self.shouting_delay = 0
         
         self.danmaku_mode = ["red", "yellow", "blue", "green", "purple", "carrot", "egg"]
-        self.danmaku_type = "purple"
+        self.danmaku_type = "green"
         
     def move(self, master):
         destination = [master.center[1] - 30, master.center[0]]
@@ -130,8 +144,23 @@ class Ribbon(pygame.sprite.Sprite):
     def blue_attack(self, shouting_group):
         pass
     
-    def green_attack(self, shouting_group):
-        pass
+    def green_attack(self, shouting_group, key_pressed):
+        if not self.shouting_delay:
+            key = key_pressed
+        try:
+            if key[K_z]:
+                if not self.shouting_delay:
+                    for i in range(-3,4):
+                        temp = green_danmaku(self)
+                        temp.direction = [\
+                                          cos((314 + 5*i + random.random()*5) / 100), \
+                                          sin((314 + 5*i + random.random()*5) / 100)]
+                        shouting_group.add(temp)
+                self.shouting_delay += 1
+        except:
+            self.shouting_delay += 1
+        if self.shouting_delay > 10:
+            self.shouting_delay = 0
 
     def yellow_attack(self, shouting_group):
         pass
@@ -140,6 +169,8 @@ class Ribbon(pygame.sprite.Sprite):
         pass
 
     def attack(self, shouting_group, key_pressed):
+        self.__getattribute__(self.danmaku_type + '_attack')(shouting_group, key_pressed)
+        """
         if self.danmaku_type == "purple":
             self.purple_attack(shouting_group, key_pressed)
         elif self.danmaku_type == "red":
@@ -152,6 +183,7 @@ class Ribbon(pygame.sprite.Sprite):
             self.yellow_attack(shouting_group)
         elif self.danmaku_type == "carrot":
             self.carrot_attack(shouting_group)
+        """
 
 class energy(pygame.sprite.Sprite):
     def __init__(self, boss):
