@@ -1,6 +1,12 @@
 """
 function tools
 """
+import functions.run
+import functions.spell_card
+import functions.sprites
+import functions.values
+import functions.stage_run
+import functions.buff_debuff
 
 __doc__ = ["debug_font", "me_erina", "me_ribbon", "ExitCheck",
            "snipe", "angle", "clear_cache"]
@@ -22,6 +28,7 @@ from math import pi
 from os import system
 from os import remove
 from sys import exit
+
 
 def ExitCheck():
     for event in pygame.event.get():
@@ -93,9 +100,3 @@ def clear_cache(*dir):
             system("rm data/tmp/mid/*.tmp")
             system("rm data/tmp/misc/*.tmp")
             
-import functions.run
-import functions.spell_card
-import functions.sprites
-import functions.values
-import functions.stage_run
-import functions.buff_debuff

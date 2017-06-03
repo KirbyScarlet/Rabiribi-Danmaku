@@ -28,13 +28,12 @@ me_ribbon = character.ribbon.Ribbon()
 global difficulty
 
 def main():
-    pass
+    print("Hello Rabiribi Danmaku")
     #ui.welcome.opening(screen)
     #ui.menu.menu_switch(screen)
-    #difficulty = 'normal'
-    #functions.run.stage_boss(screen, me_erina, me_ribbon, difficulty, boss.section1.stage1a.cocoa.Cocoa())
-    #stage1boss = functions.stage_run.BossBattle(me_erina, me_ribbon, difficulty, 2, boss.section1.stage1a.cocoa.Cocoa())
-    #stage1boss(screen, debug=True)
+    difficulty = 'normal'
+    stage1boss = functions.stage_run.BossBattle(me_erina, me_ribbon, difficulty, 2, boss.section1.stage1a.cocoa.Cocoa())
+    stage1boss(screen, debug=True)
 
 if __name__ == "__main__":
     try:

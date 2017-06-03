@@ -2,8 +2,10 @@ import pygame
 import functions
 import sys
 import ui
+import abc
 
 class Battle():
+    __metaclass__ = abc.ABCMeta
     """
     stage run
     """
@@ -21,7 +23,7 @@ class Battle():
         self.esc = 0
         self.set_bgm = True
         self.play_bgm = False
-        self.stage_run = True
+        self.part_run = True
 
     def GroupInit(self, number):
         """
@@ -51,6 +53,7 @@ class Battle():
         self.birth_layer = pygame.sprite.Group()
         self.illustration_layer = pygame.sprite.Group()
         self.boss_layer = pygame.sprite.Group()
+        self.elf_layer = pygame.sprite.Group()
         for n in range(self.boss):
             self.boss_layer.add(self.__getattribute__('boss_'+str(n)))
         self.energy_layer = pygame.sprite.Group()
@@ -60,6 +63,7 @@ class Battle():
         # small number will on top. 
         for n in range(self.danmaku_layer_count):
             self.__setattr__('danmaku_layer_'+str(n), pygame.sprite.Group())
+        self.BackgroundMusic()
 
     def BackgroundMusic(self, *music):
         """
@@ -110,14 +114,14 @@ class Battle():
         """
         self.ui = self.face.face
         self.background = self.face.background
-        
-    def BossAttack(self):
+    
+    @abc.abstractmethod
+    def Attack(self, *args, **kwargs):
         """
         active spell attack
         """
-        for b in self.boss_layer:
-            if hasattr(b, 'attack'):
-                b.attack(self.difficulty, self.erina, self.birth_layer, self.boss_layer, self.illustration_layer)
+        print("define attack method first")
+        raise NotImplementedError
 
     def KeyPress(self):
         """
@@ -230,9 +234,9 @@ class Battle():
                 self.pause -= 1
 
     def run(self, screen, debug):
-        self.BackgroundMusic()
+        #self.BackgroundMusic()
         self.BuffCheck()
-        self.BossAttack()
+        self.Attack()
         self.erina.move(self.key_pressed)
         self.ribbon.move(self.erina)
         self.ribbon.attack(self.shouting_layer, self.key_pressed)
@@ -247,7 +251,7 @@ class Battle():
         pygame.display.update()
 
     def __call__(self, screen, debug = False):
-        while self.stage_run:
+        while self.part_run:
             functions.ExitCheck()
             self.KeyPress()
             self.PauseCheck()
@@ -280,10 +284,38 @@ class BossBattle(Battle):
                                self.illustration_layer, 
                                self.danmaku_layer)
 
-    def BossAttack(self):
+    def Attack(self):
         self.PlayBgm()
         self.SpellCard()
-        return super().BossAttack()
 
+class MidBattle(Battle):
+    """
+    stage mid battle, sometimes boss here
+    """
+    def __init__(self, erina, ribbon, difficulty, danmaku_layer_count, *mid_boss, **kwargs):
+        super().__init__(erina, ribbon, difficulty, danmaku_layer_count, mid_boss, **kwargs)
+        self.BackgroundMusic(kwargs[music])
+
+    @abc.abstractmethod
+    def MidAttack(self, *args, **kwargs):
+        """
+        active midbattle
+        """
+        print("define mid method first")
+        raise NotImplementedError
+    
+    @abc.abstractmethod
+    def MidBossAttack(self, *args, **kwargs):
+        """
+        MidBossAttack(*args, **kwargs): return None
+        if no middle boss, use pass
+        """
+        print("define middle boss first or use pass")
+        raise NotImplementedError
+    
+    def Attack(self):
+        self.PlayBgm()
+        self.MidAttack()
+    
 class Pause():
     pass

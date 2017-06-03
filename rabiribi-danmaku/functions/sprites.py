@@ -396,6 +396,12 @@ class Danmaku(pygame.sprite.Sprite):
         """
         pass
 
+    def death(self):
+        """
+        death animation
+        """
+        pass
+
     def move(self):
         """
         move function:
