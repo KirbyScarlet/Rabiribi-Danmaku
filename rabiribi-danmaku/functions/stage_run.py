@@ -294,7 +294,7 @@ class MidBattle(Battle):
     """
     def __init__(self, erina, ribbon, difficulty, danmaku_layer_count, *mid_boss, **kwargs):
         super().__init__(erina, ribbon, difficulty, danmaku_layer_count, mid_boss, **kwargs)
-        self.BackgroundMusic(kwargs[music])
+        self.BackgroundMusic()
 
     @abc.abstractmethod
     def MidAttack(self, *args, **kwargs):
@@ -313,6 +313,11 @@ class MidBattle(Battle):
         print("define middle boss first or use pass")
         raise NotImplementedError
     
+    def SetBGM(self, file_name):
+        self.bgm = pygame.mixer.music
+        self.bgm.pygame.music.load(file_name)
+        self.set_bgm = False
+
     def Attack(self):
         self.PlayBgm()
         self.MidAttack()

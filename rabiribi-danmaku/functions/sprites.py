@@ -3,6 +3,7 @@ import math
 import pickle
 import os
 import functions
+import abc
 from functions.values import SCREEN_BOTTOM, SCREEN_LEFT, SCREEN_RIGHT, SCREEN_TOP
 
 class Boss(pygame.sprite.Sprite):
@@ -11,27 +12,27 @@ class Boss(pygame.sprite.Sprite):
     """
     def __init__(self, name):
         pygame.sprite.Sprite.__init__(self)
+        self.name = name
         """
         specify the name of the sprite
         """
-        self.name = name
+        self.buff = functions.buff_debuff.BuffGroup()
         """
         the buffs boss have.
         """
-        self.buff = functions.buff_debuff.BuffGroup()
+        self.bgm = pygame.mixer.music
         """
         boss bgm specify
         """
-        self.bgm = pygame.mixer.music
+        self.invincible = 0
         """
         if boss in invincible,
         resist all damage
         """
-        self.invincible = 0
+        self.frame_count = 0
         """
         use for animation
         """
-        self.frame_count = 0
         self.timer = 0
     
     def SetSource(self, file_name):
@@ -279,8 +280,8 @@ class Boss(pygame.sprite.Sprite):
             del self.bgm
 
     def clear_cache(self):
-        os.system("del data/tmp/imgs/*.tmp")
-        os.system("del data/tmp/misc/*.tmp")
+        os.system("del data/tmp/imgs/" + self.name + "*.tmp")
+        os.system("del data/tmp/misc/" + self.name + "*.tmp")
 
 class Danmaku(pygame.sprite.Sprite):
     """
@@ -389,7 +390,7 @@ class Danmaku(pygame.sprite.Sprite):
     def birth_check(self):
         if self.birth_time > 0:
             self.birth_time -= 1
-
+    
     def time_rip(self):
         """
         change value
@@ -427,18 +428,23 @@ class Elf(pygame.sprite.Sprite):
     """
     use for almost all mid boss
     """
-    def __init__(self, file_name):
+    def __init__(self, name):
         pygame.sprite.Sprite.__init__(self)
+        self.name = name
         self.buff = functions.buff_debuff.BuffGroup()
         self.invincible = 0
         self.frame_count = 0
         self.timer = 0
+        self.SetSource(file_name)
 
     def SetSource(self, file_name):
+        """
+        SetSource(file_name): return None
+        """
         self.load_source(file_name)
-        self.__pixel_count = len(self.images['pixel'])
-        self.__pixel = len(self.images['pixel'])
-        self.__pixel_frame = 0
+        self.pixel_count = len(self.images['pixel'])
+        self.pixel = len(self.images['pixel'])
+        self.pixel_frame = 0
         self.image = self.__pixel[self.__pixel_count]
         self.rect = self.image.get_rect()
         self.direction = [0,-1]
@@ -448,6 +454,11 @@ class Elf(pygame.sprite.Sprite):
         self.rect.left = self.center[1] - 10
 
     def SetValue(self, max_hp, crash_damage, bonus_energy):
+        """
+        SetValue(max_hp, crash_damage, bonus_energy): return None
+
+        specify parament for elf
+        """
         self.max_hp = max_hp
         self.hp = int(self.max_hp)
         self.crash_damage = crash_damage
@@ -475,6 +486,35 @@ class Elf(pygame.sprite.Sprite):
         self.rect.left = self.center[0] - 35
         self.rect.top = self.center[1] - 35 + 5*math.sin(6.28*self.frame_count/100)
         self.Frame_Count()
+
+    def load_source(self, file_name):
+        f = open(file_name,'rb')
+        sources = pickle.load(f)
+        f.close()
+        self.images = {"pixel":[]}
+        for i in range(len(sources['pixel'])):
+            img_name = 'data/tmp/imgs' + self.name + '_pixle' + str(i) + '.tmp'
+            try:
+                img_file = open(img_name, 'wb')
+            except:
+                os.makedirs('data/tmp/imgs/')
+                img_file = open(img_name, 'wb')
+            img_file.write(sources['pixel'])
+            img_file.close()
+            self.images['pixel'].append(pygame.image.load(image_name).convert_alpha())
+
+    def change_image(self):
+        if not self.frame_count %12:
+            self.pixel_frame += 1
+            if self.pixel_frame >= self.pixel_count:
+                self.pixel_frame = 0
+        self.image = self.pixel[self.pixel_frame]
+        
+    def attack(self):
+        """
+        specify attack methods
+        """
+        pass
 
     def print_screen(self, screen):
         screen.blit(self.image, self.rect)

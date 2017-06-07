@@ -1,6 +1,7 @@
 import pygame
 import random
 import math
+import abc
 from _operator import truth
 
 class IllustrationAttack(pygame.sprite.Sprite):
@@ -57,7 +58,6 @@ class SpellCard():
         self.spell_time = spell_time
         self.timer = -270
         self.illustration_attack_time = 150
-        self.difficulty = 1
         self.boss = boss
         if illustration:
             self.type = True
@@ -83,14 +83,28 @@ class SpellCard():
         if self.type and self.illustration_attack_time and self.timer == -150:
             self.illustration_attack(illustration_group)
         elif 0 < self.timer < self.spell_time:
-            self.spell = self.__getattribute__('spell_' + difficulty)(erina, birth_group, boss_group, illustration_group)
+            self.__getattribute__('spell_' + difficulty)(erina, birth_group, boss_group, illustration_group)
         self.timer += 1
-
+    
+    @abc.abstractmethod
     def spell_easy(self, erina, birth_group, boss_group, illustration_group):
-        pass
+        raise NotImplementedError
 
+    @abc.abstractmethod
     def spell_normal(self, erina, birth_group, boss_group, illustration_group):
-        pass
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def spell_hard(self, erina, birth_group, boss_group, illustration_group):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def spell_hell(self, erina, birth_group, boss_group, illustration_group):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def spell_bunny(self, erina, birth_group, boss_group, illustration_group):
+        raise NotImplementedError
 
 class SpellGroup():
     """
@@ -103,6 +117,46 @@ class SpellGroup():
         for spell in args:
             self.__setattr__(spell.__class__.__name__.lower(), spell)
             self.count += 1
+
+class NonSpell():
+    """
+    attack methods for elf
+    """
+    def __init__(self, elf, attack_time, *args, **kwargs):
+        '''
+        __init__(elf, attack_time[, ...])
+
+            elf: specify a elf
+            attack_time: specify attack time
+            *args...
+        '''
+        self.attack_time = attack_time
+        self.timer = 0
+
+    def __call__(self, difficulty, erina, birth_group, elf_group):
+        if 0 < self.timer < self.spell_time:
+            self.__getattribute__('nonspell_' + difficulty)(erina, birth_group, elf_group)
+
+    @abc.abstractmethod
+    def nonspell_easy(self, erina, birth_group, elf_group):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def nonspell_normal(self, erina, birth_group, elf_group):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def nonspell_hard(self, erina, birth_group, elf_group):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def nonspell_hell(self, erina, birth_group, elf_group):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def nonspell_bunny(self, erina, birth_group, elf_group):
+        raise NotImplementedError
+        
 '''
 class SpellGroup():
     """
