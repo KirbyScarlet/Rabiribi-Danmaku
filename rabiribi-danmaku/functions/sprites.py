@@ -427,6 +427,7 @@ class Danmaku(pygame.sprite.Sprite):
 ###
 
 class Elf(pygame.sprite.Sprite):
+    __metaclass__ = abc.ABCMeta
     """
     use for almost all mid boss
     """
@@ -516,7 +517,8 @@ class Elf(pygame.sprite.Sprite):
         """
         specify attack methods
         """
-        pass
+        print("define attack first")
+        raise NotImplementedError
 
     def print_screen(self, screen):
         screen.blit(self.image, self.rect)
