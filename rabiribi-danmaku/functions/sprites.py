@@ -284,6 +284,7 @@ class Boss(pygame.sprite.Sprite):
         os.system("del data/tmp/misc/" + self.name + "*.tmp")
 
 class Danmaku(pygame.sprite.Sprite):
+    __metaclass__ = abc.ABCMeta
     """
     specify most of danmaku type.
     only danmaku be defined there.
@@ -391,11 +392,12 @@ class Danmaku(pygame.sprite.Sprite):
         if self.birth_time > 0:
             self.birth_time -= 1
     
+    @abc.abstractmethod
     def time_rip(self):
         """
         change value
         """
-        pass
+        raise NotImplementedError
 
     def death(self):
         """
