@@ -438,7 +438,7 @@ class Elf(pygame.sprite.Sprite):
         self.invincible = 0
         self.frame_count = 0
         self.timer = 0
-        self.SetSource(file_name)
+        #self.SetSource(file_name)
 
     def SetSource(self, file_name):
         """
@@ -513,12 +513,26 @@ class Elf(pygame.sprite.Sprite):
                 self.pixel_frame = 0
         self.image = self.pixel[self.pixel_frame]
         
-    def attack(self):
+    def attack(self, difficulty, erina, birth_group, elf_group, danmaku_group):
         """
         specify attack methods
         """
-        print("define attack first")
-        raise NotImplementedError
+        self.__getattribute__("attack_"+difficulty)(difficulty, erina, birth_group, elf_group, danmaku_group)
+
+    def attack_easy(self, difficulty, erina, brith_group, elf_group, danmaku_group):
+        pass
+
+    def attack_normal(self, difficulty, erina, brith_group, elf_group, danmaku_group):
+        pass
+
+    def attack_hard(self, difficulty, erina, brith_group, elf_group, danmaku_group):
+        pass
+
+    def attack_hell(self, difficulty, erina, brith_group, elf_group, danmaku_group):
+        pass
+
+    def attack_bunny(self, difficulty, erina, brith_group, elf_group, danmaku_group):
+        pass
 
     def print_screen(self, screen):
         screen.blit(self.image, self.rect)

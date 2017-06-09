@@ -7,6 +7,7 @@ import functions.sprites
 import functions.values
 import functions.stage_run
 import functions.buff_debuff
+import functions.objects
 
 __doc__ = ["debug_font", "me_erina", "me_ribbon", "ExitCheck",
            "snipe", "angle", "clear_cache"]

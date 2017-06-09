@@ -5,13 +5,7 @@ from functions.sprites import Boss
 from functions.sprites import Danmaku
 from functions.spell_card import SpellCard
 from functions import snipe
-
-class mid_orange_circle(Danmaku):
-    def __init__(self, emitter, images):
-        super().__init__()
-        self.SetImage(images['mid_orange_circle'])
-        self.SetValue(7,50,4,emitter)
-        self.SetLiveCheck(-20,400,-10,500)
+from objects.danmaku import mid_orange_circle
 
 class mid_orange_circle_cocoa_spell_1(mid_orange_circle):
     def __init__(self, emitter, images):

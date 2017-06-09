@@ -28,6 +28,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="boss\section1\stage1a\cocoa_old.py" />
+    <Compile Include="boss\section1\stage1a\run.py" />
     <Compile Include="boss\section1\stage1a\__init__.py" />
     <Compile Include="boss\section1\__init__.py" />
     <Compile Include="boss\section2\__init__.py">
@@ -66,6 +67,15 @@
     <Compile Include="images\elf\png2rbrb.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="objects\danmaku.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="objects\elf.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="objects\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="rabiribi_danmaku.py" />
     <Compile Include="ui\face.py" />
     <Compile Include="ui\menu.py" />
@@ -83,7 +93,7 @@
     <Folder Include="boss\section2\" />
     <Folder Include="character\" />
     <Folder Include="data\bgm\" />
-    <Folder Include="data\danmaku\" />
+    <Folder Include="data\obj\danmaku\" />
     <Folder Include="data\obj\" />
     <Folder Include="data\obj\boss\" />
     <Folder Include="data\obj\elf\" />
@@ -135,6 +145,7 @@
     <Folder Include="images\welcome\now_loading\" />
     <Folder Include="images\welcome\wallpaper\" />
     <Folder Include="data\" />
+    <Folder Include="objects\" />
     <Folder Include="ui\" />
   </ItemGroup>
   <ItemGroup>
@@ -148,7 +159,7 @@
     <Content Include="boss\section1\stage1a\__pycache__\run.cpython-35.pyc" />
     <Content Include="boss\section1\stage1a\__pycache__\__init__.cpython-35.pyc" />
     <Content Include="data\bgm\rbs1s1a.ogg" />
-    <Content Include="data\danmaku\mid_orange_circle.rbrb" />
+    <Content Include="data\obj\danmaku\mid_orange_circle.rbrb" />
     <Content Include="data\obj\boss\Cocoa.rbrb" />
     <Content Include="data\obj\elf\elf_blue_small.rbrb" />
     <Content Include="data\obj\elf\elf_green_small.rbrb" />
