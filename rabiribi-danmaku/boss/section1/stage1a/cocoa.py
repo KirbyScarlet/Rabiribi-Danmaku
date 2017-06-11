@@ -6,10 +6,12 @@ from functions.sprites import Danmaku
 from functions.spell_card import SpellCard
 from functions import snipe
 from objects.danmaku import mid_orange_circle
+from objects.danmaku import small_blue_circle
+import copy
 
 class mid_orange_circle_cocoa_spell_1(mid_orange_circle):
-    def __init__(self, emitter, images):
-        super().__init__(emitter, images)
+    def __init__(self, emitter):
+        super().__init__(emitter)
 
     def time_rip(self):
         if self.timer < 10:
@@ -18,6 +20,13 @@ class mid_orange_circle_cocoa_spell_1(mid_orange_circle):
             self.speed = -0.4*self.timer+10
         else:
             self.speed = 2
+
+class small_blue_circle_cocoa_spell_2(small_blue_circle):
+    def __init__(self, emitter):
+        super().__init__(emitter)
+
+    def time_rip(self):
+        pass
 
 class Spell_1(SpellCard):
     """
@@ -30,7 +39,7 @@ class Spell_1(SpellCard):
                 temp_snipe = snipe(self.boss, erina)
                 offset = random.randint(-10,10)
                 for i in range(-8,9):
-                    temp_danmaku = mid_orange_circle_cocoa_spell_1(self.boss.center, self.boss.danmaku_images)
+                    temp_danmaku = mid_orange_circle_cocoa_spell_1(self.boss.center)
                     temp_danmaku.layer = 0
                     temp_danmaku.center = [self.boss.center[0], self.boss.center[1]]
                     temp_danmaku.direction = [math.cos(temp_snipe + i*math.pi/32 + math.pi*offset/320), math.sin(temp_snipe + i*math.pi/32 + math.pi*offset/320)]
@@ -50,7 +59,7 @@ class Spell_2(SpellCard):
         if temp_time%15 == 1:
             angle = random.randint(0,628)/100
             for i in range(32):
-                temp_danmaku = mid_orange_circle_cocoa_spell_1(self.boss.center, self.boss.danmaku_images)
+                temp_danmaku = mid_orange_circle_cocoa_spell_1(self.boss.center)
                 temp_danmaku.layer = 1
                 temp_danmaku.center = list(self.boss.center)
                 temp_danmaku.direction = [math.cos(angle + 2*math.pi/32*i), math.sin(angle + 2*math.pi/32*i)]
@@ -61,7 +70,7 @@ class Spell_2(SpellCard):
             if temp_time % 2 == 1:
                 for i in range(10):
                     for j in -1,1:
-                        temp_danmaku = mid_orange_circle_cocoa_spell_1(self.boss.center, self.boss.danmaku_images)
+                        temp_danmaku = small_blue_circle_cocoa_spell_2(self.boss.center)
                         temp_danmaku.layer = 0
                         temp_danmaku.center = list(self.boss.center)
                         temp_danmaku.time_rip = lambda: 1
@@ -83,6 +92,6 @@ class Cocoa(Boss):
         self.SetValue(1000, 18, 400)
         self.SetSpell(1800)
         self.SetSource('data/obj/boss/Cocoa.rbrb')
-        self.SetDanmakuUse('mid_orange_circle')
+        #self.SetDanmakuUse('mid_orange_circle', 'small_blue_circle')
         self.spell_group.add(Spell_1(self,1,1800), Spell_2(self,2,3000,self.illustration))
     

@@ -133,6 +133,7 @@
     <Folder Include="images\character\Ribbon\" />
     <Folder Include="images\elf\" />
     <Folder Include="images\faces\" />
+    <Folder Include="images\danmaku\" />
     <Folder Include="images\title\" />
     <Folder Include="images\title\Comp 2\" />
     <Folder Include="images\title\Comp 3\" />
@@ -161,6 +162,7 @@
     <Content Include="data\bgm\rbs1s1a.ogg" />
     <Content Include="data\obj\danmaku\mid_orange_circle.rbrb" />
     <Content Include="data\obj\boss\Cocoa.rbrb" />
+    <Content Include="data\obj\danmaku\small_blue_circle.rbrb" />
     <Content Include="data\obj\elf\elf_blue_small.rbrb" />
     <Content Include="data\obj\elf\elf_green_small.rbrb" />
     <Content Include="data\obj\elf\elf_red_small.rbrb" />

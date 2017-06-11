@@ -72,7 +72,7 @@ class Boss(pygame.sprite.Sprite):
         temp_image = {'birth':[], 'live':[]}
         self.danmaku_images = {}
         for each in danmaku_name:
-            file_name = "data/danmaku/" + each + ".rbrb"
+            file_name = "data/obj/danmaku/" + each + ".rbrb"
             f = open(file_name, 'rb')
             sources = pickle.load(f)
             f.close()
@@ -97,7 +97,7 @@ class Boss(pygame.sprite.Sprite):
                 f.write(sources['live'][i])
                 f.close()
                 self.danmaku_images[each]['live'].append(pygame.image.load(img_name).convert_alpha())
-        
+
     def SetValue(self, max_hp, crash_damage, bonus_energy):
         """
         define the local property for every boss.
@@ -290,7 +290,7 @@ class Danmaku(pygame.sprite.Sprite):
     only danmaku be defined there.
     lazer next
     """
-    def __init__(self, birth_time=10, lazer=-1):
+    def __init__(self, danmaku_name, birth_time=10, lazer=-1):
         pygame.sprite.Sprite.__init__(self)
         self.buff_catch = functions.buff_debuff.BuffGroup()
         """
@@ -310,10 +310,11 @@ class Danmaku(pygame.sprite.Sprite):
         layer 0 will on the top.
         """
         self.timer = 0
+        self.SetImage(danmaku_name)
 
         # music not specify
 
-    def SetImage(self, image_list):
+    def SetImage(self, danmaku_name):
         """
         specify the pictures that danmaku sprite used.
         danmaku size will locked on a square shape
@@ -323,19 +324,24 @@ class Danmaku(pygame.sprite.Sprite):
 
         birth image will not at a size
         """
-        self.images = image_list
-        self.__pixel = self.images['live']
-        self.__pixel_count = len(self.images['live'])
-        self.__birth_pixel = self.images['birth']
-        self.__birth_pixel_count = 9
+        #self.images = {'birth':[], 'live':[]}
+        #if not self.read_source(danmaku_name, birth_frame, live_frame):
+        #    self.load_source(danmaku_name)
+        #    self.read_source(danmaku_name, birth_frame, live_frame)
+        #self.load_source(danmaku_name)
+        self.pixel = self.images['live']
+        self.pixel_count = len(self.images['live'])
+        self.birth = self.images['birth']
+        self.birth_count = len(self.images['birth'])
 
-        self.image = self.__birth_pixel[8] # sometimes have more than 1 frame
+        self.image = self.birth[0] # sometimes have more than 1 frame
         self.rect = self.image.get_rect()
 
         self.speed = 0
+        self.rotation = 0
         self.direction = [0.0, -1.0]
 
-    def SetValue(self, damage, energy, radius, birth_position):
+    def SetValue(self, damage, energy, radius, birth_position, image_change_fps=0, image_change_rotation=0):
         """
         define local damage, removing energy, and birth position
         """
@@ -350,6 +356,8 @@ class Danmaku(pygame.sprite.Sprite):
         """
         special value
         """
+        self.image_change_fps = image_change_fps
+        self.image_change_rotation = image_change_rotation
         self.live_time = -1
         self.collide = True
         self.collide_delete = True
@@ -372,6 +380,87 @@ class Danmaku(pygame.sprite.Sprite):
         self.top_border = top - self.rect.height/2
         self.bottom_border = bottom + self.rect.height/2
         self.live_time = live_time
+
+    @classmethod
+    def load_source(cls, danmaku_name):
+        """
+        load sources functions
+        class method
+
+            load_source(danmaku_name): return None
+        """
+        cls.images = {'birth':[], 'live':[]}
+        f = open('data/obj/danmaku/' + danmaku_name + '.rbrb', 'rb')
+        sources = pickle.load(f)
+        f.close()
+        for i in range(len(sources['birth'])):
+            img_name = 'data/tmp/imgs/' + danmaku_name + '_birth_rank_' + str(i) + '.tmp'
+            try:
+                f = open(img_name, 'wb')
+            except:
+                os.makedirs('data/tmp/imgs/')
+                f = open(img_name, 'wb')
+            f.write(sources['birth'][i])
+            f.close()
+            cls.images['birth'].append(pygame.image.load(img_name).convert_alpha())
+        for i in range(len(sources['live'])):
+            img_name = 'data/tmp/imgs/' + danmaku_name + '_live_rank_' + str(i) + '.tmp'
+            try:
+                f = open(img_name, 'wb')
+            except:
+                os.makedirs('data/tmp/imgs/')
+                f = open(img_name, 'wb')
+            f.write(sources['live'][i])
+            f.close()
+            cls.images['live'].append(pygame.image.load(img_name).convert_alpha())
+
+    '''
+    def read_source(self):
+        """
+        read sources method:
+            
+            read_source(danmaku_name): return Bool
+
+        if false, load sources first
+        """
+        for i in range(birth_frame):
+            img_name = 'data/tmp/imgs/' + danmaku_name + '_birth_rank_' + str(i) + '.tmp'
+            try: 
+                self.images['birth'].append(pygame.image.load(img_name).convert_alpha())
+            except:
+                if i == 0:
+                    return False
+                break
+        for i in range(live_frame):
+            img_name = 'data/tmp/imgs/' + danmaku_name + '_live_rank_' + str(i) + '.tmp'
+            try:
+                self.images['live'].append(pygame.image.load(img_name).convert_alpha())
+            except:
+                if i == 0:
+                    return False
+        return True
+    '''
+
+    def image_change(self):
+        """
+        """
+        if self.birth_time:
+            if self.birth_time > 2:
+                self.image = self.images['birth'][10-self.birth_time]
+            else:
+                self.image = self.images['birth'][8]
+        else:
+            if not self.image_change_fps:
+                pass
+            else:
+                if self.timer % fps == 0:
+                    self.image = self.images['live'][(self.timer/self.image_change_fps)%self.pixel_count]
+                    self.image = pygame.transform.rotate(self.image, self.rotation)
+        if not self.image_change_rotation:
+            pass
+        else:
+            self.rotation += self.image_chagne_rotation
+            self.image = pygame.transform.rotate(self.image, self.image_change_rotation)
 
     def live_check(self):
         """
@@ -413,6 +502,7 @@ class Danmaku(pygame.sprite.Sprite):
             it only can controled by speed and direction!
         """
         self.time_rip()
+        self.image_change()
         self.center[0] += self.speed * self.direction[0]
         self.center[1] += self.speed * self.direction[1]
         self.rect.left = self.center[0] - self.rect.width/2
