@@ -22,7 +22,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="boss\extra\irisu_old.py" />
+    <Compile Include="boss\extra\irisu.py" />
     <Compile Include="boss\extra\__init__.py" />
     <Compile Include="boss\section1\stage1a\cocoa.py">
       <SubType>Code</SubType>
@@ -30,6 +30,15 @@
     <Compile Include="boss\section1\stage1a\cocoa_old.py" />
     <Compile Include="boss\section1\stage1a\run.py" />
     <Compile Include="boss\section1\stage1a\__init__.py" />
+    <Compile Include="boss\section1\stage4a\nieve.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="boss\section1\stage4a\nixie.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="boss\section1\stage4a\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="boss\section1\__init__.py" />
     <Compile Include="boss\section2\__init__.py">
       <SubType>Code</SubType>
@@ -88,6 +97,7 @@
     <Folder Include="boss\extra\" />
     <Folder Include="boss\extra\__pycache__\" />
     <Folder Include="boss\section1\" />
+    <Folder Include="boss\section1\stage4a\" />
     <Folder Include="boss\section1\stage1a\" />
     <Folder Include="boss\section1\stage1a\__pycache__\" />
     <Folder Include="boss\section2\" />

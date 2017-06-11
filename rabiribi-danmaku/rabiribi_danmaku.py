@@ -31,6 +31,7 @@ def main():
     print("Hello Rabiribi Danmaku")
     #ui.welcome.opening(screen)
     #ui.menu.menu_switch(screen)
+    functions.run.stage_boss(screen, me_erina, me_ribbon, 0, boss.extra.irisu.Irisu())
     difficulty = 'normal'
     stage1boss = functions.stage_run.BossBattle(me_erina, me_ribbon, difficulty, 2, boss.section1.stage1a.cocoa.Cocoa())
     stage1boss(screen, debug=True)

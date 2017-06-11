@@ -2,6 +2,7 @@ import pygame
 import math
 import random
 import platform
+import functions.buff_debuff
 from random import *
 from math import *
 
@@ -19,8 +20,9 @@ class Irisu(pygame.sprite.Sprite):
         self.center = [225, 100]
         self.rect.left = self.center[0] - 30
         self.rect.top = self.center[1] - 37
+        self.buff = functions.buff_debuff.BuffGroup()
         self.bgm = pygame.mixer.music
-        self.bgm.load("bgm/Rabi-Ribi Original Soundtrack - 46 RFN - III.ogg")
+        #self.bgm.load("bgm/Rabi-Ribi Original Soundtrack - 46 RFN - III.ogg")
 
     def move(self, frame_count):
         #self.center[1] += sin(6.28*frame_count/100)

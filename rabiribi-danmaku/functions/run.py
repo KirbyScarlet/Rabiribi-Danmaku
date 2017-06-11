@@ -108,6 +108,7 @@ def stage_mid(screen, me_erina, me_ribbon, difficulty):
 def stage_boss(screen, me_erina, me_ribbon, difficulty, stage_boss):
     global miss
     global pause
+    global timer
     face = ui.face.Face()
     miss = 0
     boost = 0
@@ -124,7 +125,7 @@ def stage_boss(screen, me_erina, me_ribbon, difficulty, stage_boss):
     
     boss_group.add(stage_boss)
     
-    stage_boss.bgm.play(-1)
+    #stage_boss.bgm.play(-1)
     
     running = True
     
@@ -135,6 +136,7 @@ def stage_boss(screen, me_erina, me_ribbon, difficulty, stage_boss):
                 functions.clear_cache()
                 sys.exit()
         
+        timer += 1
         #key pressed here:
         key_pressed = pygame.key.get_pressed()
 
@@ -146,8 +148,9 @@ def stage_boss(screen, me_erina, me_ribbon, difficulty, stage_boss):
             f.check(me_erina)
         
         #boss spell attack on here:
-        stage_boss.spell_attack(1, me_erina, boss_group, birth_group, effects_group)
-        
+        #stage_boss.spell_attack(1, me_erina, boss_group, birth_group, effects_group)
+        boss.extra.irisu.Irisu_Final_Spell(me_erina.center, danmaku_group,1,timer)
+
         if not miss:
             me_erina.move(key_pressed)
             me_ribbon.move(me_erina)
