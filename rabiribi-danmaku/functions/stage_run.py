@@ -9,13 +9,13 @@ class Battle():
     """
     stage run
     """
-    def __init__(self, erina, ribbon, difficulty, danmaku_layer_count, *args, **kwargs):
+    def __init__(self, danmaku_layer_count, *args, **kwargs):
         """
         specify erina instance, ribbon instance, local difficulty and faces
         """
-        self.erina = erina
-        self.ribbon = ribbon
-        self.difficulty = difficulty
+        #self.erina = erina
+        #self.ribbon = ribbon
+        #self.difficulty = difficulty
         self.clock = pygame.time.Clock()
         self.face = ui.face.Face()
         self.boss = len(args)
@@ -24,6 +24,8 @@ class Battle():
         self.set_bgm = True
         self.play_bgm = False
         self.part_run = True
+        self.timer = 0
+        
 
     def GroupInit(self, number):
         """
@@ -250,7 +252,10 @@ class Battle():
         screen.blit(functions.debug_font.render(str(round(self.clock.get_fps(), 2)), True, (255,0,0)), (600,460))
         pygame.display.update()
 
-    def __call__(self, screen, debug = False):
+    def __call__(self, erina, ribbon, difficulty, screen, debug = False):
+        self.erina = erina 
+        self.ribbon = ribbon
+        self.difficulty = difficulty
         while self.part_run:
             functions.ExitCheck()
             self.KeyPress()
@@ -265,8 +270,8 @@ class BossBattle(Battle):
     """
     stage end boss here
     """
-    def __init__(self, erina, ribbon, difficulty, danmaku_layer_count, *boss):
-        super().__init__(erina, ribbon, difficulty, danmaku_layer_count, *boss)
+    def __init__(self, danmaku_layer_count, *boss):
+        super().__init__(danmaku_layer_count, *boss)
         for b in range(self.boss):
             self.__setattr__('boss_'+str(b), boss[b])
         self.GroupInit(danmaku_layer_count)
@@ -292,8 +297,8 @@ class MidBattle(Battle):
     """
     stage mid battle, sometimes boss here
     """
-    def __init__(self, erina, ribbon, difficulty, danmaku_layer_count, *mid_boss, **kwargs):
-        super().__init__(erina, ribbon, difficulty, danmaku_layer_count, mid_boss, **kwargs)
+    def __init__(self, danmaku_layer_count, *mid_boss, **kwargs):
+        super().__init__(danmaku_layer_count, *mid_boss, **kwargs)
         self.BackgroundMusic()
 
     @abc.abstractmethod

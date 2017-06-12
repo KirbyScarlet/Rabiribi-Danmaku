@@ -28,7 +28,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="boss\section1\stage1a\cocoa_old.py" />
-    <Compile Include="boss\section1\stage1a\run.py" />
+    <Compile Include="boss\section1\stage1a\stage_mid.py" />
     <Compile Include="boss\section1\stage1a\__init__.py" />
     <Compile Include="boss\section1\stage4a\nieve.py">
       <SubType>Code</SubType>
@@ -119,7 +119,7 @@
     <Folder Include="images\boss\" />
     <Folder Include="images\boss\Aruaune\" />
     <Folder Include="images\boss\Ashuri\" />
-    <Folder Include="images\boss\Chocolate\" />
+    <Folder Include="images\boss\Chocolate and Vanilla\" />
     <Folder Include="images\boss\Cicini\" />
     <Folder Include="images\boss\Cocoa\" />
     <Folder Include="images\boss\Erina_2\" />
@@ -137,7 +137,6 @@
     <Folder Include="images\boss\Saya\" />
     <Folder Include="images\boss\Seana\" />
     <Folder Include="images\boss\Syaro\" />
-    <Folder Include="images\boss\Vanilla\" />
     <Folder Include="images\character\" />
     <Folder Include="images\character\Erina\" />
     <Folder Include="images\character\Ribbon\" />
@@ -170,6 +169,8 @@
     <Content Include="boss\section1\stage1a\__pycache__\run.cpython-35.pyc" />
     <Content Include="boss\section1\stage1a\__pycache__\__init__.cpython-35.pyc" />
     <Content Include="data\bgm\rbs1s1a.ogg" />
+    <Content Include="data\obj\boss\Chocolate.rbrb" />
+    <Content Include="data\obj\boss\Vanilla.rbrb" />
     <Content Include="data\obj\danmaku\mid_orange_circle.rbrb" />
     <Content Include="data\obj\boss\Cocoa.rbrb" />
     <Content Include="data\obj\danmaku\small_blue_circle.rbrb" />
@@ -213,7 +214,16 @@
     <Content Include="images\boss images\vanilla.png" />
     <Content Include="images\boss\Aruaune\{3N%25N_PXZ~625SU}EE]N%29`N.png" />
     <Content Include="images\boss\Ashuri\{%29X_6DU0X]KZ04Z~F%25ND~0K.png" />
-    <Content Include="images\boss\Chocolate\87G]`%40TK`~CX[S54TD]OYFY.png" />
+    <Content Include="images\boss\Chocolate and Vanilla\chocolate_01.png" />
+    <Content Include="images\boss\Chocolate and Vanilla\chocolate_02.png" />
+    <Content Include="images\boss\Chocolate and Vanilla\chocolate_03.png" />
+    <Content Include="images\boss\Chocolate and Vanilla\chocolate_04.png" />
+    <Content Include="images\boss\Chocolate and Vanilla\chocolate_05.png" />
+    <Content Include="images\boss\Chocolate and Vanilla\vanilla_01.png" />
+    <Content Include="images\boss\Chocolate and Vanilla\vanilla_02.png" />
+    <Content Include="images\boss\Chocolate and Vanilla\vanilla_03.png" />
+    <Content Include="images\boss\Chocolate and Vanilla\vanilla_04.png" />
+    <Content Include="images\boss\Chocolate and Vanilla\vanilla_05.png" />
     <Content Include="images\boss\Cicini\5]FWZ%24%29VJRBEFX%25D%25U%28W2NI.png" />
     <Content Include="images\boss\Cocoa\coco-W.png" />
     <Content Include="images\boss\Cocoa\Cocoa_00.png" />
@@ -249,7 +259,6 @@
     <Content Include="images\boss\Saya\2%28C8}AT~1[WG4F_R9RAJ%28WI.png" />
     <Content Include="images\boss\Seana\T4VK%25%246OQY8B%25ZH%29649QN66.png" />
     <Content Include="images\boss\Syaro\%24NSVG%296CRBG8S`XU18V~CWU.png" />
-    <Content Include="images\boss\Vanilla\L%25]_Q[~]%404W53~32KV2UVCT.png" />
     <Content Include="images\character\Erina\Erina.png" />
     <Content Include="images\character\Ribbon\Ribbon.png" />
     <Content Include="images\character\Ribbon\ribbon_green.png" />

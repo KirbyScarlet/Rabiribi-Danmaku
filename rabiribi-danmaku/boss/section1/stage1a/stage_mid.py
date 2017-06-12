@@ -18,11 +18,7 @@ class Stage1aMidBattle(functions.stage_run.MidBattle):
         self.setBGM("data/bgm/rbs1s1a.ogg")
         super().__init__(erina, ribbon, difficulty, danmaku_layer_count, *mid_boss, **kwargs)
         self.stage_time = 5400
-        self.timer = 0
-        
 
     def MidAttack(self, *args, **kwargs):
         pass
 
-    
-        

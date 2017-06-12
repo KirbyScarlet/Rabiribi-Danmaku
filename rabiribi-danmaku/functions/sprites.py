@@ -580,7 +580,8 @@ class Elf(pygame.sprite.Sprite):
         self.rect.top = self.center[1] - 35 + 5*math.sin(6.28*self.frame_count/100)
         self.Frame_Count()
 
-    def load_source(self, file_name):
+    @classmethod
+    def load_source(cls, file_name):
         f = open(file_name,'rb')
         sources = pickle.load(f)
         f.close()
@@ -594,7 +595,7 @@ class Elf(pygame.sprite.Sprite):
                 img_file = open(img_name, 'wb')
             img_file.write(sources['pixel'])
             img_file.close()
-            self.images['pixel'].append(pygame.image.load(image_name).convert_alpha())
+            cls.images['pixel'].append(pygame.image.load(image_name).convert_alpha())
 
     def change_image(self):
         if not self.frame_count %12:

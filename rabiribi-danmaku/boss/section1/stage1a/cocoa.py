@@ -7,7 +7,6 @@ from functions.spell_card import SpellCard
 from functions import snipe
 from objects.danmaku import mid_orange_circle
 from objects.danmaku import small_blue_circle
-import copy
 
 class mid_orange_circle_cocoa_spell_1(mid_orange_circle):
     def __init__(self, emitter):
@@ -92,6 +91,6 @@ class Cocoa(Boss):
         self.SetValue(1000, 18, 400)
         self.SetSpell(1800)
         self.SetSource('data/obj/boss/Cocoa.rbrb')
-        #self.SetDanmakuUse('mid_orange_circle', 'small_blue_circle')
+        self.SetDanmakuUse('mid_orange_circle', 'small_blue_circle')
         self.spell_group.add(Spell_1(self,1,1800), Spell_2(self,2,3000,self.illustration))
     
