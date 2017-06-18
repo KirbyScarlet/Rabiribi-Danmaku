@@ -131,12 +131,16 @@ class Battle():
         """
         self.key_pressed = pygame.key.get_pressed()
 
-    def SpriteMove(self):
-        def sprite_move(*layer):
-            for l in layer:
-                for each in l:
+    def sprite_move(self, *layer):
+        for l in layer:
+            for each in l:
+                try:
                     each.move()
-        sprite_move(
+                except:
+                    each.move(self.erina)
+        
+    def SpriteMove(self):
+        self.sprite_move(
                     self.illustration_layer,
                     self.boss_layer,
                     self.shouting_layer,

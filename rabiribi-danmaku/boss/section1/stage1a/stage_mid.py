@@ -7,6 +7,13 @@ import functions.stage_run
 import functions.values
 import functions.buff_debuff
 
+from objects.elf import *
+
+class elf_1(elf_blue_small):
+    def __init__(self):
+        super().__init__()
+
+
 class Stage1aMidBattle(functions.stage_run.MidBattle):
     """
     stage1a battle

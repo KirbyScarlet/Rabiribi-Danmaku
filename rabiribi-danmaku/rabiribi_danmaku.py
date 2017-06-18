@@ -29,7 +29,6 @@ global difficulty
 
 def main():
     print("Hello Rabiribi Danmaku")
-    input()
     #ui.welcome.opening(screen)
     #ui.menu.menu_switch(screen)
     difficulty = 'normal'

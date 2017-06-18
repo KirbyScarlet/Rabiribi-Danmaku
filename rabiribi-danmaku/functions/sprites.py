@@ -6,6 +6,37 @@ import functions
 import abc
 from functions.values import SCREEN_BOTTOM, SCREEN_LEFT, SCREEN_RIGHT, SCREEN_TOP
 
+class direction(object):
+    def __init__(self):
+        self.x = 0.0
+        self.y = 0.0
+
+    def set(self, *value):
+        if len(value) == 1:
+            if isinstance(value[0], (int, float)):
+                self._rad(value[0])
+            elif isinstance(value[0], list):
+                self._vector(value[0])
+            else:
+                raise ValueError
+        elif len(value) == 2:
+            self._vector(*value)
+        else:
+            raise ValueError
+
+    def _rad(self, value):
+        self.x = math.cos(value)
+        self.y = math.sin(value)
+
+    def _vector(self, *value):
+        #if abs(math.sqrt(value[0]**2 + value[1]**2))-1 > 0.1:
+        #    raise ValueError
+        self.x = value[0]
+        self.y = value[1]
+
+class position(object):
+    pass
+
 class Boss(pygame.sprite.Sprite):
     """
     use almost all the boss.
@@ -59,7 +90,7 @@ class Boss(pygame.sprite.Sprite):
         """
         self.image = self.pixel[self.pixel_frame]   # image will use in a list
         self.rect = self.image.get_rect()
-        self.direction = [0,-1]
+        self.direction = direction()
         self.center = [-35.0, 35.0]
         self.temp_position = [255.0, 100.0]
         self.rect.top = self.center[0] - 35
@@ -157,16 +188,14 @@ class Boss(pygame.sprite.Sprite):
                         (self.center[0] - self.temp_position[0]) ** 2 + \
                         (self.center[1] - self.temp_position[1]) ** 2 )
         if distance:
-            self.direction = [
-                            (self.temp_position[0] - self.center[0]) / distance, 
-                            (self.temp_position[1] - self.center[1]) / distance ]
+            self.direction.set(functions.snipe(self.center, self.temp_position))
             self.speed = math.log(distance + 1.0)
         else:
             self.speed = 0
         if self.in_screen:
             self.InScreenCheck()
-        self.center[0] += self.direction[0] * self.speed
-        self.center[1] += self.direction[1] * self.speed
+        self.center[0] += self.direction.x * self.speed
+        self.center[1] += self.direction.y * self.speed
         self.rect.left = self.center[0] - 35
         self.rect.top = self.center[1] - 35 + 5*math.sin(6.28*self.frame_count/100)
         self.change_image()
@@ -339,7 +368,7 @@ class Danmaku(pygame.sprite.Sprite):
 
         self.speed = 0
         self.rotation = 0
-        self.direction = [0.0, -1.0]
+        self.direction = direction()
 
     def SetValue(self, damage, energy, radius, birth_position, image_change_fps=0, image_change_rotation=0):
         """
@@ -494,17 +523,17 @@ class Danmaku(pygame.sprite.Sprite):
         """
         pass
 
-    def move(self):
+    def move(self, *erina):
         """
         move function:
 
             it's different from boss sprite.
             it only can controled by speed and direction!
         """
-        self.time_rip()
+        self.time_rip(*erina)
         self.image_change()
-        self.center[0] += self.speed * self.direction[0]
-        self.center[1] += self.speed * self.direction[1]
+        self.center[0] += self.speed * self.direction.x
+        self.center[1] += self.speed * self.direction.y
         self.rect.left = self.center[0] - self.rect.width/2
         self.rect.top = self.center[1] - self.rect.height/2
         self.birth_check()
@@ -530,17 +559,17 @@ class Elf(pygame.sprite.Sprite):
         self.timer = 0
         #self.SetSource(file_name)
 
-    def SetSource(self, file_name):
+    def SetSource(self):
         """
         SetSource(file_name): return None
         """
-        self.load_source(file_name)
+        #self.load_source(file_name)
         self.pixel_count = len(self.images['pixel'])
-        self.pixel = len(self.images['pixel'])
+        self.pixel = self.images['pixel']
         self.pixel_frame = 0
-        self.image = self.__pixel[self.__pixel_count]
+        self.image = self.pixel[self.pixel_count]
         self.rect = self.image.get_rect()
-        self.direction = [0,-1]
+        self.direction = direction()
         self.temp_position = [-10.0,-10.0]
         self.center = [-10.0, 10.0]
         self.rect.top = self.center[0] - 10
@@ -568,34 +597,32 @@ class Elf(pygame.sprite.Sprite):
                         (self.center[0] - self.temp_position[0]) ** 2 + \
                         (self.center[1] - self.temp_position[1]) ** 2 )
         if distance:
-            self.direction = [
-                            (self.temp_position[0] - self.center[0]) / distance, 
-                            (self.temp_position[1] - self.center[1]) / distance ]
+            self.direction.set(functions.snipe(self.temp_position, self.center))
             self.speed = math.log(distance + 1.0)/3
         else:
             self.speed = 0
-        self.center[0] += self.direction[0] * self.speed
-        self.center[1] += self.direction[1] * self.speed
+        self.center[0] += self.direction.x * self.speed
+        self.center[1] += self.direction.y * self.speed
         self.rect.left = self.center[0] - 35
         self.rect.top = self.center[1] - 35 + 5*math.sin(6.28*self.frame_count/100)
         self.Frame_Count()
 
     @classmethod
     def load_source(cls, file_name):
-        f = open(file_name,'rb')
+        f = open('data/obj/elf/' + file_name + '.rbrb' ,'rb')
         sources = pickle.load(f)
         f.close()
-        self.images = {"pixel":[]}
+        cls.images = {"pixel":[]}
         for i in range(len(sources['pixel'])):
-            img_name = 'data/tmp/imgs' + self.name + '_pixle' + str(i) + '.tmp'
+            img_name = 'data/tmp/imgs' + file_name + '_pixle' + str(i) + '.tmp'
             try:
                 img_file = open(img_name, 'wb')
             except:
                 os.makedirs('data/tmp/imgs/')
                 img_file = open(img_name, 'wb')
-            img_file.write(sources['pixel'])
+            img_file.write(sources['pixel'][i])
             img_file.close()
-            cls.images['pixel'].append(pygame.image.load(image_name).convert_alpha())
+            cls.images['pixel'].append(pygame.image.load(img_name).convert_alpha())
 
     def change_image(self):
         if not self.frame_count %12:

@@ -22,13 +22,16 @@ me_erina = character.erina.Erina()
 me_ribbon = character.ribbon.Ribbon()
 
 import platform
+from pygame.sprite import Sprite
 from math import sqrt
 from math import asin
 from math import pi
+from math import cos
+from math import sin
+from random import random
 from os import system
 from os import remove
 from sys import exit
-
 
 def ExitCheck():
     for event in pygame.event.get():
@@ -37,16 +40,42 @@ def ExitCheck():
             functions.clear_cache()
             exit()
 
-def snipe(origin_sprite, enemy_sprite):
+class SnipeError(TypeError):
+    pass
+
+def snipe(origin, destination, type='rad'):
     """
     snipe function here:
 
-        snipe(Sprite, Sprite): return int
+        snipe(origin, destination, type='rad'): return int
+
+        both parament can be a sprite or a direction
+        type: 'rad' or 'vector'
 
         return a rad value
     """
-    delta_x = enemy_sprite.center[0] - origin_sprite.center[0]
-    delta_y = enemy_sprite.center[1] - origin_sprite.center[1]
+    if isinstance(origin, list):
+        origin_x = origin[0]
+        origin_y = origin[1]
+    elif isinstance(origin, Sprite):
+        origin_x = origin.center[0]
+        origin_y = origin.center[1]
+    else:
+        print("snipe parament error")
+        raise TypeError
+    if isinstance(destination, list):
+        destination_x = destination[0]
+        destination_y = destination[1]
+    elif isinstance(destination, Sprite):
+        destination_x = destination.center[0]
+        destination_y = destination.center[1]
+    else:
+        print("snipe parament error")
+        raise TypeError
+    delta_x = destination_x - origin_x
+    delta_y = destination_y - origin_y
+    if delta_x==0 and delta_y==0:
+        raise SnipeError
     distance = sqrt(delta_x ** 2 + delta_y ** 2)
     temp_snipe = asin(delta_y/distance)
     if delta_x < 0:
@@ -54,9 +83,22 @@ def snipe(origin_sprite, enemy_sprite):
             snipe = pi - temp_snipe
         elif delta_y < 0:
             snipe = -pi - temp_snipe
+        elif delta_y == 0:
+            snipe = pi
+    elif delta_x == 0:
+        if delta_y > 0:
+            snipe = pi/2
+        elif delta_y < 0:
+            snipe = -pi/2
     else:
         snipe = temp_snipe
-    return snipe
+    if type == 'rad':
+        return snipe
+    elif type == 'vector':
+        return [cos(snipe), sin(snipe)]
+    else:
+        print("parament error")
+        raise TypeError
 
 def angle(direction):
     """
