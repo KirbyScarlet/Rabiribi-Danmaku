@@ -75,6 +75,7 @@ def snipe(origin, destination, type='rad'):
     delta_x = destination_x - origin_x
     delta_y = destination_y - origin_y
     if delta_x==0 and delta_y==0:
+        return random() * 2 * pi
         raise SnipeError
     distance = sqrt(delta_x ** 2 + delta_y ** 2)
     temp_snipe = asin(delta_y/distance)

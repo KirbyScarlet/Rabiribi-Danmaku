@@ -6,23 +6,26 @@ import functions
 import abc
 from functions.values import SCREEN_BOTTOM, SCREEN_LEFT, SCREEN_RIGHT, SCREEN_TOP
 
-class direction(object):
+class direction(list):
     def __init__(self):
         self.x = 0.0
         self.y = 0.0
 
     def set(self, *value):
-        if len(value) == 1:
+        if len(value)==1:
             if isinstance(value[0], (int, float)):
                 self._rad(value[0])
             elif isinstance(value[0], list):
                 self._vector(value[0])
             else:
-                raise ValueError
-        elif len(value) == 2:
-            self._vector(*value)
+                raise TypeError
+        elif len(value)==2:
+            if isinstance(value, (tuple, list)):
+                self._vector(*value)
+            else:
+                raise TypeError
         else:
-            raise ValueError
+            raise TypeError
 
     def _rad(self, value):
         self.x = math.cos(value)
@@ -34,8 +37,21 @@ class direction(object):
         self.x = value[0]
         self.y = value[1]
 
-class position(object):
-    pass
+    def __getitem__(self, y):
+        if y==0:
+            return self.x
+        elif y==1:
+            return self.y
+        else:
+            raise IndexError
+
+class position(list):
+    def __init__(self):
+        self.x = 0
+        self.y = 0
+
+    def set(self, *value):
+        pass
 
 class Boss(pygame.sprite.Sprite):
     """
