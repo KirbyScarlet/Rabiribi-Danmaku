@@ -10,7 +10,7 @@ from math import pi
 
 class DanmakuAction():
     def __init__(self, birth_group, birth_place, *args, 
-                 birth_place_offset = (0,0), 
+                 birth_place_offset = ((0),0), 
                  danmaku_layer = 0, 
                  birth_speed = 0, 
                  direction = pi/2, 
@@ -59,8 +59,8 @@ class DanmakuAction():
         self.layer = danmaku_layer
         self.SetDirection(direction, direction_offset)
         self.SetSpeed(birth_speed)
-        self.SetTimerip(**kwargs)
-        birth_group.append(self)
+        if timerip:
+            self.SetTimerip(**kwargs)
 
     def SetPosition(self, birth_place, birth_place_offset):
         if isinstance(birth_place, list):
@@ -70,17 +70,27 @@ class DanmakuAction():
         else:
             raise TypeError
         if isinstance(birth_place_offset, tuple):
-            offset = [birth_place_offset[1]*cos(birth_place_offset[0]), birth_place_offset[0]*sin(birth_place_offset[0])]
+            if isinstance(birth_place_offset[0], Sprite):
+                try:
+                    self.SetPosition(birth_place, (snipe(center, birth_place_offset[0])+birth_place_offset[1], birth_place_offset[2]))
+                except IndexError:
+                    print("parament input error")
+                    raise IndexError
+            try:
+                offset = [birth_place_offset[1]*cos(birth_place_offset[0]), birth_place_offset[0]*sin(birth_place_offset[0])]
+            except IndexError:
+                print("parament input error")
+                raise IndexError
         else:
             raise TypeError
-        self.center = center[0]+offset[0]
+        self.center = center[0]+offset[0], center[1]+offset[1]
         self.setposition = True
     
     def SetDirection(self, direction, direction_offset):
         if isinstance(direction, (float, int)):
             self.direction.set(direction + direction-offset)
-        if isinstance(direction, Erina):
-            self.direction.set(snipe(self.center, direction))
+        if isinstance(direction, Sprite):
+            self.direction.set(snipe(self.center, direction) + direction_offset)
         self.setdirection = True
 
     def SetSpeed(self, speed=False, **kwargs):
@@ -97,14 +107,14 @@ class DanmakuAction():
         time1 == time2:
             raise ValueError
         if not time2:
-            if self.setspeed and speed1!=0:
-                return self.__speed(0,float(self.speed),time2,speed2,iftype)
             text = 
             """
             %s %d < self.timer:
                 self.speed = %.16f
             """ % (iftype, time1, speed1)
         elif not time1:
+            if self.setspeed and speed1!=0:
+                return self.__speed(0,float(self.speed),time2,speed2,iftype)
             text = 
             """
             %s self.timer < %d:
@@ -144,14 +154,25 @@ class DanmakuAction():
         else:
             direction1offset = 0
         if not time2:
-            if self.setdirection and direction1!=0:
-                return self.__direction(0, float(self.direction), time2, direction2, iftype)
+            if isinstance(direction1, Erina):
+                text = 
+                """
+                %s %d == self.timer:
+                    self.direction.set(*erina)
+                    
+                """
             text = 
             """
             %s %d < self.timer:
                 self.direction.set(%.16f)
             """ % (iftype, time1, direction1+direction1offset)
         elif not time1:
+            if isinstance(direction2, Erina):
+                text =
+                """
+                %s self.timer == %d:
+                    self.direction.set(*erina)
+                """ % (iftype, time2)
             text = 
             """
             %s self.timer < %d:
@@ -159,6 +180,19 @@ class DanmakuAction():
             """ % (iftype, time2, direction2+direction2offset2)
         else:
             if isinstance(direction1, Erina):
+                if isinstance(direction2, Erina):
+                    text =
+                    """
+                    %s %d < self.timer < %d:
+                        self.direction.set(*erina)
+                    """ % (iftype, time1, time2)
+                else:
+                    text = 
+                    """
+                    %s %d == self.timer:
+                        self.direction.set(*erina)
+                    """ % (iftype, time1)
+                return text
                 
             accleration = (direction2+direction2offset-direction1-direction1offset1)/float(time2-time1)
             if accleration == 0:
@@ -180,8 +214,8 @@ class DanmakuAction():
             self.timerip = 'pass\n'
         else:
             try:
-                speedlist = sorted([x for x in kwargs.keys() if 'speed' in x], key=lambda x: int(x.split('-')[-1]), reverse=True)
-                directionlist = sorted([x for x in kwargs.keys() if 'direction' in x], key=lambda x: int(x.split('-')[1]), reverse=True)
+                speedlist = sorted([x for x in kwargs.keys() if 'speed' in x], key=lambda x: int(x.split('-')[-1]))
+                directionlist = sorted([x for x in kwargs.keys() if 'direction' in x], key=lambda x: int(x.split('-')[1]))
             except ValueError:
                 print("""
                 use keywords:
@@ -192,9 +226,19 @@ class DanmakuAction():
                         |  |____________stynax use
                         |_______________speed or direction
                 """)
+                raise ValueError
             if speedlist:
-                recent_time = speedlist.pop()
-                
+                recent_time = speedlist[0]
+                self.timerip += self.__speed(time2=recent_time.split('-')[1], speed2=kwargs[recent_time], iftype='if')
+                for sl in len(speedlist):
+                    recent_time1 = speedlist[sl]
+                    try:
+                        recent_time2 = speedlist[sl+1]
+                        self.timerip += self.__speed(time1=recent_time1.split('-')[1], speed1=kwargs[recent_time1], time2=recent_time2.split('-')[1], speed2=kwargs[recent_time2])
+                    except IndexError:
+                        self.timerip += self.__speed(time1=recent_time1.split('-')[1], speed1=kwargs[recent_time1])
+            if directionlist:
+                pass
 
-    def time_rip(self, timerip, *erina):
+    def time_rip(self, *erina):
         exec(timerip)

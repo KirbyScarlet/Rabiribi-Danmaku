@@ -16,7 +16,7 @@ windows:
         pip install pygame
     执行rabiribi_danmaku.py
     
-linux:
+linux & mac os:
     bash控制台，游戏目录下：
         # pip3 install pygame
         $ chmod +x rabiribi_danmaku.py

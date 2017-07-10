@@ -38,12 +38,16 @@ class Spell_1(SpellCard):
                 temp_snipe = snipe(self.boss, erina)
                 offset = random.randint(-10,10)
                 for i in range(-8,9):
-                    temp_danmaku = mid_orange_circle_cocoa_spell_1(self.boss.center)
+                    temp_danmaku = mid_orange_circle(
+                        birth_group, 
+                    )
+                    '''
                     temp_danmaku.layer = 0
                     temp_danmaku.center = [self.boss.center[0], self.boss.center[1]]
                     temp_danmaku.direction.set(temp_snipe + i*math.pi/32 + math.pi*offset/320)
                     #temp_danmaku.speed = 2
                     birth_group.add(temp_danmaku)
+                    '''
         else:
             pass
             self.boss.temp_position[0] = random.randint(50,380)

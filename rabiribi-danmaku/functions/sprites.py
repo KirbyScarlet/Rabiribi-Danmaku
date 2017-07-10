@@ -4,19 +4,24 @@ import pickle
 import os
 import functions
 import abc
-from functions.values import SCREEN_BOTTOM, SCREEN_LEFT, SCREEN_RIGHT, SCREEN_TOP
+from functions.values import screenborder
+from objects.action import DanmakuAction
+from functions import snipe
 
 class direction(list):
-    def __init__(self):
+    def __init__(self, center):
         self.x = 0.0
         self.y = 0.0
+        self.center = center
 
     def set(self, *value):
         if len(value)==1:
-            if isinstance(value[0], (int, float)):
+            if isinstance(value[0], (float, int)):
                 self._rad(value[0])
             elif isinstance(value[0], list):
                 self._vector(value[0])
+            elif isinstance(value[0], pygame.sprite.Sprite):
+                self._rad(snipe(self.center, value[0]))
             else:
                 raise TypeError
         elif len(value)==2:
@@ -24,6 +29,13 @@ class direction(list):
                 self._vector(*value)
             else:
                 raise TypeError
+        else:
+            raise TypeError
+
+    def offset(self, value):
+        if isinstance(value, (float, int)):
+            v = snipe((0,0), (self.x,self.y))
+            self._rad(value+v)
         else:
             raise TypeError
 
@@ -328,15 +340,32 @@ class Boss(pygame.sprite.Sprite):
         os.system("del data/tmp/imgs/" + self.name + "*.tmp")
         os.system("del data/tmp/misc/" + self.name + "*.tmp")
 
-class Danmaku(pygame.sprite.Sprite):
+class Danmaku(pygame.sprite.Sprite, DanmakuAction):
     __metaclass__ = abc.ABCMeta
     """
     specify most of danmaku type.
     only danmaku be defined there.
     lazer next
     """
-    def __init__(self, danmaku_name, birth_time=10, lazer=-1):
-        pygame.sprite.Sprite.__init__(self)
+    def __init__(self, 
+                birth_group, birth_place, *args, 
+                birth_time=10, lazer=-1,
+                birth_place_offset = (0,0), 
+                danmaku_layer = 0, 
+                birth_speed = 0, 
+                direction = pi/2, 
+                direction_offset = 0, 
+                time_rip = False, 
+                **kwargs):
+        pygame.sprite.Sprite.__init__(self, birth_group)
+        DanmakuAction.__init__(self, birth_place, *args, 
+                                birth_place_offset = (0,0), 
+                                danmaku_layer = 0, 
+                                birth_speed = 0, 
+                                direction = pi/2, 
+                                direction_offset = 0, 
+                                time_rip = False, 
+                                **kwargs)
         self.buff_catch = functions.buff_debuff.BuffGroup()
         """
         specify when miss opponite will have some buff or debuff
@@ -355,11 +384,11 @@ class Danmaku(pygame.sprite.Sprite):
         layer 0 will on the top.
         """
         self.timer = 0
-        self.SetImage(danmaku_name)
+        self.SetImage()
 
         # music not specify
 
-    def SetImage(self, danmaku_name):
+    def SetImage(self):
         """
         specify the pictures that danmaku sprite used.
         danmaku size will locked on a square shape
@@ -384,47 +413,47 @@ class Danmaku(pygame.sprite.Sprite):
 
         self.speed = 0
         self.rotation = 0
-        self.direction = direction()
+        self.direction = direction(self.center)
 
-    def SetValue(self, damage, energy, radius, birth_position, image_change_fps=0, image_change_rotation=0):
+    @classmethod
+    def SetValue(cls, damage, energy, radius, image_change_fps=0, image_change_rotation=0):
         """
         define local damage, removing energy, and birth position
         """
-        self.damage = damage
-        self.energy = energy
-        self.birth_position = birth_position
-        self.radius = radius
+        cls.damage = damage
+        cls.energy = energy
+        cls.radius = radius
 
-        self.center = list(self.birth_position)
-        self.rect.left = self.center[0] - self.rect.width/2
-        self.rect.top = self.center[1] - self.rect.height/2
+        cls.rect.left = cls.center[0] - cls.rect.width/2
+        cls.rect.top = cls.center[1] - cls.rect.height/2
         """
         special value
         """
-        self.image_change_fps = image_change_fps
-        self.image_change_rotation = image_change_rotation
-        self.live_time = -1
-        self.collide = True
-        self.collide_delete = True
-        self.delete = False
-        self.inscreen = True
+        cls.image_change_fps = image_change_fps
+        cls.image_change_rotation = image_change_rotation
+        cls.live_time = -1
+        cls.collide = True
+        cls.collide_delete = True
+        cls.delete = False
+        cls.inscreen = True
         
-    def SetLiveCheck(self, 
-                     left = functions.values.SCREEN_LEFT, 
-                     right = functions.values.SCREEN_RIGHT, 
-                     top = functions.values.SCREEN_TOP, 
-                     bottom = functions.values.SCREEN_BOTTOM,
+    @classmethod
+    def SetLiveCheck(cls, 
+                     left = screenborder.SCREEN_LEFT, 
+                     right = screenborder.SCREEN_RIGHT, 
+                     top = screenborder.SCREEN_TOP, 
+                     bottom = screenborder.SCREEN_BOTTOM,
                      live_time = -1):
         """
         when danmaku move out of this area,
         change delete count
         free this sprite for save ram space
         """
-        self.left_border = left - self.rect.width/2
-        self.right_border = right + self.rect.width/2
-        self.top_border = top - self.rect.height/2
-        self.bottom_border = bottom + self.rect.height/2
-        self.live_time = live_time
+        cls.left_border = left - cls.rect.width/2
+        cls.right_border = right + cls.rect.width/2
+        cls.top_border = top - cls.rect.height/2
+        cls.bottom_border = bottom + cls.rect.height/2
+        cls.live_time = live_time
 
     @classmethod
     def load_source(cls, danmaku_name):

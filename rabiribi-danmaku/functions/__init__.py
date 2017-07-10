@@ -54,7 +54,7 @@ def snipe(origin, destination, type='rad'):
 
         return a rad value
     """
-    if isinstance(origin, list):
+    if isinstance(origin, (list, tuple)):
         origin_x = origin[0]
         origin_y = origin[1]
     elif isinstance(origin, Sprite):
@@ -63,7 +63,7 @@ def snipe(origin, destination, type='rad'):
     else:
         print("snipe parament error")
         raise TypeError
-    if isinstance(destination, list):
+    if isinstance(destination, (list, tuple)):
         destination_x = destination[0]
         destination_y = destination[1]
     elif isinstance(destination, Sprite):
