@@ -1,8 +1,8 @@
 import pygame
 import math
 
+import objects.sprites
 import functions
-import functions.sprites
 import functions.stage_run
 import functions.values
 import functions.buff_debuff

@@ -3,7 +3,6 @@ function tools
 """
 import functions.run
 import functions.spell_card
-import functions.sprites
 import functions.values
 import functions.stage_run
 import functions.buff_debuff

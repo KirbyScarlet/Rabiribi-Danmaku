@@ -1,12 +1,13 @@
 import math
 import random
 
-from functions.sprites import Boss
-from functions.sprites import Danmaku
+from objects.sprites import Boss
+from objects.sprites import Danmaku
 from functions.spell_card import SpellCard
 from functions import snipe
 from objects.danmaku import mid_orange_circle
 from objects.danmaku import small_blue_circle
+from math import pi
 
 class mid_orange_circle_cocoa_spell_1(mid_orange_circle):
     def __init__(self, emitter):
@@ -35,12 +36,15 @@ class Spell_1(SpellCard):
         temp_time = self.timer % 120
         if temp_time:
             if temp_time%10 == 1 and temp_time<62:
-                temp_snipe = snipe(self.boss, erina)
+                #temp_snipe = snipe(self.boss, erina)
                 offset = random.randint(-10,10)
                 for i in range(-8,9):
-                    temp_danmaku = mid_orange_circle(
-                        birth_group, 
-                    )
+                    birth_group.add(mid_orange_circle(
+                        self.boss,
+                        birth_time = 10, lazer = -1,
+                        birth_speed = 2, direction = erina,
+                        direction_offset = offset*pi/320 + i*pi/32
+                    ))
                     '''
                     temp_danmaku.layer = 0
                     temp_danmaku.center = [self.boss.center[0], self.boss.center[1]]

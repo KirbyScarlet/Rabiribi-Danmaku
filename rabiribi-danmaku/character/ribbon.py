@@ -2,10 +2,10 @@ import pygame
 import math
 import platform
 import character.erina
-import functions.values
 import random
 from math import *
 from pygame.locals import *
+from functions.values import screenborder
 
 class green_danmaku(pygame.sprite.Sprite):
     def __init__(self, me_ribbon):
@@ -33,10 +33,10 @@ class green_danmaku(pygame.sprite.Sprite):
         self.center[1] += self.speed * self.direction[1]
         self.rect.top = self.center[0] - 10
         self.rect.left = self.center[1] - 10
-        if self.rect.top < functions.values.SCREEN_TOP or \
-           self.rect.left < functions.values.SCREEN_LEFT or \
-           self.rect.right > functions.values.SCREEN_RIGHT or \
-           self.rect.bottom > functions.values.SCREEN_BOTTOM:
+        if self.rect.top < screenborder.SCREEN_TOP or \
+           self.rect.left < screenborder.SCREEN_LEFT or \
+           self.rect.right > screenborder.SCREEN_RIGHT or \
+           self.rect.bottom > screenborder.SCREEN_BOTTOM:
             self.delete = True
 
     def print_screen(self, screen):
@@ -68,10 +68,10 @@ class purple_danmaku(pygame.sprite.Sprite):
         self.center[1] += self.speed * self.direction[1]
         self.rect.top = self.center[0] - 5
         self.rect.left = self.center[1] - 5
-        if self.rect.top < functions.values.SCREEN_TOP or \
-           self.rect.left < functions.values.SCREEN_LEFT or \
-           self.rect.right > functions.values.SCREEN_RIGHT or \
-           self.rect.bottom > functions.values.SCREEN_BOTTOM:
+        if self.rect.top < screenborder.SCREEN_TOP or \
+           self.rect.left < screenborder.SCREEN_LEFT or \
+           self.rect.right > screenborder.SCREEN_RIGHT or \
+           self.rect.bottom > screenborder.SCREEN_BOTTOM:
             self.delete = True
 
     def print_screen(self, screen):

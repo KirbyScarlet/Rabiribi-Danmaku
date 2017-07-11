@@ -1,4 +1,4 @@
-from functions.sprites import Elf
+from objects.sprites import Elf
 
 class elf_blue_small(Elf):
     def __init__(self):

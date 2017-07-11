@@ -21,6 +21,7 @@ import ui
 import boss
 import character
 import functions
+import objects
 
 me_erina = character.erina.Erina()
 me_ribbon = character.ribbon.Ribbon()

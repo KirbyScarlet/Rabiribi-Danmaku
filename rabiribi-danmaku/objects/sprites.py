@@ -2,52 +2,28 @@ import pygame
 import math
 import pickle
 import os
-import functions
 import abc
-from functions.values import screenborder
+import functions
 from objects.action import DanmakuAction
+from objects.action import direction
+from functions.values import screenborder
 from functions import snipe
+from math import pi
 
-class direction(list):
-    def __init__(self, center):
-        self.x = 0.0
-        self.y = 0.0
-        self.center = center
+class position(list):
+    def __init__(self):
+        self.x = 0
+        self.y = 0
 
-    def set(self, *value):
-        if len(value)==1:
-            if isinstance(value[0], (float, int)):
-                self._rad(value[0])
-            elif isinstance(value[0], list):
-                self._vector(value[0])
-            elif isinstance(value[0], pygame.sprite.Sprite):
-                self._rad(snipe(self.center, value[0]))
-            else:
-                raise TypeError
-        elif len(value)==2:
-            if isinstance(value, (tuple, list)):
-                self._vector(*value)
-            else:
-                raise TypeError
+    def set(self, value):
+        if len(value)!=2:
+            raise TypeError
+        if isinstance(value, (tuple, list)):
+            self.x, self.y = value
+        elif isinstance(value, pygame.sprite.Sprite):
+            self.x, self.y = tuple(value.center)
         else:
             raise TypeError
-
-    def offset(self, value):
-        if isinstance(value, (float, int)):
-            v = snipe((0,0), (self.x,self.y))
-            self._rad(value+v)
-        else:
-            raise TypeError
-
-    def _rad(self, value):
-        self.x = math.cos(value)
-        self.y = math.sin(value)
-
-    def _vector(self, *value):
-        #if abs(math.sqrt(value[0]**2 + value[1]**2))-1 > 0.1:
-        #    raise ValueError
-        self.x = value[0]
-        self.y = value[1]
 
     def __getitem__(self, y):
         if y==0:
@@ -56,14 +32,6 @@ class direction(list):
             return self.y
         else:
             raise IndexError
-
-class position(list):
-    def __init__(self):
-        self.x = 0
-        self.y = 0
-
-    def set(self, *value):
-        pass
 
 class Boss(pygame.sprite.Sprite):
     """
@@ -118,8 +86,8 @@ class Boss(pygame.sprite.Sprite):
         """
         self.image = self.pixel[self.pixel_frame]   # image will use in a list
         self.rect = self.image.get_rect()
-        self.direction = direction()
         self.center = [-35.0, 35.0]
+        self.direction = direction(self.center)
         self.temp_position = [255.0, 100.0]
         self.rect.top = self.center[0] - 35
         self.rect.left = self.center[1] - 35
@@ -204,7 +172,7 @@ class Boss(pygame.sprite.Sprite):
         elif self.temp_position[1] > 200:
             self.temp_position[1] = 200
     
-    def move(self):
+    def move(self, *erina):
         """
         move functions
         
@@ -348,24 +316,25 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
     lazer next
     """
     def __init__(self, 
-                birth_group, birth_place, *args, 
+                birth_place, *args, 
                 birth_time=10, lazer=-1,
-                birth_place_offset = (0,0), 
+                birth_place_offset = ((0),0), 
                 danmaku_layer = 0, 
                 birth_speed = 0, 
                 direction = pi/2, 
                 direction_offset = 0, 
                 time_rip = False, 
                 **kwargs):
-        pygame.sprite.Sprite.__init__(self, birth_group)
+        pygame.sprite.Sprite.__init__(self)
         DanmakuAction.__init__(self, birth_place, *args, 
-                                birth_place_offset = (0,0), 
-                                danmaku_layer = 0, 
-                                birth_speed = 0, 
-                                direction = pi/2, 
-                                direction_offset = 0, 
-                                time_rip = False, 
+                                birth_place_offset=birth_place_offset, 
+                                danmaku_layer=danmaku_layer, 
+                                birth_speed=birth_speed, 
+                                direction=direction, 
+                                direction_offset=direction_offset, 
+                                time_rip=time_rip, 
                                 **kwargs)
+        print(self.speed, self.direction)
         self.buff_catch = functions.buff_debuff.BuffGroup()
         """
         specify when miss opponite will have some buff or debuff
@@ -379,16 +348,14 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
         """
         some lazer will use this
         """
-        self.layer = 0
-        """
-        layer 0 will on the top.
-        """
         self.timer = 0
-        self.SetImage()
+        self.rect.left = self.center[0] - self.rect.width/2
+        self.rect.top = self.center[1] - self.rect.height/2
 
         # music not specify
-
-    def SetImage(self):
+    
+    @classmethod
+    def SetImage(cls):
         """
         specify the pictures that danmaku sprite used.
         danmaku size will locked on a square shape
@@ -398,22 +365,23 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
 
         birth image will not at a size
         """
-        #self.images = {'birth':[], 'live':[]}
-        #if not self.read_source(danmaku_name, birth_frame, live_frame):
-        #    self.load_source(danmaku_name)
-        #    self.read_source(danmaku_name, birth_frame, live_frame)
-        #self.load_source(danmaku_name)
-        self.pixel = self.images['live']
-        self.pixel_count = len(self.images['live'])
-        self.birth = self.images['birth']
-        self.birth_count = len(self.images['birth'])
+        #cls.images = {'birth':[], 'live':[]}
+        #if not cls.read_source(danmaku_name, birth_frame, live_frame):
+        #    cls.load_source(danmaku_name)
+        #    cls.read_source(danmaku_name, birth_frame, live_frame)
+        #cls.load_source(danmaku_name)
+        cls.pixel = cls.images['live']
+        cls.pixel_count = len(cls.images['live'])
+        cls.birth = cls.images['birth']
+        cls.birth_count = len(cls.images['birth'])
 
-        self.image = self.birth[0] # sometimes have more than 1 frame
-        self.rect = self.image.get_rect()
+        cls.image = cls.birth[0] # sometimes have more than 1 frame
+        cls.rect = cls.image.get_rect()
 
-        self.speed = 0
-        self.rotation = 0
-        self.direction = direction(self.center)
+        #cls.speed = 0
+        cls.rotation = 0
+        #cls.center = [0,0]
+        #cls.direction = direction(cls.center)
 
     @classmethod
     def SetValue(cls, damage, energy, radius, image_change_fps=0, image_change_rotation=0):
@@ -424,8 +392,8 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
         cls.energy = energy
         cls.radius = radius
 
-        cls.rect.left = cls.center[0] - cls.rect.width/2
-        cls.rect.top = cls.center[1] - cls.rect.height/2
+        #cls.rect.left = cls.center[0] - cls.rect.width/2
+        #cls.rect.top = cls.center[1] - cls.rect.height/2
         """
         special value
         """
@@ -487,6 +455,7 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
             f.write(sources['live'][i])
             f.close()
             cls.images['live'].append(pygame.image.load(img_name).convert_alpha())
+        cls.SetImage()
 
     '''
     def read_source(self):
@@ -554,13 +523,6 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
     def birth_check(self):
         if self.birth_time > 0:
             self.birth_time -= 1
-    
-    @abc.abstractmethod
-    def time_rip(self):
-        """
-        change value
-        """
-        raise NotImplementedError
 
     def death(self):
         """

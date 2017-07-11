@@ -131,9 +131,9 @@ class Battle():
         """
         self.key_pressed = pygame.key.get_pressed()
 
-    def sprite_move(self, *layer):
-        for l in layer:
-            for each in l:
+    def sprite_move(self, *layers):
+        for layer in layers:
+            for each in layer:
                 try:
                     each.move()
                 except:
@@ -324,7 +324,7 @@ class MidBattle(Battle):
     
     def SetBGM(self, file_name):
         self.bgm = pygame.mixer.music
-        self.bgm.pygame.music.load(file_name)
+        self.bgm.load(file_name)
         self.set_bgm = False
 
     def Attack(self):
