@@ -266,6 +266,9 @@ class Battle():
             self.PauseCheck()
             if self.pause == 0:
                 self.run(screen, debug)
+                #print("=============================================")
+                #for each in self.danmaku_layer:
+                #    print(each.center, each.speed, each.direction)
             else:
                 pass
             self.clock.tick_busy_loop(60)

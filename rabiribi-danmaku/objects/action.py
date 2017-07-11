@@ -123,6 +123,7 @@ class DanmakuAction():
             self.SetTimerip(**kwargs)
         else:
             self.timerip = 'pass\n'
+        #print('action instance:', self.speed, self.center, self.direction)
 
     def SetPosition(self, birth_place, birth_place_offset):
         if isinstance(birth_place, list):

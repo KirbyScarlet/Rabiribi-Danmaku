@@ -334,7 +334,6 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
                                 direction_offset=direction_offset, 
                                 time_rip=time_rip, 
                                 **kwargs)
-        print(self.speed, self.direction)
         self.buff_catch = functions.buff_debuff.BuffGroup()
         """
         specify when miss opponite will have some buff or debuff
@@ -349,13 +348,12 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
         some lazer will use this
         """
         self.timer = 0
-        self.rect.left = self.center[0] - self.rect.width/2
-        self.rect.top = self.center[1] - self.rect.height/2
+        self.SetImage()
+        #print('danmaku instance:', self.speed, self.center, self.direction)
 
         # music not specify
     
-    @classmethod
-    def SetImage(cls):
+    def SetImage(self):
         """
         specify the pictures that danmaku sprite used.
         danmaku size will locked on a square shape
@@ -365,48 +363,42 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
 
         birth image will not at a size
         """
-        #cls.images = {'birth':[], 'live':[]}
-        #if not cls.read_source(danmaku_name, birth_frame, live_frame):
-        #    cls.load_source(danmaku_name)
-        #    cls.read_source(danmaku_name, birth_frame, live_frame)
-        #cls.load_source(danmaku_name)
-        cls.pixel = cls.images['live']
-        cls.pixel_count = len(cls.images['live'])
-        cls.birth = cls.images['birth']
-        cls.birth_count = len(cls.images['birth'])
+        #self.images = {'birth':[], 'live':[]}
+        #if not self.read_source(danmaku_name, birth_frame, live_frame):
+        #    self.load_source(danmaku_name)
+        #    self.read_source(danmaku_name, birth_frame, live_frame)
+        #self.load_source(danmaku_name)
+        self.pixel = self.images['live']
+        self.pixel_count = len(self.images['live'])
+        self.birth = self.images['birth']
+        self.birth_count = len(self.images['birth'])
 
-        cls.image = cls.birth[0] # sometimes have more than 1 frame
-        cls.rect = cls.image.get_rect()
+        self.image = self.birth[0] # sometimes have more than 1 frame
+        self.rect = self.image.get_rect()
 
-        #cls.speed = 0
-        cls.rotation = 0
-        #cls.center = [0,0]
-        #cls.direction = direction(cls.center)
+        self.rect.left = self.center[0] - self.rect.width/2
+        self.rect.top = self.center[1] - self.rect.height/2
 
-    @classmethod
-    def SetValue(cls, damage, energy, radius, image_change_fps=0, image_change_rotation=0):
+    def SetValue(self, damage, energy, radius, image_change_fps=0, image_change_rotation=0):
         """
         define local damage, removing energy, and birth position
         """
-        cls.damage = damage
-        cls.energy = energy
-        cls.radius = radius
+        self.damage = damage
+        self.energy = energy
+        self.radius = radius
 
-        #cls.rect.left = cls.center[0] - cls.rect.width/2
-        #cls.rect.top = cls.center[1] - cls.rect.height/2
         """
         special value
         """
-        cls.image_change_fps = image_change_fps
-        cls.image_change_rotation = image_change_rotation
-        cls.live_time = -1
-        cls.collide = True
-        cls.collide_delete = True
-        cls.delete = False
-        cls.inscreen = True
+        self.image_change_fps = image_change_fps
+        self.image_change_rotation = image_change_rotation
+        self.live_time = -1
+        self.collide = True
+        self.collide_delete = True
+        self.delete = False
+        self.inscreen = True
         
-    @classmethod
-    def SetLiveCheck(cls, 
+    def SetLiveCheck(self, 
                      left = screenborder.SCREEN_LEFT, 
                      right = screenborder.SCREEN_RIGHT, 
                      top = screenborder.SCREEN_TOP, 
@@ -417,21 +409,21 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
         change delete count
         free this sprite for save ram space
         """
-        cls.left_border = left - cls.rect.width/2
-        cls.right_border = right + cls.rect.width/2
-        cls.top_border = top - cls.rect.height/2
-        cls.bottom_border = bottom + cls.rect.height/2
-        cls.live_time = live_time
+        self.left_border = left - self.rect.width/2
+        self.right_border = right + self.rect.width/2
+        self.top_border = top - self.rect.height/2
+        self.bottom_border = bottom + self.rect.height/2
+        self.live_time = live_time
 
     @classmethod
-    def load_source(cls, danmaku_name):
+    def load_source(self, danmaku_name):
         """
         load sources functions
         class method
 
             load_source(danmaku_name): return None
         """
-        cls.images = {'birth':[], 'live':[]}
+        self.images = {'birth':[], 'live':[]}
         f = open('data/obj/danmaku/' + danmaku_name + '.rbrb', 'rb')
         sources = pickle.load(f)
         f.close()
@@ -444,7 +436,7 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
                 f = open(img_name, 'wb')
             f.write(sources['birth'][i])
             f.close()
-            cls.images['birth'].append(pygame.image.load(img_name).convert_alpha())
+            self.images['birth'].append(pygame.image.load(img_name).convert_alpha())
         for i in range(len(sources['live'])):
             img_name = 'data/tmp/imgs/' + danmaku_name + '_live_rank_' + str(i) + '.tmp'
             try:
@@ -454,8 +446,7 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
                 f = open(img_name, 'wb')
             f.write(sources['live'][i])
             f.close()
-            cls.images['live'].append(pygame.image.load(img_name).convert_alpha())
-        cls.SetImage()
+            self.images['live'].append(pygame.image.load(img_name).convert_alpha())
 
     '''
     def read_source(self):
@@ -615,11 +606,11 @@ class Elf(pygame.sprite.Sprite):
         self.Frame_Count()
 
     @classmethod
-    def load_source(cls, file_name):
+    def load_source(self, file_name):
         f = open('data/obj/elf/' + file_name + '.rbrb' ,'rb')
         sources = pickle.load(f)
         f.close()
-        cls.images = {"pixel":[]}
+        self.images = {"pixel":[]}
         for i in range(len(sources['pixel'])):
             img_name = 'data/tmp/imgs' + file_name + '_pixle' + str(i) + '.tmp'
             try:
@@ -629,7 +620,7 @@ class Elf(pygame.sprite.Sprite):
                 img_file = open(img_name, 'wb')
             img_file.write(sources['pixel'][i])
             img_file.close()
-            cls.images['pixel'].append(pygame.image.load(img_name).convert_alpha())
+            self.images['pixel'].append(pygame.image.load(img_name).convert_alpha())
 
     def change_image(self):
         if not self.frame_count %12:
