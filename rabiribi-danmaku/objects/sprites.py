@@ -316,16 +316,16 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
     lazer next
     """
     def __init__(self, 
-                birth_place, *args, 
+                birth_group, birth_place, *args, 
                 birth_time=10, lazer=-1,
                 birth_place_offset = ((0),0), 
                 danmaku_layer = 0, 
-                birth_speed = 0, 
+                birth_speed = 1.0, 
                 direction = pi/2, 
                 direction_offset = 0, 
                 time_rip = False, 
                 **kwargs):
-        pygame.sprite.Sprite.__init__(self)
+        pygame.sprite.Sprite.__init__(self, birth_group)
         DanmakuAction.__init__(self, birth_place, *args, 
                                 birth_place_offset=birth_place_offset, 
                                 danmaku_layer=danmaku_layer, 
