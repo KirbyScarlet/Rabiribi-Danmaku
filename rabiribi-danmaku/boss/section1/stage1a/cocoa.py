@@ -39,11 +39,14 @@ class Spell_1(SpellCard):
                 #temp_snipe = snipe(self.boss, erina)
                 offset = random.randint(-10,10)
                 for i in range(-8,9):
-                    temp = mid_orange_circle(
+                    mid_orange_circle(birth_group,
                         self.boss,
                         birth_time = 10, lazer = -1,
-                        birth_speed = 2, direction = erina,
-                        direction_offset = offset*pi/320 + i*pi/32
+                        birth_speed = 0, 
+                        direction = erina,
+                        direction_offset = offset*pi/320 + i*pi/32,
+                        time_rip = True,
+                        speed_0 = 2
                     )
                     #birth_group.add(temp)
                     '''
