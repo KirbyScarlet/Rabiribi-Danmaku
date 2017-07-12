@@ -166,7 +166,8 @@ class DanmakuAction():
             self.speed = speed
             self.setspeed = True
 
-    def __speed(self, time1=False, speed1=False, time2=False, speed2=False, iftype='elif'):
+    # low efficiency
+    def __speed_old(self, time1=False, speed1=False, time2=False, speed2=False, iftype='elif'):
         if not isinstance(time1, (int, bool)):
             raise ValueError('time1 input error!', time1)
         elif not isinstance(time2, (int, bool)):
@@ -207,8 +208,8 @@ class DanmakuAction():
     self.speed = %.16f * (self.timer - %d) + %.16f """ % (iftype, time1, time2, accleration, time1, speed1)
         return text
 
-    # problems unfit
-    def __direction(self, time1=False, direction1=False, time2=False, direction2=False, iftype='elif'):
+    # problems unfit and low efficiency
+    def __direction_old(self, time1=False, direction1=False, time2=False, direction2=False, iftype='elif'):
         if not isinstance(time1, (int, bool)) or \
         not isinstance(time2, (int, bool)) or \
         not isinstance(direction1, (int, float, bool, Erina, tuple)) or \
@@ -309,10 +310,5 @@ class DanmakuAction():
 
     def time_rip(self, *erina):
         #print(self.timerip)
+        # problems unfit
         exec(self.timerip)
-        '''
-        if self.timer<20:
-            self.speed = -0.1*self.timer + 4
-        elif self.timer==20:
-            self.speed = 2
-            '''
