@@ -118,6 +118,13 @@ def angle(direction):
         rad = temp_rad
     return rad
 
+import time
+def time_check(fun, *args, **kwargs):
+    a = time.time()
+    ret = fun(*args, **kwargs)
+    print(fun.__name__, time.time()-a)
+    return ret
+
 def clear_cache(*dir):
     if platform.system() == "Windows":
         if dir:

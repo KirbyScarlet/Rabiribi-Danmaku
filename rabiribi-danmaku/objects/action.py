@@ -7,6 +7,7 @@ from character.erina import Erina
 from math import cos
 from math import sin
 from math import pi
+import time
 
 class direction():
     def __init__(self, center):
@@ -309,3 +310,9 @@ class DanmakuAction():
     def time_rip(self, *erina):
         #print(self.timerip)
         exec(self.timerip)
+        '''
+        if self.timer<20:
+            self.speed = -0.1*self.timer + 4
+        elif self.timer==20:
+            self.speed = 2
+            '''

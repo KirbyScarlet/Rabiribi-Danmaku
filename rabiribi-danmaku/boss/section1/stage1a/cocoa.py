@@ -1,5 +1,6 @@
 import math
 import random
+import time
 
 from objects.sprites import Boss
 from objects.sprites import Danmaku
@@ -42,11 +43,11 @@ class Spell_1(SpellCard):
                     mid_orange_circle(birth_group,
                         self.boss,
                         birth_time = 10, lazer = -1,
-                        birth_speed = 0, 
+                        birth_speed = 4, 
                         direction = erina,
                         direction_offset = offset*pi/320 + i*pi/32,
                         time_rip = True,
-                        speed_0 = 2
+                        speed_20 = 2
                     )
                     #birth_group.add(temp)
                     '''
