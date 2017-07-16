@@ -591,7 +591,7 @@ class Elf(pygame.sprite.Sprite):
         self.radius = 8
         self.defense = 1.0
 
-    def move(self):
+    def move(self, *erina):
         distance = sqrt( \
                         (self.center[0] - self.temp_position[0]) ** 2 + \
                         (self.center[1] - self.temp_position[1]) ** 2 )

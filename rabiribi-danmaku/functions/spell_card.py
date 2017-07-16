@@ -21,7 +21,7 @@ class IllustrationAttack(pygame.sprite.Sprite):
         self.timer = 0
         self.delete = False
 
-    def move(self):
+    def move(self, *args):
         self.rect.top += 1
         self.image.set_alpha(100)
         self.timer += 1

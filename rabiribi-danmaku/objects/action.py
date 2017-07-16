@@ -287,7 +287,6 @@ class DanmakuAction():
             if not self.setaccleration:
                 self.accleration = (self.speedvalue[0]-self.birth_speed)/self.speedtime[0]
                 self.setaccleration = True
-                self.speedvalue[0] = self.speed
             if self.accleration:
                 self.speed = self.birth_speed + self.accleration*self.timer
             else:

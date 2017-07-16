@@ -39,17 +39,15 @@ class Spell_1(SpellCard):
             if temp_time%10 == 1 and temp_time>60:
                 #temp_snipe = snipe(self.boss, erina)
                 offset = random.randint(-10,10)
-                for i in range(-32,32):
+                for i in range(-15,16):
                     mid_orange_circle(birth_group,
                         self.boss,
                         birth_time = 10, lazer = -1,
                         birth_speed = 5, 
                         direction = erina,
-                        direction_offset = offset*pi/320 + i*pi/32,
+                        direction_offset = offset*pi/320 + i*pi/64,
                         time_rip = True,
-                        speed_40 = 0,
-                        speed_100 = 0,
-                        speed_130 = 2
+                        speed_40 = 2
                     )
                     #birth_group.add(temp)
                     '''

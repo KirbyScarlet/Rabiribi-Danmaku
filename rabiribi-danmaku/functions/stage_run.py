@@ -3,6 +3,9 @@ import functions
 import sys
 import ui
 import abc
+import multiprocessing
+
+#mpool = multiprocessing.Pool()
 
 class Battle():
     __metaclass__ = abc.ABCMeta
@@ -132,12 +135,13 @@ class Battle():
         self.key_pressed = pygame.key.get_pressed()
 
     def sprite_move(self, *layers):
+        #mpool = multiprocessing.Pool()
         for layer in layers:
             for each in layer:
-                try:
-                    each.move()
-                except:
-                    each.move(self.erina)
+                #mpool.apply_async(each.move, self.erina)
+                each.move(self.erina)
+        #mpool.close()
+        #mpool.join()
         
     def SpriteMove(self):
         self.sprite_move(

@@ -28,7 +28,7 @@ class green_danmaku(pygame.sprite.Sprite):
         
         self.speed = 8 + random.random()*2
     
-    def move(self):
+    def move(self, *erina):
         self.center[0] += self.speed * self.direction[0]
         self.center[1] += self.speed * self.direction[1]
         self.rect.top = self.center[0] - 10
@@ -63,7 +63,7 @@ class purple_danmaku(pygame.sprite.Sprite):
         
         self.speed = 10
         
-    def move(self):
+    def move(self, *erina):
         self.center[0] += self.speed * self.direction[0]
         self.center[1] += self.speed * self.direction[1]
         self.rect.top = self.center[0] - 5
