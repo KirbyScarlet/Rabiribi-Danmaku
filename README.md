@@ -13,7 +13,7 @@ windows:
     安装python3.3或以上
     官方下载地址：https://www.python.org/downloads/windows/
     cmd中输入：
-        pip install pygame
+        > pip install pygame
     执行rabiribi_danmaku.py
     
 linux & mac os:

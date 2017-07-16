@@ -529,9 +529,7 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
             it's different from boss sprite.
             it only can controled by speed and direction!
         """
-        a = time.time()
         self.time_rip(*erina)
-        print(time.time()-a)
         self.image_change()
         self.center[0] += self.speed * self.direction.x
         self.center[1] += self.speed * self.direction.y

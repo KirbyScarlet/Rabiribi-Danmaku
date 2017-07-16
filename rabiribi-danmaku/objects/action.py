@@ -7,7 +7,7 @@ from character.erina import Erina
 from math import cos
 from math import sin
 from math import pi
-import time
+import timeit
 
 class direction():
     def __init__(self, center):
@@ -99,7 +99,11 @@ class DanmakuAction():
                                    if direction parament is a vector, lose acuricy
                 direction_offset = 0: a radium number
                 time_rip = False: if timerip set to true, use keyword argument.
-                **kwargs: for example:
+                **kwargs: specify speed and direction in time:
+                    format:
+                        speed_<speed timer> = <speed value>
+                        direction_<direction_timer1>[_<direction_timer2>] = (<direction_value>, <direction_offset>)
+                    for example:
                     speed_20 = 4.0
                        ^ ^ ^    ^
                        |  |  |    |_____set value
@@ -107,7 +111,7 @@ class DanmakuAction():
                        |  |____________stynax use
                        |_______________speed or direction
                                         when use direction mode, value can use a tuple for direction and offset
-                                        direction_20 = (sprite, pi/16)
+                    direction_20 = (sprite, pi/16)
                     direction_10_30 = pi/2,pi/3
                     ^   ^   ^   ^       ^
                     |   |   |   |       |________set values, as path as direction time
@@ -164,6 +168,7 @@ class DanmakuAction():
         self.setspeed = False
         if speed:
             self.speed = speed
+            self.birth_speed = speed
             self.setspeed = True
 
     # low efficiency
@@ -183,8 +188,8 @@ class DanmakuAction():
 
         if isinstance(time2, bool):
             text = """
-%s %d == self.timer:
-    self.speed = %.16f """ % (iftype, time1, speed1)
+        %s %d == self.timer:
+            self.speed = %.16f """ % (iftype, time1, speed1)
 
         elif isinstance(time1, bool):
             if self.setspeed:
@@ -194,18 +199,18 @@ class DanmakuAction():
                     return self.__speed(time1=0,speed1=float(self.speed),time2=time2,speed2=speed2,iftype=iftype)
             else:
                 text = """
-%s self.timer == 0:
-    self.speed = %.16f """ % (iftype, speed2)
+        %s self.timer == 0:
+            self.speed = %.16f """ % (iftype, speed2)
         else:
             accleration = (speed2-speed1)/float(time2-time1)
             if accleration == 0:
                 text = """
-%s %d == self.timer:
-    self.speed = %.16f """ % (iftype, time1, time2, speed1)
+        %s %d == self.timer:
+            self.speed = %.16f """ % (iftype, time1, time2, speed1)
             else:
                 text = """
-%s %d <= self.timer < %d:
-    self.speed = %.16f * (self.timer - %d) + %.16f """ % (iftype, time1, time2, accleration, time1, speed1)
+        %s %d <= self.timer < %d:
+            self.speed = %.16f * (self.timer - %d) + %.16f """ % (iftype, time1, time2, accleration, time1, speed1)
         return text
 
     # problems unfit and low efficiency
@@ -272,18 +277,73 @@ class DanmakuAction():
                     self.direction.set(%.16f * (self.timer - %d) + %.16f)
                 """ % (iftype, time1, time2, accleration, time1, direction1+offset1)
         return text
-    
+    #
+    def __speed_freeze_ease(self, time, speed):
+        if self.timer == time:
+            self.speed = speed
+        else:
+            pass
+
+    def __speed_easy_ease(self, time1, speed1, time2, speed2):
+        if time1 <= self.timer < time2:
+            try:
+                accleration = (speed2 - speed1)/(time2 - time1)
+            except ZeroDivisionError:
+                if time2 == 0:
+                    raise ZeroDivisionError("time specify error at %d" % time1)
+                if time1 == 0:
+                    raise ValueError("time specify conflict at 0")
+            if accleration==0:
+                self.__speed_freeze_ease(self, time1, speed1)
+            else:
+                self.speed = speed1 + accleration*(self.timer - time1)
+        else: 
+            pass
+
+    def __speed(self, *erina):
+        if self.speedtimecount:
+            if self.setspeed:
+                self.__speed_easy_ease(0, self.birth_speed, self.speedtime[0], self.speedvalue[0])
+            else:
+                self.__speed_freeze_ease(0, self.speedvalue[0])
+        if self.speedtimecount>1:
+            if self.timer < self.speedtime[-1]:
+                for timer in range(self.speedtimecount-1):
+                    self.__speed_easy_ease(self.speedtime[timer], self.speedvalue[timer], self.speedtime[timer+1], self.speedvalue[timer+1])
+            else:
+                self.__speed_freeze_ease(self.speedtime[-1], self.speedvalue[-1])
+        else: pass
+            
+    def __direction_freeze_ease(self, time, direction):
+        pass
+
+    def __direction_easy_ease(self, time, direciton):
+        pass
+
+    def __direction(self, *erina):
+        if self.directiontimecount:
+            pass
+
     def SetTimerip(self, **kwargs):
         if not kwargs:
-            self.timerip = 'pass\n'
+            self.timerip = False
         else:
             try:
-                speedlist = [x for x in kwargs.keys() if 'speed' in x]
-                speedlist.sort(key=lambda x: int(x.split('_')[1]))
-                directionlist = [x for x in kwargs.keys() if 'direction' in x]
-                directionlist.sort(key=lambda x: int(x.split('_')[1]))
+                self.speedtime = [x for x in kwargs.keys() if 'speed' in x]
+                self.speedtime.sort(key=lambda x: int(x.split('_')[1]))
+                self.directiontime = [x for x in kwargs.keys() if 'direction' in x]
+                self.directiontime.sort(key=lambda x: int(x.split('_')[1]))
+
+                self.speedvalue = tuple(map(lambda x:kwargs[x], self.speedtime))
+                self.directionvalue = tuple(map(lambda x:kwargs[x], self.directiontime))
+                self.speedtime = tuple(map(lambda x:int(x.split('_')[1]), self.speedtime))
+                self.directiontime = tuple(map(lambda x:tuple(x.split['_'][1], x.split['_'][-1]), self.directiontime))
+
+                self.speedtimecount = len(self.speedtime)
+                self.directiontimecount = len(self.directiontime)
+                self.timerip = True
             except ValueError:
-                print("""
+                raise ValueError("""
                 use keywords:
                     speed_20 = 4.0
                         ^ ^ ^    ^
@@ -292,7 +352,9 @@ class DanmakuAction():
                         |  |____________stynax use
                         |_______________speed or direction
                 """)
-                raise ValueError
+            
+            # old framework instance
+            '''
             if speedlist:
                 recent_time = speedlist[0]
                 self.timerip = self.__speed(time2=int(recent_time.split('_')[1]), speed2=kwargs[recent_time], iftype='if')
@@ -307,8 +369,14 @@ class DanmakuAction():
                         self.timerip += self.__speed(time1=int(recent_time1.split('_')[1]), speed1=kwargs[recent_time1])
             if directionlist:
                 pass
+                '''
 
     def time_rip(self, *erina):
-        #print(self.timerip)
+        if not self.timerip:
+            pass
+        else:
+            self.__speed(*erina)
+            #self.__direction(*erina)
+
         # problems unfit
-        exec(self.timerip)
+        #exec(self.timerip)

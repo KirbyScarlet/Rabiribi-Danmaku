@@ -36,18 +36,19 @@ class Spell_1(SpellCard):
     def spell_normal(self, erina, birth_group, boss_group, illustration_group):
         temp_time = self.timer % 120
         if temp_time:
-            if temp_time%10 == 1 and temp_time<62:
+            if temp_time%10 == 9 and temp_time>60:
                 #temp_snipe = snipe(self.boss, erina)
                 offset = random.randint(-10,10)
-                for i in range(-8,9):
+                for i in range(-15,16):
                     mid_orange_circle(birth_group,
                         self.boss,
                         birth_time = 10, lazer = -1,
-                        birth_speed = 4, 
+                        birth_speed = 10, 
                         direction = erina,
-                        direction_offset = offset*pi/320 + i*pi/32,
+                        direction_offset = offset*pi/320 + i*pi/16,
                         time_rip = True,
-                        speed_20 = 2
+                        speed_20 = 0,
+                        speed_80 = -2
                     )
                     #birth_group.add(temp)
                     '''

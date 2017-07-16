@@ -10,7 +10,7 @@ pygame.init()
 pygame.mixer.init()
 
 bg_size = width, height = 640, 480
-screen = pygame.display.set_mode(bg_size)
+screen = pygame.display.set_mode(bg_size, pygame.DOUBLEBUF)
 pygame.display.set_caption("RabiRibi-Danmaku demo")
 icon = pygame.image.load("images/ribbon cover.png")
 pygame.display.set_icon(icon)
