@@ -266,7 +266,7 @@ class Battle():
             self.PauseCheck()
             if self.pause == 0:
                 self.run(screen, debug)
-                #print("=============================================")
+                # print("=============================================")
                 #for each in self.danmaku_layer:
                 #    print(each.center, each.speed, each.direction)
             else:

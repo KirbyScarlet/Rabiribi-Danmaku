@@ -36,19 +36,20 @@ class Spell_1(SpellCard):
     def spell_normal(self, erina, birth_group, boss_group, illustration_group):
         temp_time = self.timer % 120
         if temp_time:
-            if temp_time%10 == 9 and temp_time>60:
+            if temp_time%10 == 1 and temp_time>60:
                 #temp_snipe = snipe(self.boss, erina)
                 offset = random.randint(-10,10)
-                for i in range(-15,16):
+                for i in range(-32,32):
                     mid_orange_circle(birth_group,
                         self.boss,
                         birth_time = 10, lazer = -1,
-                        birth_speed = 10, 
+                        birth_speed = 5, 
                         direction = erina,
-                        direction_offset = offset*pi/320 + i*pi/16,
+                        direction_offset = offset*pi/320 + i*pi/32,
                         time_rip = True,
-                        speed_20 = 0,
-                        speed_80 = -2
+                        speed_40 = 0,
+                        speed_100 = 0,
+                        speed_130 = 2
                     )
                     #birth_group.add(temp)
                     '''
@@ -72,17 +73,34 @@ class Spell_2(SpellCard):
         if temp_time%15 == 1:
             angle = random.randint(0,628)/100
             for i in range(32):
+                mid_orange_circle(birth_group, self.boss,
+                                  birth_time = 10,
+                                  birth_speed = 10,
+                                  direction = angle,
+                                  direction_offset = 2*pi*i/32,
+                                  danmaku_layer = 1,
+                                  time_rip = True,
+                                  speed_20 = 1.5
+                                  )
+            '''
                 temp_danmaku = mid_orange_circle_cocoa_spell_1(self.boss.center)
                 temp_danmaku.layer = 1
                 temp_danmaku.center = list(self.boss.center)
                 temp_danmaku.direction.set(angle + 2*math.pi/32*i)
                 birth_group.add(temp_danmaku)
+            '''
         if self.timer >= 300 and temp_time < 20:
             if temp_time == 0:
                 self.temp_snipe = snipe(self.boss, erina)
             if temp_time % 2 == 1:
                 for i in range(10):
                     for j in -1,1:
+                        small_blue_circle(birth_group, self.boss,
+                                          birth_speed = 3,
+                                          direction = erina,
+                                          direction_offset = 2*pi*i/10 + 2*pi*temp_time*j/314
+                                          )
+                        '''
                         temp_danmaku = small_blue_circle_cocoa_spell_2(self.boss.center)
                         temp_danmaku.layer = 0
                         temp_danmaku.center = list(self.boss.center)
@@ -90,6 +108,7 @@ class Spell_2(SpellCard):
                         temp_danmaku.speed = 4
                         temp_danmaku.direction.set(self.temp_snipe + 2*math.pi/10*i + 2*math.pi/128*temp_time*j)
                         birth_group.add(temp_danmaku)
+                        '''
         else:
             self.boss.temp_position[0] = 225
             self.boss.temp_position[1] = 100

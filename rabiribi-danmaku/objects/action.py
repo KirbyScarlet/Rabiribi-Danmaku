@@ -74,7 +74,7 @@ class DanmakuAction():
     def __init__(self, birth_place, *args, 
                  birth_place_offset = ((0),0), 
                  danmaku_layer = 0, 
-                 birth_speed = 0, 
+                 birth_speed = False, 
                  direction = pi/2, 
                  direction_offset = 0, 
                  time_rip = False, 
@@ -124,27 +124,27 @@ class DanmakuAction():
         self.layer = danmaku_layer
         self.SetDirection(direction, direction_offset)
         self.SetSpeed(birth_speed)
-        self.timerip = 'pass\n'
+        self.timerip = False
         if time_rip:
             self.SetTimerip(**kwargs)
         #print('action instance:', self.speed, self.center, self.direction)
 
     def SetPosition(self, birth_place, birth_place_offset):
         if isinstance(birth_place, list):
-            center = list(birth_place)
+            center = tuple(birth_place)
         elif isinstance(birth_place, Sprite):
-            center = list(birth_place.center)
+            center = tuple(birth_place.center)
         else:
             raise TypeError
         if isinstance(birth_place_offset, tuple):
             if isinstance(birth_place_offset[0], Sprite):
                 try:
-                    self.SetPosition(birth_place, (snipe(center, birth_place_offset[0])+birth_place_offset[1], birth_place_offset[2]))
+                    self.SetPosition(birth_place, (snipe(center, birth_place_offset[0]), birth_place_offset[1]))
                 except IndexError:
                     print("parament input error")
                     raise IndexError
             try:
-                offset = [birth_place_offset[1]*cos(birth_place_offset[0]), birth_place_offset[0]*sin(birth_place_offset[0])]
+                offset = [birth_place_offset[1]*cos(birth_place_offset[0]), birth_place_offset[1]*sin(birth_place_offset[0])]
             except IndexError:
                 print("parament input error")
                 raise IndexError
@@ -166,6 +166,10 @@ class DanmakuAction():
 
     def SetSpeed(self, speed=False, **kwargs):
         self.setspeed = False
+        self.speedtime_left, self.speedtime_right = 0,0
+        self.accleration = 0
+        self.setaccleration = False
+        self.freeze = False
         if speed:
             self.speed = speed
             self.birth_speed = speed
@@ -278,41 +282,79 @@ class DanmakuAction():
                 """ % (iftype, time1, time2, accleration, time1, direction1+offset1)
         return text
     #
-    def __speed_freeze_ease(self, time, speed):
-        if self.timer == time:
-            self.speed = speed
+    def __speed_count1(self):
+        if self.setspeed:
+            if not self.setaccleration:
+                self.accleration = (self.speedvalue[0]-self.birth_speed)/self.speedtime[0]
+                self.setaccleration = True
+                self.speedvalue[0] = self.speed
+            if self.accleration:
+                self.speed = self.birth_speed + self.accleration*self.timer
+            else:
+                self.speed = self.speedvalue[0]
+                self.speedtime_count = 0
         else:
-            pass
+            self.speed = self.speedvalue[0]
+            self.speedtime_count = 0
 
-    def __speed_easy_ease(self, time1, speed1, time2, speed2):
-        if time1 <= self.timer < time2:
-            try:
-                accleration = (speed2 - speed1)/(time2 - time1)
+    def __speed_ease(self, time_range):
+        if time_range:
+            if self.freeze:
+                return
+            if not self.setaccleration:
+                self.accleration = (self.speedvalue_right - self.speedvalue_left)/(self.speedtime_right - self.speedtime_left)
+                self.setaccleration = True
+                self.freeze = False
+                """
             except ZeroDivisionError:
                 if time2 == 0:
                     raise ZeroDivisionError("time specify error at %d" % time1)
                 if time1 == 0:
                     raise ValueError("time specify conflict at 0")
-            if accleration==0:
-                self.__speed_freeze_ease(self, time1, speed1)
+                    """
+            if self.accleration:
+                self.speed = self.speedvalue_left + self.accleration*(self.timer - self.speedtime_left)
             else:
-                self.speed = speed1 + accleration*(self.timer - time1)
-        else: 
-            pass
+                self.freeze = True
+                self.speed = self.speedvalue_left
+        else:
+            if self.freeze:
+                return
+            if not self.setaccleration:
+                self.accleration = (self.speedvalue_right - self.speedvalue_left)/(self.speedtime_right - self.speedtime_left)
+                self.setaccleration = True
+                """
+            except ZeroDivisionError:
+                if time2 == 0:
+                    raise ZeroDivisionError("time specify error at %d" % time1)
+                if time1 == 0:
+                    raise ValueError("time specify conflict at 0")
+                    """
+            if self.accleration:
+                self.speed = self.speedvalue[self.speedtime_range] + self.accleration*(self.timer - self.speedtime[self.speedtime_range])
+            else:
+                self.freeze = True
+                self.speed = self.speedvalue[self.speedtime_range]
 
     def __speed(self, *erina):
-        if self.speedtimecount:
-            if self.setspeed:
-                self.__speed_easy_ease(0, self.birth_speed, self.speedtime[0], self.speedvalue[0])
-            else:
-                self.__speed_freeze_ease(0, self.speedvalue[0])
-        if self.speedtimecount>1:
-            if self.timer < self.speedtime[-1]:
-                for timer in range(self.speedtimecount-1):
-                    self.__speed_easy_ease(self.speedtime[timer], self.speedvalue[timer], self.speedtime[timer+1], self.speedvalue[timer+1])
-            else:
-                self.__speed_freeze_ease(self.speedtime[-1], self.speedvalue[-1])
-        else: pass
+        if self.speedtime_count==1:
+            if self.timer <= self.speedtime[0]:
+                self.__speed_count1()
+        if self.speedtime_count>1:
+            if self.timer <= self.speedtime_last:
+                self.__speed_ease(self.speedtime_range)
+                if self.timer == self.speedtime_right:
+                    if self.timer == self.speedtime_last:
+                        self.speed = self.speedvalue_last
+                        self.speedtime_count = 0
+                        return
+                    self.speedtime_range += 1
+                    self.speedtime_left, self.speedtime_right = self.speedtime[self.speedtime_range-1], self.speedtime[self.speedtime_range]
+                    self.speedvalue_left, self.speedvalue_right = self.speedvalue[self.speedtime_range-1], self.speedvalue[self.speedtime_range]
+                    self.setaccleration = False
+                    self.freeze = False
+        else: 
+            return
             
     def __direction_freeze_ease(self, time, direction):
         pass
@@ -339,8 +381,15 @@ class DanmakuAction():
                 self.speedtime = tuple(map(lambda x:int(x.split('_')[1]), self.speedtime))
                 self.directiontime = tuple(map(lambda x:tuple(x.split['_'][1], x.split['_'][-1]), self.directiontime))
 
-                self.speedtimecount = len(self.speedtime)
-                self.directiontimecount = len(self.directiontime)
+                self.speedtime_count = len(self.speedtime)
+                self.directiontime_count = len(self.directiontime)
+
+                self.speedtime_last = self.speedtime[-1]
+                self.speedvalue_last = self.speedvalue[-1]
+                self.speedtime_range = 0
+                self.speedtime_left, self.speedtime_right = 0, self.speedtime[0]
+                self.speedvalue_left, self.speedvalue_right = self.birth_speed, self.speedvalue[0]
+
                 self.timerip = True
             except ValueError:
                 raise ValueError("""
