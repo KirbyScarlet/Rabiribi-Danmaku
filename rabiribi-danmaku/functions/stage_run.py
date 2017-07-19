@@ -275,6 +275,7 @@ class Battle():
                 #    print(each.center, each.speed, each.direction)
             else:
                 pass
+            #self.clock.tick(60)
             self.clock.tick_busy_loop(60)
 
 class BossBattle(Battle):

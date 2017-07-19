@@ -7,53 +7,56 @@ from character.erina import Erina
 from math import cos
 from math import sin
 from math import pi
-import timeit
+import time
 
 class direction():
-    def __init__(self, center):
+    def __init__(self):
         self.x = 0.0
         self.y = 0.0
+        self.r = 0
         self.vector = [0,0]
-        self.center = center
 
     def set(self, *value):
+        '''
+        direction.set(*value): return none
+        '''
         if len(value)==1:
             if isinstance(value[0], (float, int)):
                 self._rad(value[0])
-            elif isinstance(value[0], list):
+                return
+            elif isinstance(value[0], (tuple, list)):
                 self._vector(value[0])
-            elif isinstance(value[0], pygame.sprite.Sprite):
-                self._rad(snipe(self.center, value[0]))
+                return
             else:
                 raise TypeError
         elif len(value)==2:
-            if isinstance(value, (tuple, list)):
-                self._vector(*value)
-            else:
-                raise TypeError
+            self._vector(*value)
+            return
         else:
             raise TypeError
 
     def offset(self, value):
         if isinstance(value, (float, int)):
-            v = snipe((0,0), (self.x,self.y))
-            self._rad(value+v)
+            self.r += value
+            self._rad(self.r)
         else:
             raise TypeError
 
     def _rad(self, value):
+        self.r = value
         self.x = cos(value)
         self.y = sin(value)
 
     def _vector(self, *value):
         #if abs(math.sqrt(value[0]**2 + value[1]**2))-1 > 0.1:
         #    raise ValueError
-        self.x, self.y = value
+        self._rad(snipe((0,0), value))
 
     def __setattr__(self, name, value):
-        if name=='x' or name=='y':
-            pass
-        return super().__setattr__(name, value)  
+        if name in ('x','y','r','vector'):
+            return super().__setattr__(name, value)  
+        else:
+            raise AttributeError("attribute deny")
 
     def __getitem__(self, y):
         if y==0:
@@ -72,12 +75,16 @@ class direction():
 
 class DanmakuAction():
     def __init__(self, birth_place, *args, 
-                 birth_place_offset = ((0),0), 
+                 birth_place_offset = (), 
                  danmaku_layer = 0, 
                  birth_speed = False, 
                  direction = pi/2, 
                  direction_offset = 0, 
                  time_rip = False, 
+                 speedtime = (),
+                 speedvalue = (),
+                 directiontime = (),
+                 directionvalue = (),
                  **kwargs):
         """
         using:
@@ -111,14 +118,11 @@ class DanmakuAction():
                        |  |____________stynax use
                        |_______________speed or direction
                                         when use direction mode, value can use a tuple for direction and offset
-                    direction_20 = (sprite, pi/16)
-                    direction_10_30 = pi/2,pi/3
-                    ^   ^   ^   ^       ^
-                    |   |   |   |       |________set values, as path as direction time
-                    |   |   |   |________________set stop time
-                    |   |   |____________________set start time
-                    |   |________________________stynax usage
-                    |____________________________only direction
+
+                    direction_10 = pi/2         offset value
+                    direction_20 = (erina, pi/128)      static value
+                    direction_30 = [pi/64, pi/720]      dynamic offset value, rad/frame
+                    direction_40 = {'x':0, 'y':-1}     dynamic offset with different axis
         """
         self.SetPosition(birth_place, birth_place_offset)
         self.layer = danmaku_layer
@@ -126,39 +130,32 @@ class DanmakuAction():
         self.SetSpeed(birth_speed)
         self.timerip = False
         if time_rip:
-            self.SetTimerip(**kwargs)
+            self.SetTimerip(speedtime, speedvalue, directiontime, directionvalue)
         #print('action instance:', self.speed, self.center, self.direction)
 
     def SetPosition(self, birth_place, birth_place_offset):
-        if isinstance(birth_place, list):
-            center = tuple(birth_place)
-        elif isinstance(birth_place, Sprite):
+        if isinstance(birth_place, Sprite):
             center = tuple(birth_place.center)
+        elif isinstance(birth_place, list):
+            center = tuple(birth_place)
         else:
             raise TypeError
-        if isinstance(birth_place_offset, tuple):
-            if isinstance(birth_place_offset[0], Sprite):
-                try:
+        if birth_place_offset:
+            if isinstance(birth_place_offset, tuple):
+                if isinstance(birth_place_offset[0], Sprite):
                     self.SetPosition(birth_place, (snipe(center, birth_place_offset[0]), birth_place_offset[1]))
-                except IndexError:
-                    print("parament input error")
-                    raise IndexError
-            try:
-                offset = [birth_place_offset[1]*cos(birth_place_offset[0]), birth_place_offset[1]*sin(birth_place_offset[0])]
-            except IndexError:
-                print("parament input error")
-                raise IndexError
-        else:
-            raise TypeError
+                offset = (birth_place_offset[1]*cos(birth_place_offset[0]), birth_place_offset[1]*sin(birth_place_offset[0]))
+            else:
+                raise TypeError
         self.center = [center[0]+offset[0], center[1]+offset[1]]
         self.setposition = True
     
     def SetDirection(self, danmaku_direction, direction_offset):
-        if isinstance(danmaku_direction, (float, int)):
-            self.direction = direction(self.center)
+        if isinstance(danmaku_direction, float):
+            self.direction = direction()
             self.direction.set(danmaku_direction + direction_offset)
         elif isinstance(danmaku_direction, Sprite):
-            self.direction = direction(self.center)
+            self.direction = direction()
             self.direction.set(snipe(self.center, danmaku_direction) + direction_offset)
         else:
             raise TypeError
@@ -339,6 +336,7 @@ class DanmakuAction():
         if self.speedtime_count==1:
             if self.timer <= self.speedtime[0]:
                 self.__speed_count1()
+                return
         if self.speedtime_count>1:
             if self.timer <= self.speedtime_last:
                 self.__speed_ease(self.speedtime_range)
@@ -355,76 +353,177 @@ class DanmakuAction():
         else: 
             return
             
-    def __direction_freeze_ease(self, time, direction):
-        pass
+    def __direction_freeze_ease(self, *erina):
+        # if direction value is a tuple
+        # print('tuple')
+        if isinstance(self.directionvalue_range[0], Erina):
+            self.direction.set(snipe(self.center, *erina))
+        else:
+            self.direction.set(self.directionvalue_range[0])
+        self.direction.offset(self.directionvalue_range[1])
 
-    def __direction_easy_ease(self, time, direciton):
-        pass
+    def __direction_easy_ease(self):
+        # if direction value is a list
+        # offset number per frame
+        self.direction.offset(self.directionvalue_range[0]+self.directionvalue_range[1]*(self.timer-self.directiontime_left))
+
+    def __direction_offset_ease(self):
+        # if direction value is a single float
+        self.direction.offset(self.directionvalue_range)
+
+    # bugs unfit
+    def __direction_axis_offset(self):
+        # if direction value is a single dictionary with keywords 'x' and 'y'
+        print(self.direction)
+        if 'x' in self.directionvalue_range.keys():
+            if self.direction.y == 0: return
+            else:
+                self.direction.set(1/self.direciton.y*self.direction.x+self.directionvalue_range['x'], 1)
+        if 'y' in self.directionvalue_range.keys():
+            if self.direction.x == 0: return
+            else:
+                self.direction.set(1, 1/self.direction.x*self.direction.y+self.directionvalue_range['y'])
 
     def __direction(self, *erina):
-        if self.directiontimecount:
+        if self.timer < self.directiontime_first:
             pass
+        elif self.timer > self.directiontime_last:
+            if isinstance(self.directionvalue_range, (float, int, tuple)): return
+            elif isinstance(self.directionvalue_range, list): self.__direction_easy_ease()
+            #elif isinstance(self.directionvalue_range, dict): self.__direction_axis_offset()
+            else: raise TypeError
+            return
+        elif self.timer == self.directiontime_last:
+            self.directionvalue_range = self.directionvalue_last
+            if isinstance(self.directionvalue_range, (float,int)): self.__direction_offset_ease()
+            elif isinstance(self.directionvalue_range, tuple): self.__direction_freeze_ease(*erina)
+            elif isinstance(self.directionvalue_range, list): self.__direction_easy_ease()
+            #elif isinstance(self.directionvalue_range, dict): self.__direction_axis_offset()
+            else: raise TypeError
+            return
+        elif self.directiontime_left <= self.timer <= self.directiontime_right:
+            if self.timer == self.directiontime_left:
+                if isinstance(self.directionvalue_range, (float,int)): self.__direction_offset_ease()
+                elif isinstance(self.directionvalue_range, tuple): self.__direction_freeze_ease(*erina)
+                elif isinstance(self.directionvalue_range, list): self.__direction_easy_ease()
+                #elif isinstance(self.directionvalue_range, dict): self.__direction_axis_offset()
+                else: raise TypeError
+                return
+            elif self.timer == self.directiontime_right:
+                self.directiontime_range += 1
+                self.directionvalue_range = self.directionvalue[self.directiontime_range]
+                self.directiontime_left, self.directiontime_right = self.directiontime[self.directiontime_range], self.directiontime[self.directiontime_range+1]
+                if isinstance(self.directionvalue_range, (float,int)): self.__direction_offset_ease()
+                elif isinstance(self.directionvalue_range, tuple): self.__direction_freeze_ease(*erina)
+                elif isinstance(self.directionvalue_range, list): self.__direction_easy_ease()
+                #elif isinstance(self.directionvalue_range, dict): self.__direction_axis_offset()
+                else: raise TypeError
+                return
+            else:
+                if isinstance(self.directionvalue_range, (float, int, tuple)): pass
+                elif isinstance(self.directionvalue_range, list): self.__direction_easy_ease()
+                #elif isinstance(self.directionvalue_range, dict): self.__direction_axis_offset()
+                else: raise TypeError
 
-    def SetTimerip(self, **kwargs):
-        if not kwargs:
-            self.timerip = False
+    def SetTimerip(self, speedtime, speedvalue, directiontime, directionvalue):
+        self.speedtime = speedtime
+        self.speedvalue = speedvalue
+        self.directiontime = directiontime
+        self.directionvalue = directionvalue
+
+        self.speedtime_count = len(self.speedtime)
+        self.direction_count = len(self.directiontime)
+        
+        if self.speedtime_count:
+            self.speed_rip = True
+            self.speedtime_last = self.speedtime[-1]
+            self.speedvalue_last = self.speedvalue[-1]
+            self.speedtime_range = 0
+            self.speedtime_left, self.speedtime_right = 0, self.speedtime[0]
+            self.speedvalue_left, self.speedvalue_right = self.birth_speed, self.speedvalue[0]
         else:
-            try:
-                self.speedtime = [x for x in kwargs.keys() if 'speed' in x]
-                self.speedtime.sort(key=lambda x: int(x.split('_')[1]))
-                self.directiontime = [x for x in kwargs.keys() if 'direction' in x]
-                self.directiontime.sort(key=lambda x: int(x.split('_')[1]))
+            self.speed_rip = False
+        if self.direction_count:
+            self.direction_rip = True
+            self.directiontime_first = self.directiontime[0]
+            # self.directionvalue_first = self.directionvalue[0]
+            self.directiontime_last = self.directiontime[-1]
+            self.directionvalue_last = self.directionvalue[-1]
+            self.directiontime_range = 0
+            self.directionvalue_range = self.directionvalue[self.directiontime_range]
+            self.direciton_dictionary = False
+            if self.direction_count > 1:
+                self.directiontime_left = self.directiontime[0]
+                self.directiontime_right = self.directiontime[1]
+            else:
+                self.directiontime_left = 0
+                self.directiontime_right = self.directiontime[0]
+        else:
+            self.direction_rip = False
+        
+        self.timerip = True
 
-                self.speedvalue = tuple(map(lambda x:kwargs[x], self.speedtime))
-                self.directionvalue = tuple(map(lambda x:kwargs[x], self.directiontime))
-                self.speedtime = tuple(map(lambda x:int(x.split('_')[1]), self.speedtime))
-                self.directiontime = tuple(map(lambda x:tuple(x.split['_'][1], x.split['_'][-1]), self.directiontime))
+        # low efficiency on danmaku birthtime
+        """
+        try:
+            self.speedtime = [x for x in kwargs.keys() if 'speed' in x]
+            self.speedtime.sort(key=lambda x: int(x.split('_')[1]))
+            self.directiontime = [x for x in kwargs.keys() if 'direction' in x]
+            self.directiontime.sort(key=lambda x: int(x.split('_')[1]))
 
-                self.speedtime_count = len(self.speedtime)
-                self.directiontime_count = len(self.directiontime)
+            self.speedvalue = tuple(map(lambda x:kwargs[x], self.speedtime))
+            self.directionvalue = tuple(map(lambda x:kwargs[x], self.directiontime))
+            self.speedtime = tuple(map(lambda x:int(x.split('_')[1]), self.speedtime))
+            self.directiontime = tuple(map(lambda x:tuple(x.split['_'][1], x.split['_'][-1]), self.directiontime))
 
-                self.speedtime_last = self.speedtime[-1]
-                self.speedvalue_last = self.speedvalue[-1]
-                self.speedtime_range = 0
-                self.speedtime_left, self.speedtime_right = 0, self.speedtime[0]
-                self.speedvalue_left, self.speedvalue_right = self.birth_speed, self.speedvalue[0]
+            self.speedtime_count = len(self.speedtime)
+            self.directiontime_count = len(self.directiontime)
 
-                self.timerip = True
-            except ValueError:
-                raise ValueError("""
-                use keywords:
-                    speed_20 = 4.0
-                        ^ ^ ^    ^
-                        |  |  |    |_____set value
-                        |  |  |_________set sprite timer, 60 frames per second default
-                        |  |____________stynax use
-                        |_______________speed or direction
-                """)
-            
-            # old framework instance
+            self.speedtime_last = self.speedtime[-1]
+            self.speedvalue_last = self.speedvalue[-1]
+            self.speedtime_range = 0
+            self.speedtime_left, self.speedtime_right = 0, self.speedtime[0]
+            self.speedvalue_left, self.speedvalue_right = self.birth_speed, self.speedvalue[0]
+
+            self.timerip = True
+        except ValueError:
+            raise ValueError('''
+            use keywords:
+                speed_20 = 4.0
+                    ^ ^ ^    ^
+                    |  |  |    |_____set value
+                    |  |  |_________set sprite timer, 60 frames per second default
+                    |  |____________stynax use
+                    |_______________speed or direction
+            ''')
+        """
+        
+        # old framework instance
+        '''
+        if speedlist:
+            recent_time = speedlist[0]
+            self.timerip = self.__speed(time2=int(recent_time.split('_')[1]), speed2=kwargs[recent_time], iftype='if')
+            speedlist_length = len(speedlist)
+            for sl in range(speedlist_length):
+                if sl+1 < speedlist_length:
+                    recent_time2 = speedlist[sl+1]
+                    recent_time1 = speedlist[sl]
+                    self.timerip += self.__speed(time1=int(recent_time1.split('_')[1]), speed1=kwargs[recent_time1], time2=int(recent_time2.split('_')[1]), speed2=kwargs[recent_time2])
+                elif sl+1 == speedlist_length:
+                    recent_time1 = speedlist[sl]
+                    self.timerip += self.__speed(time1=int(recent_time1.split('_')[1]), speed1=kwargs[recent_time1])
+        if directionlist:
+            pass
             '''
-            if speedlist:
-                recent_time = speedlist[0]
-                self.timerip = self.__speed(time2=int(recent_time.split('_')[1]), speed2=kwargs[recent_time], iftype='if')
-                speedlist_length = len(speedlist)
-                for sl in range(speedlist_length):
-                    if sl+1 < speedlist_length:
-                        recent_time2 = speedlist[sl+1]
-                        recent_time1 = speedlist[sl]
-                        self.timerip += self.__speed(time1=int(recent_time1.split('_')[1]), speed1=kwargs[recent_time1], time2=int(recent_time2.split('_')[1]), speed2=kwargs[recent_time2])
-                    elif sl+1 == speedlist_length:
-                        recent_time1 = speedlist[sl]
-                        self.timerip += self.__speed(time1=int(recent_time1.split('_')[1]), speed1=kwargs[recent_time1])
-            if directionlist:
-                pass
-                '''
 
     def time_rip(self, *erina):
         if not self.timerip:
             pass
         else:
-            self.__speed(*erina)
-            #self.__direction(*erina)
+            if self.speed_rip:
+                self.__speed(*erina)
+            if self.direction_rip:
+                self.__direction(*erina)
 
-        # problems unfit
+        # low efficiency
         #exec(self.timerip)

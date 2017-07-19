@@ -88,7 +88,7 @@ class Boss(pygame.sprite.Sprite):
         self.image = self.pixel[self.pixel_frame]   # image will use in a list
         self.rect = self.image.get_rect()
         self.center = [-35.0, 35.0]
-        self.direction = direction(self.center)
+        self.direction = direction()
         self.temp_position = [255.0, 100.0]
         self.rect.top = self.center[0] - 35
         self.rect.left = self.center[1] - 35

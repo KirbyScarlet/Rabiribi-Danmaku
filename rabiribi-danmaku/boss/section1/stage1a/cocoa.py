@@ -45,9 +45,12 @@ class Spell_1(SpellCard):
                         birth_time = 10, lazer = -1,
                         birth_speed = 5, 
                         direction = erina,
-                        direction_offset = offset*pi/320 + i*pi/64,
+                        direction_offset = offset*pi/320 + i*pi/32,
                         time_rip = True,
-                        speed_40 = 2
+                        speedtime = (60,120),
+                        speedvalue = (0,1.5),
+                        directiontime = (60,120),
+                        directionvalue = ([pi/240*(-1)**((temp_time-1)//10),0],0)
                     )
                     #birth_group.add(temp)
                     '''
@@ -78,7 +81,8 @@ class Spell_2(SpellCard):
                                   direction_offset = 2*pi*i/32,
                                   danmaku_layer = 1,
                                   time_rip = True,
-                                  speed_20 = 1.5
+                                  speedtime = (20,),
+                                  speedvalue = (2,)
                                   )
             '''
                 temp_danmaku = mid_orange_circle_cocoa_spell_1(self.boss.center)
@@ -95,7 +99,7 @@ class Spell_2(SpellCard):
                     for j in -1,1:
                         small_blue_circle(birth_group, self.boss,
                                           birth_speed = 3,
-                                          direction = erina,
+                                          direction = self.temp_snipe,
                                           direction_offset = 2*pi*i/10 + 2*pi*temp_time*j/314
                                           )
                         '''
