@@ -124,7 +124,7 @@ class Cocoa(Boss):
         super().__init__('Cocoa')
         self.SetValue(1000, 18, 400)
         self.SetSpell(1800)
-        self.SetSource('data/obj/boss/Cocoa.rbrb')
-        self.SetDanmakuUse('mid_orange_circle', 'small_blue_circle')
+        self.SetSource('Cocoa.rbrb')
+        # self.SetDanmakuUse('mid_orange_circle', 'small_blue_circle')
         self.spell_group.add(Spell_1(self,1,1800), Spell_2(self,2,3000,self.illustration))
     

@@ -1,28 +1,151 @@
 import pygame
 import pickle
-from _operator import truth
+import character
+import functions
+import objects
+from functions.values import screenborder
 
-class Buff():
+class Buff(pygame.sprite.Sprite):
     """
     use this to define buffs and debuffs
     """
-    def __init__(self, owner='boss'):
-        # if timer > 10 or timer == -1, it's buff time
-        self.timer = 0
-        # if active is true, changing value now
-        self.active = False
-        # if owner is erina, something different
+    def __init__(self, buff_group, name, owner=None, time=-1):
+        super().__init__(buff_group)
+        self.name = name
         self.owner = owner
-    
-    def buff_check(self, owner):
+        self.stack = {} # temp value in this
+        if isinstance(self.owner, character.erina.Erina):
+            self.type = 1
+        elif isinstance(self,owner, objects.sprites.Boss):
+            self.type = -1
+        elif isinstance(self.owner, objects.sprites.Elf):
+            self.type = 0
+        
+
+        # if timer > 10 or timer == -1, it's buff time
+        self.time = time
+        self.timer = 0
+        self.birth_time = 180
+        self.death_time = 30
+
+        self.image = pygame.surface.Surface((17,11)).convert()
+        self.rect = self.image.get_rect()
+        self.image.blit(self.image_temp, (0,0))
+        self.rank = len(buff_group)
+        self.temp_position = [0,0]
+
+        if isinstance(owner, character.erina.Erina):
+            self.temp_position[0] = screenborder.SCREEN_RIGHT
+            self.temp_position[1] = screenborder.SCREEN_BOTTOM - 30 - 20*self.rank
+            self.rect.left, self.rect.bottom = self.temp_position
+        elif isinstance(owner, objects.sprites.Boss):
+            self.temp_position[0] = screenborder.SCREEN_LEFT
+            self.temp_position[1] = screenborder.SCREEN_TOP + 30 + 20*self.rank
+        elif isinstance(owner, objects.sprites.Elf):
+            self.rect.center = owner.center
+
+    @classmethod
+    def SetImage(cls, buff_name):
+        buff_name = 'data/tmp/'+ buff_name +'.tmp'
+        try:
+            cls.image_temp = pygame.image.load(buff_name).convert_alpha()
+        except FileNotFoundError:
+            filename = 'data/obj/items/buffs.rbrb'
+            with open(filename,'rb') as f:
+                images = pickle.load(f)
+            for key,value in images.items():
+                filename = 'data/tmp/imgs/'+key+'.tmp'
+                with open(filename,'wb') as f:
+                    f.write(value)
+            cls.(buff_name)
+
+    def move_elf(self):
+        self.rect.center = self.owner.center
+
+    def move_in(self):
+        if self.type == 1:
+            destination = [screenborder.SCEREEN_RIGHT-50, screenborder.SCREEN_BOTTOM-30-20*self.rank]
+            speed = (self.rect.right - destination[0])/2 # problems unfit
+            self.direction = functions.snipe((self.rect.right, self.rect.bottom), destination, type='vector')
+            self.temp_position[0] += self.direction[0]*speed
+            self.temp_position[1] += self.direction[1]*speed # problems unfit
+            self.rect.right, self.rect.bottom = self.temp_position
+        elif self.type == -1:
+            destination = [screenborder.SCREEN_LEFT+50, screenborder.SCREEN_TOP+30+20*self.rank]
+            speed = (self.rect.left - destination[0])/2
+            self.direction = functions.snipe((self.rect.left, self.rect.top), destination, type='vector')
+            self.temp_position[0] += self.direction[0]*speed
+            self.temp_position[1] += self.direction[1]*speed
+            self.rect.left, self.rect.top = self.temp_position
+        else:
+            self.rect.center = self.owner.center
+
+    def move_out(self):
+        if self.type == 1:
+            speed = (screenborder.SCREEN_RIGHT-self.rect.left)/2 # problems unfit
+            self.temp_position[0] += speed
+            self.rect.right, self.rect.bottom = self.temp_position
+        elif self.type == -1:
+            speed = (screenborder.SCREEN_LEFT-self.rect.right)/2 # problems unfit
+            self.temp_position[0] += speed
+            self.rect.left, self.rect.bottom = self.temp_position
+        else:
+            pass
+
+    def move_up(self):
         """
-        Buff.buff_check(origin, *enemy): Return None
+        only happened on boss side
+        """
+        destination = screenborder.SCREEN_TOP + 30 + 20*self.rank
+        speed = (self.rect.top - destination)/2
+        self.temp_position[1] -= speed
+        self.rect.top, self.rect.left = self.temp_position
+
+    def move_down(self):
+        """
+        only happened on erina side
+        """
+        destination = screenborder.SCREEN_BOTTOM - 30 - 20*self.rank
+        speed = (self.rect.bottom - destination)/2
+        self.temp_position[1] += speed
+        self.rect.right, self.rect.bottom = self.temp_position
+
+    def move(self):
+        if isinstance(self.owner, character.erina.Erina):
+            self.move_erina()
+        elif isinstance(self,owner, objects.sprites.Boss):
+            self.move_boss()
+        elif isinstance(self.owner, objects.sprites.Elf):
+            self.move_elf()
+
+
+    def opacity_up(self):
+        pass
+
+    def opacity_off(self):
+        pass
+
+    def opacity_check(self, erina):
+        if erina.rect.right >= Screen
+
+    def remove(self):
+        for buff in self.groups()[0]:
+            if buff.rank>self.rank:
+                buff.rank -= 1
+        self.kill()
+    
+    def check(self, *sprites):
+        """
+        Buff.buff_check(*sprites): Return None
 
         origin is buff who owned
         *enemy store opponity(s)
         """    
         pass
 
+class BuffGroup(pygame.sprite.Group): pass
+
+'''
 class BuffImage(pygame.sprite.Sprite):
     """
     specify image of a buff(s)
@@ -48,6 +171,7 @@ class BuffImage(pygame.sprite.Sprite):
         self.temp_left = 0
         self.temp_right = 0
         self.temp_top = 0
+
 
 class BuffGroup():
     """
@@ -190,6 +314,7 @@ class BuffGroup():
     def __repr__(self):
         return "<%s(%d buffs)>" % (self.__class__.__name__, len(self))
 
+'''
 #
 # all buffs here:
 #

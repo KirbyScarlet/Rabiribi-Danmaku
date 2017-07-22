@@ -9,6 +9,9 @@ class screenborder:
     SCREEN_TOP = 15
     SCREEN_BOTTOM = 465
 
+    SCREEN_WIDTH = 380
+    SCREEN_HEIGHT = 450
+
     SCREEN_CENTER_X = 225
     SCREEN_CENTER_Y = 240
 

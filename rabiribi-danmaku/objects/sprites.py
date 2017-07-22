@@ -63,6 +63,12 @@ class Boss(pygame.sprite.Sprite):
         """
         self.timer = 0
     
+    def SetLevel(self, erina, difficulty):
+        """
+        specify attack damage, crash danmage, local difficulty
+        """
+        self.level = 0
+
     def SetSource(self, file_name):
         """
         specify the pictures that the boss sprite used
@@ -93,6 +99,7 @@ class Boss(pygame.sprite.Sprite):
         self.rect.top = self.center[0] - 35
         self.rect.left = self.center[1] - 35
     
+    # new framework useless
     def SetDanmakuUse(self, *danmaku_name):
         """
         specify danmaku that boss used
@@ -211,7 +218,7 @@ class Boss(pygame.sprite.Sprite):
         check the ribbon magic danmaku damage.
         when hp<0, spell count minus 1 and 3 seconds in invincible
         """
-        
+        '''
         if 'defense_large_boost' in self.buff:
             self.defense = 0.1
         elif 'defense_boost' in self.buff:
@@ -220,6 +227,7 @@ class Boss(pygame.sprite.Sprite):
             self.defense = 0.75
         else:
             self.defense = 1
+            '''
         for each in shouting_group:
             self.hp -= each.damage * self.defense
 
@@ -258,7 +266,7 @@ class Boss(pygame.sprite.Sprite):
         self.kill()
 
     def load_source(self, file_name):
-        f = open(file_name, 'rb')
+        f = open('data/obj/boss/' + file_name, 'rb')
         sources = pickle.load(f)
         f.close()
         self.images = {'illustration':[], 'pixel':[], 'special':[]}
@@ -613,7 +621,7 @@ class Elf(pygame.sprite.Sprite):
         f.close()
         self.images = {"pixel":[]}
         for i in range(len(sources['pixel'])):
-            img_name = 'data/tmp/imgs' + file_name + '_pixle' + str(i) + '.tmp'
+            img_name = 'data/tmp/imgs/' + file_name + '_pixle' + str(i) + '.tmp'
             try:
                 img_file = open(img_name, 'wb')
             except:

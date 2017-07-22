@@ -258,7 +258,7 @@ class Battle():
         self.PrintScreen(screen)
         if debug: self.Debug(screen)
         screen.blit(functions.debug_font.render(str(round(self.clock.get_fps(), 2)), True, (255,0,0)), (600,460))
-        pygame.display.update()
+        pygame.display.flip()
 
     def __call__(self, erina, ribbon, difficulty, screen, debug = False):
         self.erina = erina 
