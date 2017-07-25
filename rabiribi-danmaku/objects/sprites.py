@@ -34,6 +34,59 @@ class position(list):
         else:
             raise IndexError
 
+class Damage(object):
+    """
+    store damage per frame
+
+    see ../functions/values.py
+    """
+    def __init__(self, sprite):
+        self.sprite = sprite
+        #=====================
+        self.danmaku = 0
+        self.crash = 0
+        self.amulet = 0
+        self.cocoabomb = 0
+        self.boost = 0
+        self.poison = 0
+        self.burn = 0
+        self.curse = 0
+        self.reflect = 0
+        self.endurance = 0
+        self.instant = 0
+        #=====================
+        self.all_damage = 0
+
+    def physical(self, value):
+        pass
+
+    def accident(self, value):
+        pass
+
+    def weapen(self, value, type):
+        pass
+
+    def buff(self, value, type):
+        pass
+
+    def __setattr__(self, name, value):
+        super().__setattr__('all_damage', value)
+        if name == 'danmaku':
+            self.physical(value)
+        elif name == 'crash':
+            self.accident(value)
+        elif name in ('amulet', 'cocoabomb', 'boost'):
+            self.weapen(value, name)
+        elif name in ('poison', 'burn', 'curse', 'reflect', 'endurance', 'instane'):
+            self.buff(value, name)
+        return super().__setattr__(name, value)
+
+    def __call__(self, screen):
+        """
+        calculate all damage and print count on screen
+        """
+        pass
+
 class Boss(pygame.sprite.Sprite):
     """
     use almost all the boss.
@@ -67,6 +120,7 @@ class Boss(pygame.sprite.Sprite):
         """
         specify attack damage, crash danmage, local difficulty
         """
+        # under development
         self.level = 0
 
     def SetSource(self, file_name):
@@ -143,6 +197,7 @@ class Boss(pygame.sprite.Sprite):
         self.hp = int(self.max_hp)
         self.crash_damage = crash_damage
         self.bonus_energy = bonus_energy
+        self.damage_per_frame = 0
         """
         special value
         """
@@ -211,9 +266,10 @@ class Boss(pygame.sprite.Sprite):
     def collide_check(self, shouting_group):
         if self.collide:
             temp = pygame.sprite.spritecollide(self, shouting_group, True, pygame.sprite.collide_circle)
-            self.damage(temp)
+            
+            self.damage_check(temp)
 
-    def damage(self, shouting_group):
+    def damage_check(self, shouting_group):
         """
         check the ribbon magic danmaku damage.
         when hp<0, spell count minus 1 and 3 seconds in invincible

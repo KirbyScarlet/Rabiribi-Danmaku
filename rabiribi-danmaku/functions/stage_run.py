@@ -181,6 +181,9 @@ class Battle():
         for b in self.boss_layer:
             b.collide_check(self.shouting_layer)
 
+    def DamageCheck(self):
+        pass
+
     def Debug(self, screen):
         debug_words_pos_left = 430
         debug_words_pos_top = 300
@@ -252,6 +255,7 @@ class Battle():
         self.ribbon.attack(self.shouting_layer, self.key_pressed)
         self.SpriteMove()
         self.CollideCheck()
+        self.DamageCheck()
         self.SwitchLayer()
         self.SpriteDel()
         self.UIAnimation()
