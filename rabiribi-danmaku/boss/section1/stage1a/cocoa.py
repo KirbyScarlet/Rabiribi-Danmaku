@@ -10,6 +10,8 @@ from objects.danmaku import mid_orange_circle
 from objects.danmaku import small_blue_circle
 from math import pi
 
+from functions.buff_debuff import SpeedDown
+
 class mid_orange_circle_cocoa_spell_1(mid_orange_circle):
     def __init__(self, emitter):
         super().__init__(emitter)
@@ -46,6 +48,7 @@ class Spell_1(SpellCard):
                         birth_speed = 5, 
                         direction = erina,
                         direction_offset = offset*pi/320 + i*pi/32,
+                        buff = SpeedDown(time=180)
                         time_rip = True,
                         speedtime = (60,120),
                         speedvalue = (0,1.5),

@@ -1,6 +1,7 @@
 import pygame
 import platform
 import functions
+from functions.sprites import damage
 
 from pygame.locals import *
 
@@ -22,17 +23,18 @@ class Erina(pygame.sprite.Sprite):
         if platform.system()=='Linux':
             oimage = pygame.image.load("images/character/Erina/Erina.png").convert_alpha()
 
-        self.oimage = pygame.transform.scale(oimage, (40,50))
+        self.oimage = pygame.transform.scale(oimage, (40,50)) # load source under development
         self.image = self.oimage
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = 225, 400
         self.center = [self.rect.left+20, self.rect.top+25]
-        
+        # balance unfit
         self.fast = 4
         self.slow = 2
         
         self.hp = 100
         self.max_hp = 100
+        self.damage = damage()
         self.spell = 2.0
         self.max_spell = 4.0
         self.buff = functions.buff_debuff.BuffGroup()
@@ -99,26 +101,6 @@ class Erina(pygame.sprite.Sprite):
         if self.LeftRight_control == 6:
             self.moveRight()
 
-    def reset(self, time):
-        if time > 30:
-            self.image = self.oimage
-            self.image = pygame.transform.scale(\
-                        self.image, (int(self.rect.width * (time-30)*3 / 100), int(self.rect.height)))
-            self.rect.left += 1
-        if time == 30:
-            self.rect.left, self.rect.top = 225, 400
-        self.center = [self.rect.left+20, self.rect.top+25]
-        if time < 30 and time > 1:
-            self.image = self.oimage
-            self.image = pygame.transform.scale(\
-                        self.image, (int(self.rect.width * (100 - time*3.33) / 100),int(self.rect.height)))
-            self.rect.left -= 2.0/3
-        if time == 1:
-            self.image = self.oimage
-               
-    def image_change(self, frame_count):
-        pass
-
     def move(self, key_pressed):
         self.key_pressed = key_pressed
         self.moveSpeed()
@@ -159,6 +141,37 @@ class Erina(pygame.sprite.Sprite):
         self.moveUpDown()
         self.moveLeftRight()
 
+    # useless
+    '''
+    def reset(self, time):
+        if time > 30:
+            self.image = self.oimage
+            self.image = pygame.transform.scale(\
+                        self.image, (int(self.rect.width * (time-30)*3 / 100), int(self.rect.height)))
+            self.rect.left += 1
+        if time == 30:
+            self.rect.left, self.rect.top = 225, 400
+        self.center = [self.rect.left+20, self.rect.top+25]
+        if time < 30 and time > 1:
+            self.image = self.oimage
+            self.image = pygame.transform.scale(\
+                        self.image, (int(self.rect.width * (100 - time*3.33) / 100),int(self.rect.height)))
+            self.rect.left -= 2.0/3
+        if time == 1:
+            self.image = self.oimage
+    '''
+    def buff_check(self, *enemy):
+        for b in self.buff:
+            b.buff_check(*enemy)
+               
+    def image_change(self, frame_count):
+        """
+        erina animation
+        """
+        # under development
+        # momochi ?
+        pass
+
     def collide_check(self, danmaku_group, boss_group):
         if not self.invincible:
             pass
@@ -173,6 +186,9 @@ class Erina(pygame.sprite.Sprite):
         if temp_danmaku or temp_boss:
             self.invincible = 180
             for each in temp_danmaku:
-                self.hp -= each.damage
+                for b in each.buff_catch:
+                    b(self.buff, owner=self, time=)
+                self.damage.damaku += each.damage
             for each in temp_boss:
-                self.hp -= each.crash_damage
+                self.buff.add(each.buff_catch)
+                self.damage.crash += each.crash_damage

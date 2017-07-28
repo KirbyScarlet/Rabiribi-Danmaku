@@ -47,28 +47,34 @@ class defaultkey:
 
 # Local difficulty
 class difficulty:
-    easy = 4
-    normal = 8
-    hard = 16
-    hell = 32
-    bunny = 64
-    extra = 48
+    EASY = 4
+    NORMAL = 8
+    HARD = 16
+    HELL = 32
+    BUNNY = 64
+    EXTRA = 48
 
 # damage type
 class damagetype:
     # physical damage
-    danmaku = 1
+    DANMAKU = 1
     # accident damage
-    crash = 2
+    CASH = 2
     # weapen damage
-    amulet = 3
-    cocoabomb = 4
-    boost = 5
+    AMULET = 3
+    COCOABOMB = 4
+    BOOST = 5
     # buff damage
-    poison = 6
-    freeze = 7
-    burn = 8
-    curse = 9
-    reflect = 99
-    endurance = -1
-    instant = 4444
+    POISON = 6
+    FREEZE = 7
+    BURN = 8
+    CURSE = 9
+    REFLECT = 99
+    # special buff damage
+    ENDURANCE = -1
+    INSTANT = 4444
+
+class pausetypes: 
+    NEUTRAL = 0
+    PAUSING = 1
+    UNPAUSING = -1

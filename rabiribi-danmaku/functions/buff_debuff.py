@@ -7,6 +7,162 @@ import abc
 import random
 from functions.values import screenborder
 from operator import truth
+from objects.counter import BuffTimer
+
+class AllBuffs:
+    """
+    define all buffs
+    """
+    speed_down = 0
+    # Speed lowered by 20%
+    numb = 0
+    # All movement ceases intermittently
+    ponised = 0
+    # Lose HP over time
+    attack_down = 0
+    # Attack lowered by 25%
+    defense_down = 0
+    # Defense lowered by 25%
+    cursed = 0
+    # Take 50% of damage given.
+    # Enemies with "Cursed" take 2% damage of their Max. HP
+    # with a maximum damage of 666 points
+    stunned = 0
+    # All movement ceases.
+    ban_skill = 0
+    # Can't perform physical, non-magic attacks.
+    mona_down = 0
+    # Lose MP over time
+    freeze = 0
+    # When attacking, lose 3% HP every second.
+    burn = 0
+    # Lose 15% HP every 2 seconds.
+    # Enemies with "Burn" lose 2-3 HP every 0.05 Seconds
+    attack_up = 0
+    # Attack raised by 25%
+    defense_up = 0
+    # Defense raised by 25%
+    hp_recover = 0
+    # Recover 1-3 HP every 0.25 seconds
+    sp_recover = 0
+    # Improve SP recovery rate.
+    shrink = 0
+    # Speed increased by 30%, attack lowered by 15%.
+    # and damage taken increased by 30%
+    # something else happens too
+    giant = 0
+    # Speed decreased by 50%, attack raised by 50%
+    # and damage taken reduced by 50%
+    # Something esle happens too.
+    arrest = 0
+    # A chance to slow down opponents by 20% when attacking
+    speed_up = 0
+    # Speed increased by 25%.
+    badge_copy = 0
+    # Opponent's badge perks are replicated.
+    null_melee = 0
+    # No damage taken from physical attacks.
+    # Damage taken from carrot bomb increased by 62.5%
+    defense_boost = 0
+    # Damage taken reduced by 10-50%
+    # 5%-25% in Boss Rush mode
+    defense_drop = 0
+    # Damage taken increased by 100%-300%
+    stamina_down = 0
+    # SP consumption increased by 325%
+    null_slow = 0
+    # Cannot be slowed down.
+    super_armour = 0
+    # No stun effect after being damaged
+    quad_damage = 0
+    # Attack raised by 400%
+    double_damage = 0
+    # Attack raised by 200%
+    speedy = 0
+    # Movement speed increased by 20%
+    maxhp_up = 0
+    # Max. HP increased proportional to characters unlocked.
+    # Enemies with this status have a 10% Max. HP increase.
+    maxmp_up = 0
+    # Max. MP increased proportional to characters unlocked.
+    # Enemieswith this status have greater attack frequency.
+    amulet_cut = 0
+    # Amulet consumption lowered by 25%.
+    hp_regen = 0
+    # Recover 2 HP every 1.5 seconds.
+    # Enemies with this status recover 2% of Max. HP.
+    mp_regen = 0
+    # Recover 2MP every second.
+    give_atk_down = 0
+    # A chance to give opponents "Attack Down" when attacking.
+    give_def_down = 0
+    # A chance to give opponents "Defense Down" when attacking.
+    unstable = 0
+    # Speed changes randomly
+    boost_fail = 0
+    # Lose BP over time.
+    hex_cancel = 0
+    # No damage taken from every 6th attack.
+    lucky_seven = 0
+    # Every 7th successful attack inflicts 77% more damage.
+    quick_reflex = 0
+    # Lowers stun time by 75%.
+    defense_large_boost = 0
+    # Damage taken reduced by 50-100%.
+    # 25%-50% in Boss Rash
+    endurance = 0
+    # Immune to all attacks, but lose HP over time.
+    fatigue = 0
+    # Speed and jump height lowered by 20%.
+    reflect_99 = 0
+    # 100% of damage taken reflected back to opponent.
+    # Only applicable for attacks above 99 points.
+    # Opponent's health will not fall below 1 HP
+    survival_instinct = 0
+    # HP cannot fall below 1.
+    amulet_drain = 0
+    # Lose amulet charge over time.
+    mortality = 0
+    # Lose all invulnerability when performing any moves.
+    no_badges = 0
+    # Lose effects from equipped badges.
+    instant_death = 0
+    # All attacks cause 4444 points of damage.
+    health_absorb = 0
+    # Absorb HP equal to 2 times the damage given.
+    power_absorb = 0
+    # Inflict a 100% SP, 33% MP, and 25% BP reduction in the opponent.
+    revenge_300 = 0
+    # "Instant death" status dealt to opponent.
+    # Triggered when damage taken from one attack >300 points.
+    bunny_lover = 0
+    # Damage taken reduced by 50% when the opponent is a bunny
+    healing = 0
+    # Recover HP over time.
+    t_minus_two = 0
+    # Gain "T Minus One" status after a successful attack.
+    t_minus_one = 0
+    # Gain "Attack Boost" status after a successful consecutive attack.
+    attack_boost = 0
+    # Bullet hell density increased.
+    zero_offense = 0
+    # Attack reduced by 100%
+    halo_buff = 0
+    # Damage taken reduced by 10% after three "Game Over"
+    # Status removed after "Halo Boost" expires.
+    # Does not apply above Normal difficulty
+    halo_boost_lv1 = 0
+    # Damage taken -15%. Amulet recharges 33% faster.
+    # Recover 1 HP for every three successful attacks.
+    # Gained after 3-4 "Game Over", No buff above "Normal"
+    halo_boost_lv2 = 0
+    # Damage taken -27.5%. Amulet recharges 67% faster.
+    # Recover 1 HP for every two successful attacks.
+    # Gained after 5-6 "Game Over", No buff above "Noraml"
+    halo_boost_lv3 = 0
+    # Damage taken -40%. Amulet recharges 100% faster.
+    # Recover 1 HP for every successful attack.
+    # Gained after 7+ "Game Over", No buff above "Normal"
 
 class Buff(pygame.sprite.Sprite):
     __metaclass__ = abc.ABCMeta
@@ -17,13 +173,18 @@ class Buff(pygame.sprite.Sprite):
     _boss_only = False
     _special_only = None
 
-    def __init__(self, buff_group, owner, time):
+    '''
+    def __new__(cls, *buff_group, owner=None, time=-1):
+        pass
+    '''
+
+    def __init__(self, *buff_group, owner=None, time=-1):
         '''
-        __init__(buff_group, name, owner=None, time=-1): return None
+        __init__(*buff_group, owner=None, time=-1): return None
 
             buff group 
         '''
-        super().__init__(buff_group)
+        super().__init__(*buff_group)
         self.owner = owner
         self.stack = {} # temp value in this
         if isinstance(self.owner, character.erina.Erina):
@@ -332,6 +493,10 @@ class BuffGroup():
         for buff in self.buffs():
             buff.print_screen(screen)
 
+    def move(self):
+        for each in self.buffs():
+            each.move()
+
     def __nonzero__(self):
         return truth(self.buffs())
 
@@ -410,3 +575,4 @@ class Ponised(Buff):
     """
     # balance unfit
     def check(self):
+        pass

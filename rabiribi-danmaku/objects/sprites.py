@@ -11,8 +11,10 @@ from functions import snipe
 from math import pi
 import time
 
+# under development
 class position(list):
     def __init__(self):
+        super().__init__()
         self.x = 0
         self.y = 0
 
@@ -40,7 +42,7 @@ class Damage(object):
 
     see ../functions/values.py
     """
-    def __init__(self, sprite):
+    def __init__(self, sprite, layer):
         self.sprite = sprite
         #=====================
         self.danmaku = 0
@@ -49,24 +51,46 @@ class Damage(object):
         self.cocoabomb = 0
         self.boost = 0
         self.poison = 0
+        self.freeze = 0
         self.burn = 0
         self.curse = 0
         self.reflect = 0
         self.endurance = 0
         self.instant = 0
         #=====================
+        self.buff_damage = 0
         self.all_damage = 0
 
-    def physical(self, value):
+    # damage count animation.
+    def physical(self, layer):
+        """
+        damaku damage animation
+        """
         pass
 
-    def accident(self, value):
+    def accident(self, layer):
+        """
+        crash damage animation
+        """
         pass
 
-    def weapen(self, value, type):
+    def weapen(self, layer):
+        """
+        amulet, cocoa bomb and boost damage animation
+        """
         pass
 
-    def buff(self, value, type):
+    def buff(self, layer):
+        """
+        poison, burn, freeze, curse and reflect damage
+        # not causing death
+        """
+        pass
+
+    def special_buff(self, layer):
+        """
+        endurance and instant
+        """
         pass
 
     def __setattr__(self, name, value):
@@ -79,13 +103,15 @@ class Damage(object):
             self.weapen(value, name)
         elif name in ('poison', 'burn', 'curse', 'reflect', 'endurance', 'instane'):
             self.buff(value, name)
+        elif name == 'all_damage' and value == 0:
+            self.__init__(self.sprite)
         return super().__setattr__(name, value)
 
-    def __call__(self, screen):
+    def __call__(self, layer, sprite):
         """
         calculate all damage and print count on screen
         """
-        pass
+        self.all_damage
 
 class Boss(pygame.sprite.Sprite):
     """
@@ -388,6 +414,7 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
                 birth_speed = 1.0, 
                 direction = pi/2, 
                 direction_offset = 0, 
+                buff = None,
                 time_rip = False, 
                 **kwargs):
         pygame.sprite.Sprite.__init__(self, birth_group)
@@ -399,7 +426,8 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
                                 direction_offset=direction_offset, 
                                 time_rip=time_rip, 
                                 **kwargs)
-        self.buff_catch = functions.buff_debuff.BuffGroup()
+        # self.buff_catch = functions.buff_debuff.BuffGroup()
+        self.buff_catch = buff
         """
         specify when miss opponite will have some buff or debuff
         """

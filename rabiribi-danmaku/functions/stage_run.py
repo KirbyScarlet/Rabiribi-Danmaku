@@ -4,6 +4,7 @@ import sys
 import ui
 import abc
 import multiprocessing
+from functions.values import pausetypes
 
 #mpool = multiprocessing.Pool()
 
@@ -54,19 +55,19 @@ class Battle():
                               small rank on top.
         """
         self.danmaku_layer_count = number
-        self.danmaku_layer = pygame.sprite.Group()
-        self.birth_layer = pygame.sprite.Group()
-        self.illustration_layer = pygame.sprite.Group()
-        self.boss_layer = pygame.sprite.Group()
-        self.elf_layer = pygame.sprite.Group()
+        self.danmaku_layer = pygame.sprite.Group()  # all danmau
+        self.birth_layer = pygame.sprite.Group()  # danmaku with no damage
+        self.illustration_layer = pygame.sprite.Group()  # spell illustration
+        self.boss_layer = pygame.sprite.Group()  # all boss
+        self.elf_layer = pygame.sprite.Group()  #  all elf
         for n in range(self.boss):
             self.boss_layer.add(self.__getattribute__('boss_'+str(n)))
-        self.energy_layer = pygame.sprite.Group()
-        self.shouting_layer = pygame.sprite.Group()
-        self.boost_layer = pygame.sprite.Group()
-        self.item_layer = pygame.sprite.Group()
-        # small number will on top. 
-        for n in range(self.danmaku_layer_count):
+        self.energy_layer = pygame.sprite.Group()  # bonus energy
+        self.shouting_layer = pygame.sprite.Group()  # ribbon shouting
+        self.boost_layer = pygame.sprite.Group()  # ribbon boost
+        self.item_layer = pygame.sprite.Group()  # items
+        self.damage_layer = pygame.sprite.Group()
+        for n in range(self.danmaku_layer_count):  # small rank will on top. 
             self.__setattr__('danmaku_layer_'+str(n), pygame.sprite.Group())
         self.BackgroundMusic()
 
@@ -96,6 +97,7 @@ class Battle():
             self.play_bgm = True
             self.bgm.play(-1)
 
+    # maybe useless ?
     def PauseBgm(self):
         if self.play_bgm:
             self.bgm.pause()
@@ -109,9 +111,8 @@ class Battle():
         """
         for b in self.boss_layer:
             for f in b.buff:
-                f.buff_check(b)
-        for f in self.erina.buff:
-            f.buff_check(erina)
+                f.buff_check(self.erina)
+        self.erina.buff_check(iter(self.boss_layer))
 
     def UIAnimation(self):
         """
@@ -227,22 +228,22 @@ class Battle():
         screen.blit(self.face.face, (0,0))
 
     def PauseCheck(self):
-        if self.esc == 0:
+        if self.esc == pausetypes.NEUTRAL:
             if self.key_pressed[pygame.K_ESCAPE]:
                 if self.pause == 0:
                     self.pause += 1
-                    self.esc = 1
+                    self.esc = pausetypes.PAUSING
                 elif self.pause == 60:
                     self.pause -= 1
-                    self.esc = -1
-        elif self.esc == 1:
+                    self.esc = pausetypes.UNPAUSING
+        elif self.esc == pausetypes.PAUSING:
             if self.pause == 60:
-                self.esc = 0
+                self.esc = pausetypes.NEUTRAL
             else:
                 self.pause += 1
-        elif self.esc == -1:
+        elif self.esc == pausetypes.UNPAUSING:
             if self.pause == 0:
-                self.esc = 0
+                self.esc = pausetypes.NEUTRAL
             else:
                 self.pause -= 1
 
