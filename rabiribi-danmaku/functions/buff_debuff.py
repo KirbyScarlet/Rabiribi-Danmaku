@@ -207,11 +207,13 @@ class Buff(pygame.sprite.Sprite):
         self.invalid = False
 
         self.image = pygame.surface.Surface((17,11)).convert()
-        self.opacity = 1.00
+        self.opacity = 255
         self.rect = self.image.get_rect()
-        self.image.blit(self.image_temp, (0,0))
+        #self.image.blit(self.image_temp, (0,0))
         self.rank = len(self.owner.buff)
         self.temp_position = [0,0]
+
+        self.delete = False
 
         if self.owner._type == 'erina':
             self.temp_position[0] = screenborder.SCREEN_RIGHT
@@ -297,7 +299,8 @@ class Buff(pygame.sprite.Sprite):
         self.rect.right, self.rect.bottom = self.temp_position
         self.movedown -= 1
 
-    def move(self, *args):
+    def move(self, erina):
+        self.opacity_check(erina)
         if self.time > 0:
             self.time -= 1
         else:
@@ -309,27 +312,30 @@ class Buff(pygame.sprite.Sprite):
         #print(len(self.groups()))
 
     def opacity_up(self):
-        if self.opacity < 100:
-            self.opacity += 6
-            if self.opacity > 100:
-                self.opacity = 100
-            self.image.set_alpha(self.opacity)
+        if self.opacity < 255:
+            self.opacity += 10
+            if self.opacity > 255:
+                self.opacity = 255
 
     def opacity_down(self):
-        if self.opacity > 20:
-            self.opacity -= 6
-            if self.opacity < 20:
-                self.opacity = 20
-            self.image.set_alpha(self.opacity)
+        if self.opacity > 50:
+            self.opacity -= 10
+            if self.opacity < 50:
+                self.opacity = 50
 
     def opacity_check(self, erina):
         erina_rect = erina.rect
-        count = len(self.groups())
-        if erina_rect.right >= screenborder.SCREEN_RIGHT-60 and erina_rect.bottom > screenborder.SCREEN_BOTTOM-40-15*len(count) \
-        or erina_rect.left <= screenborder.SCREEN_LEFT+60 and erian_rect.top > screenborder.SCREEN_TOP+40+15*len(count):
-            self.opacity_down()
-        else:
-            self.opacity_up()
+        count = len(self.owner.buff)
+        if self.owner._type == 'erina':
+            if erina_rect.right >= screenborder.SCREEN_RIGHT-60 and erina_rect.bottom > screenborder.SCREEN_BOTTOM-40-15*count:
+                self.opacity_down()
+            else:
+                self.opacity_up()
+        elif self.owner._type == 'boss':
+            if erina_rect.left <= screenborder.SCREEN_LEFT+60 and erian_rect.top > screenborder.SCREEN_TOP+40+15*count:
+                self.opacity_down()
+            else:
+                self.opacity_up()
 
     def remove(self):
         for buff in self.owner.buff:
@@ -345,6 +351,9 @@ class Buff(pygame.sprite.Sprite):
         raise NotImplementedError
 
     def print_screen(self, screen):
+        self.image.blit(screen, (self.rect.left-640, self.rect.top-480))
+        self.image.blit(self.image_temp, (0,0))
+        self.image.set_alpha(self.opacity)
         screen.blit(self.image, self.rect)
 
     def __setattr__(self, name, value):
@@ -390,7 +399,21 @@ class BuffImage(pygame.sprite.Sprite):
         self.temp_top = 0
 '''
 
-class BuffGroup(pygame.sprite.Group): pass
+class BuffGroup(pygame.sprite.Group):
+    def add_internal(self, sprite):
+        name = sprite.__class__.__name__
+        for key, value in self.spritedict.items():
+            if value == name:
+                key.time = sprite.time
+                key.birth_time = 120
+                key.death_time = 20
+                key.effective = True
+                key.invalid = False
+                return
+        self.spritedict[sprite] = sprite.__class__.__name__
+
+    def has_internal(self, sprite):
+        return (sprite in self.spritedict) or (sprite in self.spritedict.values())
 
 '''
 class BuffGroup():
@@ -412,7 +435,7 @@ class BuffGroup():
             self.add_internal(b)
 
     def buffs(self):
-        return self.buffdict.keys()
+        return list(self.buffdict)
         # return list(self.buffdict)
 
     def add_internal(self, buff):
