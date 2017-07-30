@@ -1,7 +1,5 @@
 import pygame
 import pickle
-import character
-import functions
 import objects
 import abc
 import random
@@ -175,30 +173,33 @@ class Buff(pygame.sprite.Sprite):
 
     '''
     def __new__(cls, *buff_group, owner=None, time=-1):
-        pass
+        if owner and timer > 0:
+            return super().__new__(*buff_group, owner, time)
+        else:
+            cls._instance = cls
+            cls._instance.time = time
+            return cls._instance
     '''
 
-    def __init__(self, *buff_group, owner=None, time=-1):
-        '''
-        __init__(*buff_group, owner=None, time=-1): return None
+    def __init__(self, owner=None, time=-1):
+        """
+        __init__(owner=None, time=-1): return None
 
             buff group 
-        '''
-        super().__init__(*buff_group)
-        self.owner = owner
-        self.stack = {} # temp value in this
-        if isinstance(self.owner, character.erina.Erina):
-            self.type = 1
-        elif isinstance(self,owner, objects.sprites.Boss):
-            self.type = -1
-        elif isinstance(self.owner, objects.sprites.Elf):
-            self.type = 0
+        """
+        super().__init__()
+        if owner: self.init(owner)
         
         # buff effect: timellarger than 0 and equal -1
         self.time = time
+
+    def init(self, owner):
+        #self.owner = owner
+        super().__setattr__('owner', owner)
+        self.stack = {} # temp value in this
         self.timer = 0
-        self.birth_time = 180
-        self.death_time = 0 # max 30
+        self.birth_time = 120
+        self.death_time = 20 # max 30
         self.moveup = 0
         self.movedown = 0
 
@@ -209,25 +210,25 @@ class Buff(pygame.sprite.Sprite):
         self.opacity = 1.00
         self.rect = self.image.get_rect()
         self.image.blit(self.image_temp, (0,0))
-        self.rank = len(buff_group)
+        self.rank = len(self.owner.buff)
         self.temp_position = [0,0]
 
-        if isinstance(owner, character.erina.Erina):
+        if self.owner._type == 'erina':
             self.temp_position[0] = screenborder.SCREEN_RIGHT
             self.temp_position[1] = screenborder.SCREEN_BOTTOM - 30 - 15*self.rank
             self.rect.left, self.rect.bottom = self.temp_position
-        elif isinstance(owner, objects.sprites.Boss):
+        elif self.owner._type == 'boss':
             self.temp_position[0] = screenborder.SCREEN_LEFT
             self.temp_position[1] = screenborder.SCREEN_TOP + 30 + 15*self.rank
-        elif isinstance(owner, objects.sprites.Elf):
+        elif self.owner._type == 'elf':  # under development
             self.rect.center = owner.center
 
     @classmethod
     def SetImage(cls, buff_name):
-        buff_name = 'data/tmp/'+ buff_name +'.tmp'
+        buff_name = 'data/tmp/imgs/'+ buff_name +'.tmp'
         try:
             cls.image_temp = pygame.image.load(buff_name).convert_alpha()
-        except FileNotFoundError:
+        except pygame.error:
             filename = 'data/obj/items/buffs.rbrb'
             with open(filename, 'rb') as f:
                 images = pickle.load(f)
@@ -235,26 +236,26 @@ class Buff(pygame.sprite.Sprite):
                 filename = 'data/tmp/imgs/'+key+'.tmp'
                 with open(filename, 'wb') as f:
                     f.write(value)
-            cls.(buff_name)
+            cls.image_temp = pygame.image.load(buff_name).convert_alpha()
 
     def move_elf(self):
         self.rect.center = self.owner.center
 
     def move_in(self):
-        if self.type == 1:
+        if self.owner._type == 'erina':
             if self.birth_time > 30:
-                destination = screenborder.SCEREEN_RIGHT-50
+                destination = screenborder.SCREEN_RIGHT-50
             else:
-                destination = screenborder.SCREEN_RIGHT-17
-            speed = (self.rect.right - destination)/2 # problems unfit
-            self.temp_position[0] += speed
+                destination = screenborder.SCREEN_RIGHT
+            speed = (self.rect.right - destination)/4 # problems unfit
+            self.temp_position[0] -= speed
             self.rect.right, self.rect.bottom = self.temp_position
-        elif self.type == -1:
+        elif self.owner._type == 'boss':
             if self.birth_time > 30:
                 destination = screenborder.SCREEN_LEFT+50
             else:
                 destination = screenborder.SCREEN_RIGHT+17
-            speed = (self.rect.left - destination)/2 # problems unfit
+            speed = (self.rect.left - destination)/4 # problems unfit
             self.temp_position[0] += speed
             self.rect.left, self.rect.top = self.temp_position
         else:
@@ -262,13 +263,13 @@ class Buff(pygame.sprite.Sprite):
         self.birth_time -= 1
 
     def move_out(self):
-        if self.type == 1:
-            speed = (screenborder.SCREEN_RIGHT - self.rect.left)/2 # problems unfit
+        if self.owner._type == 'erina':
+            speed = (screenborder.SCREEN_RIGHT+5 - self.rect.left)/2 # problems unfit
             self.temp_position[0] += speed
             self.rect.right, self.rect.bottom = self.temp_position
-        elif self.type == -1:
+        elif self.owner._type == 'boss':
             speed = (screenborder.SCREEN_LEFT - self.rect.right)/2 # problems unfit
-            self.temp_position[0] += speed
+            self.temp_position[0] -= speed
             self.rect.left, self.rect.bottom = self.temp_position
         else:
             self.rect.center = self.owner.center
@@ -292,20 +293,20 @@ class Buff(pygame.sprite.Sprite):
         """
         destination = screenborder.SCREEN_BOTTOM - 30 - 15*self.rank
         speed = (self.rect.bottom - destination)/2
-        self.temp_position[1] += speed
+        self.temp_position[1] -= speed
         self.rect.right, self.rect.bottom = self.temp_position
         self.movedown -= 1
 
-    def move(self):
+    def move(self, *args):
         if self.time > 0:
             self.time -= 1
-        if self.time == 0:
-            self.death_time = 30
+        else:
+            self.move_out()
         if self.birth_time: self.move_in()
-        elif self.death_time: self.move_out()
         if self.moveup: self.move_up()
-        elif self.movedown: self.move_down()
+        if self.movedown: self.move_down()
         self.timer += 1
+        #print(len(self.groups()))
 
     def opacity_up(self):
         if self.opacity < 100:
@@ -331,10 +332,10 @@ class Buff(pygame.sprite.Sprite):
             self.opacity_up()
 
     def remove(self):
-        for buff in self.groups()[0]:
-            if buff.rank>self.rank:
+        for buff in self.owner.buff:
+            if buff.rank > self.rank:
                 buff.rank -= 1
-        self.kill()
+        self.owner.buff.remove(self)
     
     @abc.abstractmethod
     def check(self, *sprites):
@@ -348,11 +349,14 @@ class Buff(pygame.sprite.Sprite):
 
     def __setattr__(self, name, value):
         if name == 'rank':
-            if isinstance(self.owner, character.erina.Erina):
+            if self.owner._type == 'erina':
                 self.movedown = 30
-            elif isinstance(self.owner, objects.sprites.Boss):
+            elif self.owner._type == 'boss':
                 self.moveup = 30
             else: pass
+        elif name == 'owner':
+            self.init(value)
+            return
         return super().__setattr__(name, value)
 
     def __repr__(self):
@@ -386,6 +390,9 @@ class BuffImage(pygame.sprite.Sprite):
         self.temp_top = 0
 '''
 
+class BuffGroup(pygame.sprite.Group): pass
+
+'''
 class BuffGroup():
     """
     use this to restore buffs
@@ -397,7 +404,7 @@ class BuffGroup():
         iter    iterate through all the buffs
 
     """
-    _buffgroup = True
+    _spritegroup = True
 
     def __init__(self, *buff):
         self.buffdict = {}
@@ -410,6 +417,7 @@ class BuffGroup():
 
     def add_internal(self, buff):
         self.buffdict[buff] = buff.__class__.__name__
+        
 
     def remove_internal(self, buff):
         for key, value in self.buffdict.items():
@@ -451,6 +459,7 @@ class BuffGroup():
                 self.add_internal(buff)
             elif isinstance(buff, BuffGroup):
                 self.add(buff)
+            buff.add_internal(self)
 
     def remove(self, *buffs):
         """
@@ -459,6 +468,8 @@ class BuffGroup():
         BuffGroup.remove(buff, ...): return None
         """
         for buff in buffs:
+            if isinstance(buff, Buff):
+                self.remove_internal(buff.__class__.__name__)
             if self.has_internal(buff):
                 self.remove_internal(buff)
 
@@ -510,7 +521,7 @@ class BuffGroup():
 
     def __repr__(self):
         return "<%s(%d buffs)>" % (self.__class__.__name__, len(self))
-
+'''
 
 #
 # all buffs here:
@@ -520,9 +531,13 @@ class SpeedDown(Buff):
     """
     Speed lowered by 20%
     """
-    def __init__(self, buff_group, owner, time):
-        super().__init__(buff_group, owner, time):
-        self.stack[speed] = self.owner.speed
+    def __init__(self, *buff_group, owner=None, time=-1):
+        super().__init__(*buff_group, owner, time)
+        
+
+    def init(self, owner):
+        super().init(owner)
+        self.stack['speed'] = self.owner.speed
 
     def check(self, *enemy):
         if self.time==0:
@@ -534,14 +549,14 @@ class SpeedDown(Buff):
             self.owner.speed = self.stack['speed']
             self.invalid = False
             
-SpeedDown.SetImage(speed_down)
+SpeedDown.SetImage('speed_down')
 
 class Numb(Buff):
     """
     All movement ceases intermittently
     """
-    def __init__(self, buff_group, owner, time):
-        super().__init__(buff_group, owner, time)
+    def __init__(self, *buff_group, owner=None, time=-1):
+        super().__init__(*buff_group, owner, time)
         self._erina_only = True
         self.stack['speed'] = self.owner.speed
 
@@ -567,7 +582,7 @@ class Numb(Buff):
                 self.numb_timer = 20 + random.randint(-5,5)
         return super().__setattr__(name, value)
 
-Numb.SetImage(numb)
+Numb.SetImage('numb')
 
 class Ponised(Buff):
     """

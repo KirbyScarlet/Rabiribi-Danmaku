@@ -1,7 +1,8 @@
 import pygame
 import platform
 import functions
-from functions.sprites import damage
+import objects
+#from objects.sprites import Damage
 
 from pygame.locals import *
 
@@ -13,6 +14,7 @@ class Erina(pygame.sprite.Sprite):
     player control character
         
     """
+    _type = 'erina'
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
 
@@ -34,7 +36,7 @@ class Erina(pygame.sprite.Sprite):
         
         self.hp = 100
         self.max_hp = 100
-        self.damage = damage()
+        self.damage = objects.sprites.Damage(self)
         self.spell = 2.0
         self.max_spell = 4.0
         self.buff = functions.buff_debuff.BuffGroup()
@@ -162,7 +164,7 @@ class Erina(pygame.sprite.Sprite):
     '''
     def buff_check(self, *enemy):
         for b in self.buff:
-            b.buff_check(*enemy)
+            b.check(*enemy)
                
     def image_change(self, frame_count):
         """
@@ -186,9 +188,11 @@ class Erina(pygame.sprite.Sprite):
         if temp_danmaku or temp_boss:
             self.invincible = 180
             for each in temp_danmaku:
+                print(self.buff)
                 for b in each.buff_catch:
-                    b(self.buff, owner=self, time=)
-                self.damage.damaku += each.damage
+                    b.owner = self
+                    self.buff.add(b)
+                self.damage.danmaku += each.damage
             for each in temp_boss:
-                self.buff.add(each.buff_catch)
+                # self.buff.add(each.buff_catch)
                 self.damage.crash += each.crash_damage

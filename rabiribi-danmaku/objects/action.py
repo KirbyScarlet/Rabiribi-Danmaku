@@ -74,7 +74,7 @@ class direction():
 
 
 class DanmakuAction():
-    def __init__(self, birth_place, *args, 
+    def __init__(self, birth_place,
                  birth_place_offset = (), 
                  danmaku_layer = 0, 
                  birth_speed = False, 

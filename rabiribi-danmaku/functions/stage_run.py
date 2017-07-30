@@ -66,7 +66,8 @@ class Battle():
         self.shouting_layer = pygame.sprite.Group()  # ribbon shouting
         self.boost_layer = pygame.sprite.Group()  # ribbon boost
         self.item_layer = pygame.sprite.Group()  # items
-        self.damage_layer = pygame.sprite.Group()
+        self.damage_layer = pygame.sprite.Group()  # print damage numbers
+        # self.buff_layer = pygame.sprite.Groups()
         for n in range(self.danmaku_layer_count):  # small rank will on top. 
             self.__setattr__('danmaku_layer_'+str(n), pygame.sprite.Group())
         self.BackgroundMusic()
@@ -111,7 +112,7 @@ class Battle():
         """
         for b in self.boss_layer:
             for f in b.buff:
-                f.buff_check(self.erina)
+                f.buff_check(self.erina, iter(self.elf_layer))
         self.erina.buff_check(iter(self.boss_layer))
 
     def UIAnimation(self):
@@ -153,7 +154,11 @@ class Battle():
                     self.energy_layer,
                     self.item_layer,
                     self.boost_layer,
-                    self.danmaku_layer)
+                    self.danmaku_layer,
+                    self.erina.buff
+                    )
+        for boss in self.boss_layer:
+            self.sprite_move(boss.buff)
 
     def SwitchLayer(self):
         for sprite in self.birth_layer:
@@ -183,7 +188,9 @@ class Battle():
             b.collide_check(self.shouting_layer)
 
     def DamageCheck(self):
-        pass
+        self.erina.damage(self.damage_layer)
+        for b in self.boss_layer:
+            b.damage(self.damage_layer)
 
     def Debug(self, screen):
         debug_words_pos_left = 430
@@ -223,6 +230,11 @@ class Battle():
         for num in range(self.danmaku_layer_count-1,-1,-1):
             for sprite in self.__getattribute__('danmaku_layer_' + str(num)):
                 sprite.print_screen(screen)
+        for sprite in self.erina.buff:
+            sprite.print_screen(screen)
+        for sprite in self.boss_layer:
+            for b in sprite.buff:
+                b.print_screen(screen)
         for sprite in self.boost_layer:
             sprite.print_screen(screen)
         screen.blit(self.face.face, (0,0))
@@ -275,6 +287,7 @@ class Battle():
             self.PauseCheck()
             if self.pause == 0:
                 self.run(screen, debug)
+                #print(self.erina.buff)
                 # print("=============================================")
                 #for each in self.danmaku_layer:
                 #    print(each.center, each.speed, each.direction)

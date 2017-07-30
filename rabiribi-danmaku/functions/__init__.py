@@ -1,11 +1,6 @@
 """
 function tools
 """
-import functions.run
-import functions.spell_card
-import functions.values
-import functions.stage_run
-import functions.buff_debuff
 
 __doc__ = ["debug_font", "me_erina", "me_ribbon", "ExitCheck",
            "snipe", "angle", "clear_cache"]
@@ -14,11 +9,13 @@ import pygame
 
 debug_font = pygame.font.Font(None, 20)
 
+'''
 import character.erina
 import character.ribbon
 
 me_erina = character.erina.Erina()
 me_ribbon = character.ribbon.Ribbon()
+'''
 
 import platform
 from pygame.sprite import Sprite
@@ -149,3 +146,8 @@ def clear_cache(*dir):
             system("rm data/tmp/mid/*.tmp")
             system("rm data/tmp/misc/*.tmp")
             
+import functions.run
+import functions.spell_card
+import functions.values
+import functions.stage_run
+import functions.buff_debuff

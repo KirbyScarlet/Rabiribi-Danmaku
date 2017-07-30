@@ -18,15 +18,16 @@ class Number(pygame.sprite.Sprite):
         self.change = True
 
     @classmethod    
-    def load_sources(cls, number_type):
+    def SetImage(cls, number_type):
         file_name = 'data/tmp/' + number_type + '.tmp'
         try:
             cls.image = pygame.image.load(file_name).convert_alpha()
-        with open('data/font/number.rbrb','rb') as f_i:
-            with open(file_name) as f_o:
-                f_o.write(f_i.read()[number_type])
-        cls.image = pygame.image.load(file_name).convert_alpha()
-        cls.rect = cls.image.get_rect() # force square per character
+        except pygame.error:
+            with open('data/font/number.rbrb','rb') as f_i:
+                with open(file_name, 'wb') as f_o:
+                    f_o.write(pickle.load(f_i)[number_type])
+            cls.image = pygame.image.load(file_name).convert_alpha()
+            cls.rect = cls.image.get_rect() # force square per character
     
     def resize(self):
         self.image = pygame.transform.scale(self.image, (self.rect.width*self.size/self.rect.height, self.size))

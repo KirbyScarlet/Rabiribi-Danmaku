@@ -42,24 +42,30 @@ class Damage(object):
 
     see ../functions/values.py
     """
-    def __init__(self, sprite, layer):
-        self.sprite = sprite
-        #=====================
-        self.danmaku = 0
-        self.crash = 0
-        self.amulet = 0
-        self.cocoabomb = 0
-        self.boost = 0
-        self.poison = 0
-        self.freeze = 0
-        self.burn = 0
-        self.curse = 0
-        self.reflect = 0
-        self.endurance = 0
-        self.instant = 0
-        #=====================
+    def __init__(self, sprite):
+        super().__setattr__('sprite', sprite)
+        self.init()
+
+    def init(self):
+        self.all_damage = 0 # except buff damage
         self.buff_damage = 0
-        self.all_damage = 0
+        #=====================
+        super().__setattr__('danmaku', 0)
+        #=====================
+        super().__setattr__('crash', 0)
+        #=====================
+        super().__setattr__('amulet', 0)
+        super().__setattr__('cocoabomb', 0)
+        super().__setattr__('boost', 0)
+        #=====================
+        super().__setattr__('poison', 0)
+        super().__setattr__('freeze', 0)
+        super().__setattr__('burn', 0)
+        super().__setattr__('curse', 0)
+        super().__setattr__('reflect', 0)
+        #=====================
+        super().__setattr__('endurance', 0)
+        super().__setattr__('instant', 0)
 
     # damage count animation.
     def physical(self, layer):
@@ -94,29 +100,33 @@ class Damage(object):
         pass
 
     def __setattr__(self, name, value):
-        super().__setattr__('all_damage', value)
-        if name == 'danmaku':
-            self.physical(value)
-        elif name == 'crash':
-            self.accident(value)
-        elif name in ('amulet', 'cocoabomb', 'boost'):
-            self.weapen(value, name)
-        elif name in ('poison', 'burn', 'curse', 'reflect', 'endurance', 'instane'):
-            self.buff(value, name)
-        elif name == 'all_damage' and value == 0:
-            self.__init__(self.sprite)
+        if name in ('poison', 'freeze', 'burn', 'curse', 'reflect'):
+            super().__setattr__('buff_damage', self.buff_damage.__add__(value - self.__getattribute__(name)))
+        elif name not in ('buff_damage', 'all_damage'):
+            super().__setattr__('all_damage', self.all_damage.__add__(value - self.__getattribute__(name)))
         return super().__setattr__(name, value)
 
-    def __call__(self, layer, sprite):
+    def __call__(self, layer):
         """
         calculate all damage and print count on screen
         """
-        self.all_damage
+        '''
+        self.physical(layer)
+        self.accident(layer)
+        self.weapen(layer)
+        self.buff(layer)
+        self.special_buff(layer)
+        '''
+        if self.buff_damage < self.sprite.hp:
+            self.sprite.hp -= self.buff_damage
+        self.sprite.hp -= self.all_damage
+        self.init()
 
 class Boss(pygame.sprite.Sprite):
     """
     use almost all the boss.
     """
+    _type = 'boss'
     def __init__(self, name):
         pygame.sprite.Sprite.__init__(self)
         self.name = name
@@ -221,6 +231,7 @@ class Boss(pygame.sprite.Sprite):
         """
         self.max_hp = max_hp
         self.hp = int(self.max_hp)
+        self.damage = Damage(self)
         self.crash_damage = crash_damage
         self.bonus_energy = bonus_energy
         self.damage_per_frame = 0
@@ -289,6 +300,10 @@ class Boss(pygame.sprite.Sprite):
     def print_screen(self, screen):
         screen.blit(self.image, self.rect)
 
+    def buff_check(self, erina, *elf):
+        for buff in self.buff:
+            buff.check(erina, *elf)
+
     def collide_check(self, shouting_group):
         if self.collide:
             temp = pygame.sprite.spritecollide(self, shouting_group, True, pygame.sprite.collide_circle)
@@ -311,7 +326,8 @@ class Boss(pygame.sprite.Sprite):
             self.defense = 1
             '''
         for each in shouting_group:
-            self.hp -= each.damage * self.defense
+            self.damage.danmaku += each.damage
+            #self.buff.add(each.buff.buffs())
 
     def spell_attack(self, difficulty, erina, birth_group, boss_group, illustration_group, danmaku_group):
         """
@@ -345,6 +361,7 @@ class Boss(pygame.sprite.Sprite):
             self.frame_count = 0
 
     def death(self):
+        # animation under development
         self.kill()
 
     def load_source(self, file_name):
@@ -406,19 +423,19 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
     only danmaku be defined there.
     lazer next
     """
+    _type = 'danmaku'
     def __init__(self, 
-                birth_group, birth_place, *args, 
+                birth_group, birth_place, *buff, 
                 birth_time=10, lazer=-1,
                 birth_place_offset = ((0),0), 
                 danmaku_layer = 0, 
                 birth_speed = 1.0, 
                 direction = pi/2, 
                 direction_offset = 0, 
-                buff = None,
                 time_rip = False, 
                 **kwargs):
         pygame.sprite.Sprite.__init__(self, birth_group)
-        DanmakuAction.__init__(self, birth_place, *args, 
+        DanmakuAction.__init__(self, birth_place,
                                 birth_place_offset=birth_place_offset, 
                                 danmaku_layer=danmaku_layer, 
                                 birth_speed=birth_speed, 
@@ -426,8 +443,7 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
                                 direction_offset=direction_offset, 
                                 time_rip=time_rip, 
                                 **kwargs)
-        # self.buff_catch = functions.buff_debuff.BuffGroup()
-        self.buff_catch = buff
+        self.buff_catch = functions.buff_debuff.BuffGroup(*buff)
         """
         specify when miss opponite will have some buff or debuff
         """
@@ -641,6 +657,7 @@ class Elf(pygame.sprite.Sprite):
     """
     use for almost all mid boss
     """
+    _type = 'elf'
     def __init__(self, name):
         pygame.sprite.Sprite.__init__(self)
         self.name = name
@@ -682,6 +699,7 @@ class Elf(pygame.sprite.Sprite):
         self.speed = 0
         self.radius = 8
         self.defense = 1.0
+        self.damage = Damage(self)
 
     def move(self, *erina):
         distance = sqrt( \

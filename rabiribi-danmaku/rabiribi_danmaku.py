@@ -18,10 +18,9 @@ pygame.display.set_icon(icon)
 import sys
 import traceback
 import ui
+import functions
 import boss
 import character
-import functions
-import objects
 
 me_erina = character.erina.Erina()
 me_ribbon = character.ribbon.Ribbon()

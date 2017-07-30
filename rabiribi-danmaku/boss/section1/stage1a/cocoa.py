@@ -42,13 +42,12 @@ class Spell_1(SpellCard):
                 #temp_snipe = snipe(self.boss, erina)
                 offset = random.randint(-10,10)
                 for i in range(-15,16):
-                    mid_orange_circle(birth_group,
-                        self.boss,
+                    mid_orange_circle(birth_group, self.boss,
+                        SpeedDown(time=600),
                         birth_time = 10, lazer = -1,
                         birth_speed = 5, 
                         direction = erina,
                         direction_offset = offset*pi/320 + i*pi/32,
-                        buff = SpeedDown(time=180)
                         time_rip = True,
                         speedtime = (60,120),
                         speedvalue = (0,1.5),
