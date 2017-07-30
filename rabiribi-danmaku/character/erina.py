@@ -28,8 +28,8 @@ class Erina(pygame.sprite.Sprite):
         self.oimage = pygame.transform.scale(oimage, (40,50)) # load source under development
         self.image = self.oimage
         self.rect = self.image.get_rect()
-        self.rect.left, self.rect.top = 225, 400
-        self.center = [self.rect.left+20, self.rect.top+25]
+        self.center = [245.0, 425.0]
+        self.rect.left, self.rect.top = self.center[0]-20, self.center[1]-25
         # balance unfit
         self.fast = 4
         self.slow = 2
@@ -59,31 +59,31 @@ class Erina(pygame.sprite.Sprite):
 
     def moveUp(self):#8
         if (self.rect.top - self.speed) > 15:
-            self.rect.top -= self.speed
+            self.center[1] -= self.speed
         else:
-            self.rect.top = 15
-        self.center = [self.rect.left+20, self.rect.top+25]
-        
+            self.center[1] = 15
+        self.rect.left, self.rect.top = self.center[0]-20, self.center[1]-25
+
     def moveDown(self):#2
         if (self.rect.bottom + self.speed) < 465:
-            self.rect.top += self.speed
+            self.center[1] += self.speed
         else:
-            self.rect.bottom = 465
-        self.center = [self.rect.left+20, self.rect.top+25]
+            self.center[1] = 440
+        self.rect.left, self.rect.top = self.center[0]-20, self.center[1]-25
         
     def moveLeft(self):#4
         if (self.rect.left - self.speed) > 35:
-            self.rect.left -= self.speed
+            self.center[0] -= self.speed
         else:
-            self.rect.left = 35
-        self.center = [self.rect.left+20, self.rect.top+25]
+            self.center[0] = 35
+        self.rect.left, self.rect.top = self.center[0]-20, self.center[1]-25
 
     def moveRight(self):#6
         if (self.rect.right + self.speed) < 415:
-            self.rect.left += self.speed
+            self.center[0] += self.speed
         else:
-            self.rect.right = 415
-        self.center = [self.rect.left+20, self.rect.top+25]
+            self.center[0] = 395
+        self.rect.left, self.rect.top = self.center[0]-20, self.center[1]-25
 
     def UpDownControl(self, num):
         self.UpDown_control = num
@@ -188,7 +188,7 @@ class Erina(pygame.sprite.Sprite):
         if temp_danmaku or temp_boss:
             self.invincible = 180
             for each in temp_danmaku:
-                print(self.buff)
+                print
                 for b in each.buff_catch:
                     b.owner = self
                     self.buff.add(b)

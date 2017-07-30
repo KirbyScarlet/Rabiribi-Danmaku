@@ -415,6 +415,15 @@ class BuffGroup(pygame.sprite.Group):
     def has_internal(self, sprite):
         return (sprite in self.spritedict) or (sprite in self.spritedict.values())
 
+    def remove_internal(self, sprite):
+        if isinstance(sprite, pygame.sprite.Sprite):
+            del self.spritedict[sprite]
+        elif isinstance(sprite, str):
+            for key, value in self.spritedict.items():
+                if sprite == 'value':
+                    r = key
+                    break
+            del self.spritedict[r]
 '''
 class BuffGroup():
     """
@@ -560,16 +569,19 @@ class SpeedDown(Buff):
 
     def init(self, owner):
         super().init(owner)
-        self.stack['speed'] = self.owner.speed
+        self.stack['fast'] = self.owner.fast
+        self.stack['slow'] = self.owner.slow
 
     def check(self, *enemy):
         if self.time==0:
             self.invalid = True
         if self.effective:
-            self.owner.speed *= 0.8
+            self.owner.fast = 2
+            self.owner.slow = 1
             self.effective = False
         if self.invalid:
-            self.owner.speed = self.stack['speed']
+            self.owner.fast = self.stack['fast']
+            self.owner.slow = self.stack['slow']
             self.invalid = False
             
 SpeedDown.SetImage('speed_down')
