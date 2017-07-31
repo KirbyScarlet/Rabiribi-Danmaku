@@ -30,7 +30,7 @@ global difficulty
 def main():
     print("Hello Rabiribi Danmaku")
     #ui.welcome.opening(screen)
-    #ui.menu.menu_switch(screen)
+    ui.menu.menu_switch(screen)
     difficulty = 'normal'
     import boss.section1.stage1a
     boss.section1.stage1a.stage(me_erina, me_ribbon, difficulty, screen)
@@ -44,6 +44,6 @@ if __name__ == "__main__":
         pass
     except:
         traceback.print_exc()
-        pygame.quit()
         input()
+        pygame.quit()
         functions.clear_cache()
