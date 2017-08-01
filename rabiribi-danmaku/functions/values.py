@@ -45,6 +45,33 @@ class defaultkey:
     SWITCH_MAGIC_LEFT = K_a
     SWITCH_MAGIC_RIGHT = K_s
 
+    @classmethod
+    def direction(cls):
+        return (cls.MOVE_LEFT, cls.MOVE_RIGHT, cls.MOVE_UP, cls.MOVE_DOWN)
+
+    @classmethod
+    def settingkey(cls):
+        pass
+
+    @classmethod
+    def __contains__(cls, name):
+        return name in tuple(cls.__dict__.values())
+
+    @classmethod
+    def filter(cls, keys):
+        return {
+                cls.MOVE_LEFT: keys[cls.MOVE_LEFT],
+                cls.MOVE_RIGHT: keys[cls.MOVE_RIGHT],
+                cls.MOVE_UP: keys[cls.MOVE_UP],
+                cls.MOVE_DOWN: keys[cls.MOVE_DOWN],
+                cls.MOVE_SLOW: keys[cls.MOVE_SLOW],
+                cls.SHOUTING: keys[cls.SHOUTING],
+                cls.AMULET: keys[cls.AMULET],
+                cls.BOOST: keys[cls.BOOST],
+                cls.SWITCH_MAGIC_LEFT: keys[cls.SWITCH_MAGIC_LEFT],
+                cls.SWITCH_MAGIC_RIGHT: keys[cls.SWITCH_MAGIC_RIGHT]
+                }
+
 # Local difficulty
 class difficulty:
     EASY = 4
@@ -59,7 +86,7 @@ class damagetype:
     # physical damage
     DANMAKU = 1
     # accident damage
-    CASH = 2
+    CRASH = 2
     # weapen damage
     AMULET = 3
     COCOABOMB = 4

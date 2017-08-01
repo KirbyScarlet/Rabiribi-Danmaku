@@ -365,7 +365,7 @@ class Boss(pygame.sprite.Sprite):
         self.kill()
 
     def load_source(self, file_name):
-        f = open('data/obj/boss/' + file_name, 'rb')
+        f = open('data/objs/boss/' + file_name, 'rb')
         sources = pickle.load(f)
         f.close()
         self.images = {'illustration':[], 'pixel':[], 'special':[]}
@@ -525,15 +525,15 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
         self.live_time = live_time
 
     @classmethod
-    def load_source(self, danmaku_name):
+    def load_source(cls, danmaku_name):
         """
         load sources functions
         class method
 
             load_source(danmaku_name): return None
         """
-        self.images = {'birth':[], 'live':[]}
-        f = open('data/obj/danmaku/' + danmaku_name + '.rbrb', 'rb')
+        cls.images = {'birth':[], 'live':[]}
+        f = open('data/objs/danmaku/' + danmaku_name + '.rbrb', 'rb')
         sources = pickle.load(f)
         f.close()
         for i in range(len(sources['birth'])):
@@ -545,7 +545,7 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
                 f = open(img_name, 'wb')
             f.write(sources['birth'][i])
             f.close()
-            self.images['birth'].append(pygame.image.load(img_name).convert_alpha())
+            cls.images['birth'].append(pygame.image.load(img_name).convert_alpha())
         for i in range(len(sources['live'])):
             img_name = 'data/tmp/imgs/' + danmaku_name + '_live_rank_' + str(i) + '.tmp'
             try:
@@ -555,7 +555,7 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
                 f = open(img_name, 'wb')
             f.write(sources['live'][i])
             f.close()
-            self.images['live'].append(pygame.image.load(img_name).convert_alpha())
+            cls.images['live'].append(pygame.image.load(img_name).convert_alpha())
 
     '''
     def read_source(self):
@@ -718,7 +718,7 @@ class Elf(pygame.sprite.Sprite):
 
     @classmethod
     def load_source(self, file_name):
-        f = open('data/obj/elf/' + file_name + '.rbrb' ,'rb')
+        f = open('data/objs/elf/' + file_name + '.rbrb' ,'rb')
         sources = pickle.load(f)
         f.close()
         self.images = {"pixel":[]}

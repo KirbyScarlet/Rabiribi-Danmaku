@@ -231,7 +231,7 @@ class Buff(pygame.sprite.Sprite):
         try:
             cls.image_temp = pygame.image.load(buff_name).convert_alpha()
         except pygame.error:
-            filename = 'data/obj/items/buffs.rbrb'
+            filename = 'data/objs/items/buffs.rbrb'
             with open(filename, 'rb') as f:
                 images = pickle.load(f)
             for key,value in images.items():

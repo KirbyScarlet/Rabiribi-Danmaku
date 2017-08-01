@@ -567,3 +567,9 @@ class OptionAction():
     def move_out(self):
         L = self.birth_place[0]-self.unselected_position[0], self.birth_place[1]-self.unselected_position[1]
         speed = (L[0] - (self.birth_place[0]-self.center[0]))/self.rate, (L[1] - (self.birth_place[1]-self.center[1]))/self.rate
+
+    def __setattr__(self, name, value):
+        if name == 'rate':
+            if value < 2:
+                raise AttributeError("rate value must larger than 2\n")
+        return super().__setattr__(name, value)

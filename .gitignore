@@ -257,3 +257,4 @@ png2rbrb.py
 *.aep
 *.pyc
 __pycache__/
+.vscode/

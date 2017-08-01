@@ -30,7 +30,7 @@ global difficulty
 def main():
     print("Hello Rabiribi Danmaku")
     #ui.welcome.opening(screen)
-    ui.menu.menu_switch(screen)
+    #ui.menu.menu_switch(screen)
     difficulty = 'normal'
     import boss.section1.stage1a
     boss.section1.stage1a.stage(me_erina, me_ribbon, difficulty, screen)
