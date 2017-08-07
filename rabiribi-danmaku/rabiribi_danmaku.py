@@ -19,7 +19,6 @@ import sys
 import traceback
 import ui
 import functions
-import boss
 import character
 
 me_erina = character.erina.Erina()

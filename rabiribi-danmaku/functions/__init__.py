@@ -147,7 +147,7 @@ def clear_cache(*dir):
             system("rm data/tmp/misc/*.tmp")
             
 import functions.run
-import functions.spell_card
 import functions.values
+import functions.spell_card
 import functions.stage_run
 import functions.buff_debuff

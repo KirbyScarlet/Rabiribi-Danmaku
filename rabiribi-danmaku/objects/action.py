@@ -4,7 +4,7 @@ define most danmaku actions
 import pygame.transform as transform
 from functions import snipe
 from pygame.sprite import Sprite
-from character.erina import Erina
+# from character.erina import Erina
 from math import cos
 from math import sin
 from math import pi
@@ -554,19 +554,20 @@ class OptionAction():
 
     def selected(self):
         speed = (self.selected_position[0] - self.center[0])/self.rate, (self.selected_position[1] - self.center[1])/self.rate
-        self.center = self.center[0]+speed[0], self.center[1]+speed[1]
+        self.center = [self.center[0]+speed[0], self.center[1]+speed[1]]
 
     def unselected(self):
         speed = (self.unselected_position[0] - self.center[0])/self.rate, (self.unselected_position[1] - self.center[1])/self.rate
-        self.center = self.center[0]+speed[0], self.center[1]+speed[1]
+        self.center = [self.center[0]+speed[0], self.center[1]+speed[1]]
 
     def move_in(self):
         speed = (self.unselected_position[0] - self.birth_place[0])/self.rate, (self.unselected_position[1] - self.birth_place[1])/self.rate
-        self.center = self.center[0]+speed[0], self.center[1]+speed[1]
+        self.center = [self.center[0]+speed[0], self.center[1]+speed[1]]
 
     def move_out(self):
         L = self.birth_place[0]-self.unselected_position[0], self.birth_place[1]-self.unselected_position[1]
         speed = (L[0] - (self.birth_place[0]-self.center[0]))/self.rate, (L[1] - (self.birth_place[1]-self.center[1]))/self.rate
+        self.center = [self.center[0]+speed[0], self.center[1]+speed[1]]
 
     def __setattr__(self, name, value):
         if name == 'rate':

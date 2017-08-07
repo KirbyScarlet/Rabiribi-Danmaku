@@ -1,3 +1,7 @@
+#######################
+#  Under development  #
+#######################
+
 import pygame
 import functions
 import sys
@@ -33,6 +37,9 @@ class Battle():
 
     def GroupInit(self, number):
         """
+
+        # 
+
         specify group counts.
 
             GroupInit(number): return none
@@ -356,6 +363,29 @@ class MidBattle(Battle):
     def Attack(self):
         self.PlayBgm()
         self.MidAttack()
-    
+
+from functions.value import 
+
+class Menu():
+    def __init__(self, *args, **kwargs):
+        self.clock = pygame.clock.Clock()
+        self.part_run = True
+        self.option = [0x6d01]
+        self.all_options = args
+
+    def BackgroundMusic(self):
+        pass
+
+    def Animation(self):
+        pass
+
+    def _RabbitRain(self):
+        pass
+
+    def __call__(self, screen):
+        while self.part_run:
+            functions.ExitCheck()
+
+
 class Pause():
     pass

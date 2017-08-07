@@ -15,13 +15,11 @@ class Key(object):
 
     def delay(self, key):
         if self.key_hold == key:
-            if self.delay_hold == 50:
-                self.delay_hold -= 1
-                return self.key_hold
-            elif self.delay_hold > 0:
+            if self.delay_hold > 0:
                 self.delay_hold -= 1
             else:
                 if self.delay_switch == 12:
+                    self.delay_switch -= 1
                     return self.key_hold
                 elif self.delay_switch == 0:
                     self.delay_switch = 12
@@ -31,13 +29,13 @@ class Key(object):
             self.key_hold = key
             self.delay_hold = 50
             self.delay_switch = 12
+            return key
 
     def __call__(self, keypress):
         for key, value in keypress:
-            if value and (key in defaultkey):
-                return self.delay(key)
+            return self.delay(key)
 
-class option(Sprite, OptionAction):
+class Option(Sprite, OptionAction):
     def __init__(self, rank, 
                     birth_place = (0,0), 
                     selected_position = (0,0), 
@@ -64,10 +62,19 @@ class option(Sprite, OptionAction):
             with open('data/tmp/'+key+'.tmp', 'wb') as f_o:
                 f_o.write(value)
 
-class option_group(Group):
+    def __new__(cls, name, *args, **kwargs):
+        try:
+            cls.image = pygame.image.load('data/tmp/'+name+'.tmp').convert()
+        except pygame.error:
+            cls.load_source(cls.__class__.__name__)
+            cls.image = pygame.image.load('data/tmp/'+name+'.tmp').convert()
+        return super().__new__(*args, **kwargs)
+
+class OptionGroup(Group):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.menu_rank = 0
+        self.menu_rank = 1
+        self.key = Key()
         self.movein = 30  # max 30
         self,moveout = 0  # max 30
 
@@ -85,26 +92,35 @@ class option_group(Group):
             return self.__class__.__name__
         else:
             self.movein = 30
-            return self.menu_rank.__class__.__name__
+            for opt in self:
+                if opt.rank == self.menu_rank: return opt.__class__.__name__
 
-    def move(self, key):
-        pass
+    def move(self, keys):
+        k = self.key(keys)
+        if key == defaultkey.MOVE_UP:
+            self.menu_rank -= 1
+        elif key == defaultkey.MOVE_LEFT:
+            self.menu_rane -= 1
+        elif key == defaultkey.MOVE_DOWN:
+            self.menu_rank += 1
+        elif key == defaultkey.MOVE_DOWN:
+            self.menu_rank += 1
+        for opt in self:
+            if opt.rank == self.menu_rank:
+                opt.selected()
+            else:
+                opt.unselected()
+
+    def __setattr__(self, name, value):
+        if name == 'menu_rank':
+            if value < 0:
+                super().__setattr__('menu_rank', 8)
+            elif value > 8:
+                super().__setattr__('menu_rank', 1)
+        return super().__setattr__(name, value)
 
     def __call__(self):
-        key = pygame.key.get_pressed()
+        keys = defaultkey.filter(pygame.key.get_pressed())
         if self.movein: return self.move_in()
         elif self.moveout: return self.move_out()
-        else: return self.move(key)
-
-class main_menu(option):
-    """
-    main menu switching...
-    """
-    def __new__(cls, name, *args, **kwargs):
-        try:
-            cls.image = pygame.image.load('data/tmp/'+name+'.tmp').convert()
-        except pygame.error:
-            cls.load_source(cls.__class__.__name__)
-            cls.image = pygame.image.load('data/tmp/'+name+'.tmp').convert()
-        return super().__new__(*args, **kwargs)
-
+        else: return self.move(keys)
