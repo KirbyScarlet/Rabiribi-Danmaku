@@ -1,10 +1,10 @@
 Rabiribi-Danmaku
 ================================
-<pre>
-@KirbyScarlet
-Team Vanilla Party
-暂未获得授权
-</pre>
+<b>@KirbyScarlet</b>　<p>
+<b>Team Vanilla Party </b><p>
+<b>暂未获得授权 </b><p>
+
+-----------------------------------------
 ###### 未完成，欢迎提出意见或建议
 <pre>
 　　く__,.ヘヽ.　　　　/　,ー､ 〉
@@ -25,13 +25,13 @@ Team Vanilla Party
 　　　　　 　　　ﾄ-,/　|___./
 </pre>
 ### windows:
-安装python3.3或以上
+安装python3.3或以上<p>
 官方下载地址：https://www.python.org/downloads/windows/
 
     > pip install pygame
     > python rabiribi_danmaku.py
     
-执行rabiribi_danmaku.py
+或双击执行 rabiribi_danmaku.py
     
 ### linux & mac os:
 控制台，游戏目录下：
