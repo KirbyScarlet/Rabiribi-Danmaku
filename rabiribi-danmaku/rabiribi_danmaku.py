@@ -17,9 +17,9 @@ pygame.display.set_icon(icon)
 
 import sys
 import traceback
-import ui
 import functions
 import character
+import ui
 
 me_erina = character.erina.Erina()
 me_ribbon = character.ribbon.Ribbon()
@@ -31,10 +31,10 @@ def main():
     #ui.welcome.opening(screen)
     #ui.menu.menu_switch(screen)
     difficulty = 'normal'
+    import ui.menu
+    ui.menu.menu(screen)
     import boss.section1.stage1a
     boss.section1.stage1a.stage(me_erina, me_ribbon, difficulty, screen)
-    stage1boss = functions.stage_run.BossBattle(me_erina, me_ribbon, difficulty, 2, boss.section1.stage1a.cocoa.Cocoa())
-    stage1boss(screen, debug=True)
 
 if __name__ == "__main__":
     try:

@@ -4,8 +4,8 @@ import pickle
 import os
 import abc
 import functions
-from objects.action import DanmakuAction
-from objects.action import direction
+from functions.action import DanmakuAction
+from functions.action import direction
 from functions.values import screenborder
 from functions import snipe
 from math import pi

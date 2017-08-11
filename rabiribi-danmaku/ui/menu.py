@@ -1,5 +1,6 @@
 from ui.option import Option
 from ui.option import OptionGroup
+from functions.stage_run import Menu
 
 ###
 """
@@ -24,7 +25,7 @@ from ui.option import OptionGroup
   │       └── impossible        [clear all]
   ├── extra start
   │   └── extra    [clear at least normal section1]
-  ├── practice start
+  ├── practice start  [under development]
   │   ├── casual
   │   ├── novice
   │   ├── normal
@@ -57,6 +58,18 @@ from ui.option import OptionGroup
   │   │       ├── stage miriam (stage5)
   │   │       └── stage rumi (stage6)
   │   └── impossible
+  ├── mini game
+  │   ├── ribbon attack
+  │   ├── vanilla and chocolate's helloween
+  │   ├── uprprc members attack 1
+  │   ├── ...
+  │   ├── uprprc members attack 7
+  │   ├── lilith' costum
+  │   ├── lili attack
+  │   ├── bixie attack
+  │   ├── cicini's inventions
+  │   ├── uprprc girl
+  │   └── ... under development
   ├── play data
   │   ├── high score
   │   ├── spell card collected
@@ -100,7 +113,7 @@ from ui.option import OptionGroup
   │       ├── move left            [default 'KEY_LEFT']
   │       ├── move right           [default 'KEY_RIGHT']
   │       ├── reset
-  │       └── key config quit
+  │       └── key config quit
   ├── manual
   │   ├── story
   │   ├── character introduction
@@ -112,6 +125,7 @@ from ui.option import OptionGroup
 
 """ main menu """
 # 220 640 start option
+main_menu = OptionGroup('main_menu')
 mainmenuoptions = (
     'start', 
     'extra_start',
@@ -129,11 +143,12 @@ opts = map(
         x, 
         mainmenuoptions.index(x)+1, 
         (640,220+mainmenuoptions.index(x)*20), 
-        (400,220*mainmenuoptions.index(x)*20), 
-        (640,220+mainmenuoptions.index(x)*20), 
-        2),
+        (400,220+mainmenuoptions.index(x)*20), 
+        (420,220+mainmenuoptions.index(x)*20), 
+        2,10),
     mainmenuoptions
     )
-main_menu = OptionGroup(*opts)
-
+main_menu.add(*opts)
 """ ========= """
+
+menu = Menu(main_menu)

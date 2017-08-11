@@ -5,7 +5,6 @@
 import pygame
 import functions
 import sys
-import ui
 import abc
 import multiprocessing
 from functions.values import pausetypes
@@ -364,28 +363,62 @@ class MidBattle(Battle):
         self.PlayBgm()
         self.MidAttack()
 
-from functions.value import 
+from functions.values import mainmenu
+from functions.values import startmenu
+from functions.values import extrastart
+from functions.values import practicestart
+from functions.values import playdata
+from functions.values import musicroom
+from functions.values import options
+from functions.values import manual
+from functions.values import quit  # just for fun
 
 class Menu():
-    def __init__(self, *args, **kwargs):
-        self.clock = pygame.clock.Clock()
+    def __init__(self, *opts):
+        self.clock = pygame.time.Clock()
         self.part_run = True
-        self.option = [0x6d01]
-        self.all_options = args
+        self.option = ['main_menu']
+        self.all_options = {}
+        for each in opts:
+            self.all_options[each.name] = each
 
-    def BackgroundMusic(self):
+        self.bgm = pygame.mixer.music
+        self.set_bgm = 2
+        self.new_bgm = 'menu'
+
+    def KeyPress(self):
+        """
+        get key pressed
+        """
+        self.key_pressed = pygame.key.get_pressed()
+
+    def BackgroundMusic(self, *music):
+        if music:
+            self.bgm.fadeout(500)
+            self.set_bgm = 30
+            self.new_bgm = music[0]
+        if self.set_bgm:
+            self.set_bgm -= 1
+            if self.set_bgm == 1:
+                self.bgm.load('data/bgm/'+self.new_bgm+'.ogg')
+                self.bgm.play(-1)
+
+    def Animation(self, screen):
+        screen.fill((255,255,255))
         pass
 
-    def Animation(self):
-        pass
-
-    def _RabbitRain(self):
-        pass
+    def PrintScreen(self, screen):
+        pygame.display.update()
 
     def __call__(self, screen):
         while self.part_run:
             functions.ExitCheck()
-
+            self.BackgroundMusic()
+            self.Animation(screen)
+            self.KeyPress()
+            self.all_options[self.option[-1]](self.key_pressed, screen)
+            self.PrintScreen(screen)
+            self.clock.tick_busy_loop(60)
 
 class Pause():
     pass

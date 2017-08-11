@@ -8,6 +8,7 @@ from pygame.sprite import Sprite
 from math import cos
 from math import sin
 from math import pi
+from random import random
 import time
 
 class direction():
@@ -533,7 +534,8 @@ class OptionAction():
     def __init__(self, birth_place = (0,0), 
                  selected_position = (0,0),
                  unselected_position = (0,0),
-                 rate = 2.0,
+                 select_rate = 2.0,
+                 moveio_rate = 4.0,
                  **kwargs):
         """
         using:
@@ -548,25 +550,29 @@ class OptionAction():
             rate: easy-ease speed, high rate with low speed, at least 2.0
         """
         self.center = list(birth_place)
-        self.rate = rate
+        self.rate_s = select_rate
+        self.rate_io = moveio_rate
+        self.birth_place = birth_place
         self.selected_position = selected_position
         self.unselected_position = unselected_position
 
     def selected(self):
-        speed = (self.selected_position[0] - self.center[0])/self.rate, (self.selected_position[1] - self.center[1])/self.rate
+        speed = (self.selected_position[0] - self.center[0])/self.rate_s, (self.selected_position[1] - self.center[1])/self.rate_s
         self.center = [self.center[0]+speed[0], self.center[1]+speed[1]]
 
     def unselected(self):
-        speed = (self.unselected_position[0] - self.center[0])/self.rate, (self.unselected_position[1] - self.center[1])/self.rate
+        speed = (self.unselected_position[0] - self.center[0])/self.rate_s, (self.unselected_position[1] - self.center[1])/self.rate_s
         self.center = [self.center[0]+speed[0], self.center[1]+speed[1]]
 
     def move_in(self):
-        speed = (self.unselected_position[0] - self.birth_place[0])/self.rate, (self.unselected_position[1] - self.birth_place[1])/self.rate
-        self.center = [self.center[0]+speed[0], self.center[1]+speed[1]]
+        speed = (self.unselected_position[0] - self.birth_place[0])/self.rate_io, 
+                (self.unselected_position[1] - self.birth_place[1])/self.rate_io
+        print(speed, random())
+        self.center = [self.center[0]-speed[0], self.center[1]-speed[1]]
 
     def move_out(self):
         L = self.birth_place[0]-self.unselected_position[0], self.birth_place[1]-self.unselected_position[1]
-        speed = (L[0] - (self.birth_place[0]-self.center[0]))/self.rate, (L[1] - (self.birth_place[1]-self.center[1]))/self.rate
+        speed = (L[0] - (self.birth_place[0]-self.center[0]))/self.rate_io, (L[1] - (self.birth_place[1]-self.center[1]))/self.rate_io
         self.center = [self.center[0]+speed[0], self.center[1]+speed[1]]
 
     def __setattr__(self, name, value):
