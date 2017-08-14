@@ -39,6 +39,51 @@ def ExitCheck():
 class SnipeError(TypeError):
     pass
 
+def vector(x, y):
+    """
+    vector(x, y): return float
+
+        return a radian from a vector
+    """
+    d = sprt(x**2 + y**2)
+    v = asin(y/b)
+    if x < 0:
+        if y > 0:
+            v = pi - v
+        elif delta_y < 0:
+            v = -pi - v
+        elif delta_y == 0:
+            v = pi
+    elif x > 0:
+        snipe = temp_snipe
+    else:
+        if y > 0:
+           v = pi/2
+        elif y < 0:
+            v = -pi/2
+    return v
+
+def angle(vector1, vector2):
+    """
+    angle(vector1, vector2): return float
+
+        return
+    """
+    if isinsance(vector1, float):
+        v1 = vector1
+    elif isinstance(vector1, (list, tuple)):
+        v1 = vector(*vector1)
+    if isinstance(vector2, float):
+        v2 = vector2
+    elif isinstance(vector2, (list, tuple)):
+        v2 = vector(*vector2)
+    v = v2 - v1
+    while v < -pi:
+        v += 2*pi
+    while v >= pi:
+        v -= 2*pi
+    return v
+
 def snipe(origin, destination, type='rad'):
     """
     snipe function here:
@@ -73,6 +118,7 @@ def snipe(origin, destination, type='rad'):
     if delta_x==0 and delta_y==0:
         return random() * 2 * pi
         raise SnipeError
+    '''
     distance = sqrt(delta_x ** 2 + delta_y ** 2)
     temp_snipe = asin(delta_y/distance)
     if delta_x < 0:
@@ -89,6 +135,8 @@ def snipe(origin, destination, type='rad'):
             snipe = -pi/2
     else:
         snipe = temp_snipe
+    '''
+    snipe = vector(delta_x, delta_y)
     if type == 'rad':
         return snipe
     elif type == 'vector':
@@ -97,6 +145,7 @@ def snipe(origin, destination, type='rad'):
         print("parament error")
         raise TypeError
 
+'''
 def angle(direction):
     """
     return rad of a direction:
@@ -114,6 +163,7 @@ def angle(direction):
     else:
         rad = temp_rad
     return rad
+'''
 
 import time
 def time_check(fun, *args, **kwargs):

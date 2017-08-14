@@ -3,6 +3,8 @@ define most danmaku actions
 """
 import pygame.transform as transform
 from functions import snipe
+from functions import vector
+from functions import angle
 from pygame.sprite import Sprite
 # from character.erina import Erina
 from math import cos
@@ -74,66 +76,54 @@ class direction():
     def __repr__(self):
         return 'direction vector = (%.4f,%.4f)' % (self.x, self.y)
 
+class AbstractAction():
+    """
+    Action(birth_place, 
+           birth_place_offset,
+           birth_direction,
+           birth_direction_offset,
+           *args,
+           speedtime = (),
+           speedvalue = (),
+           directiontime = (),
+           directionvalue = (),
+           **kwargs
+           ): return action instance
+        
+            birth_place: specify the coordinate of sprite
+            birth_place_offset: specify the polar coordinate offset of sprite
+                                birth_place_offset = (<radian>,<distance>)
+            speedtime = (): specify time (frame) when speed change
+                            speedtime = (30,)
+            speedvalue = (): specify speed (float) at speedtime
+                             speedvalue = (2.5,)
+            directiontime = (): specify time (frame) when direction change
+            directionvalue = (): specify direction at directiontime (type tuple)
+                                directionvalue = (
+                                    pi/2,  # static offset value
+                                    (erina, pi/64),  # static value
+                                    [pi/96, pi/256],  # dynamic offset value
+                                    {x:0, y:}  # dynamic offset with different axis
+                                    )
 
-class DanmakuAction():
+    """
     def __init__(self, birth_place,
-                 birth_place_offset = (), 
-                 danmaku_layer = 0, 
-                 birth_speed = False, 
-                 direction = pi/2, 
-                 direction_offset = 0, 
-                 time_rip = False, 
+                 birth_place_offset,
+                 birth_direction, 
+                 birth_direction_offset, *args,
                  speedtime = (),
                  speedvalue = (),
                  directiontime = (),
                  directionvalue = (),
-                 **kwargs):
-        """
-        using:
-
-            danmaku(self, birth_place, *args, 
-                 birth_place_offset = (0,0), 
-                 danmaku_layer = 0, 
-                 birth_speed = 0, 
-                 direction = pi/2, 
-                 direction_offset = 0, 
-                 time_rip = 'pass', 
-                 **kwargs):
-
-                birth_place: specify danmaku birth place
-                *args: fit mistakes
-                danmaku_layer = 0: defaulty on the top
-                birth_speed = 0: specify danmaku speed when birth
-                direction = pi/2: default direction is [0,2*pi]
-                                   if direction parament is a vector, lose acuricy
-                direction_offset = 0: a radium number
-                time_rip = False: if timerip set to true, use keyword argument.
-                **kwargs: specify speed and direction in time:
-                    format:
-                        speed_<speed timer> = <speed value>
-                        direction_<direction_timer1>[_<direction_timer2>] = (<direction_value>, <direction_offset>)
-                    for example:
-                    speed_20 = 4.0
-                       ^ ^ ^    ^
-                       |  |  |    |_____set value
-                       |  |  |_________set sprite timer, 60 frames per second default
-                       |  |____________stynax use
-                       |_______________speed or direction
-                                        when use direction mode, value can use a tuple for direction and offset
-
-                    direction_10 = pi/2         offset value
-                    direction_20 = (erina, pi/128)      static value
-                    direction_30 = [pi/64, pi/720]      dynamic offset value, rad/frame
-                    direction_40 = {'x':0, 'y':-1}     dynamic offset with different axis
-        """
+                 **kwargs
+                 ):
         self.SetPosition(birth_place, birth_place_offset)
-        self.layer = danmaku_layer
         self.SetDirection(direction, direction_offset)
         self.SetSpeed(birth_speed)
         self.timerip = False
-        if time_rip:
+        if speedtime or directiontime:
             self.SetTimerip(speedtime, speedvalue, directiontime, directionvalue)
-        #print('action instance:', self.speed, self.center, self.direction)
+
 
     def SetPosition(self, birth_place, birth_place_offset):
         if isinstance(birth_place, Sprite):
@@ -358,7 +348,7 @@ class DanmakuAction():
     def __direction_freeze_ease(self, *erina):
         # if direction value is a tuple
         # print('tuple')
-        if isinstance(self.directionvalue_range[0], Erina):
+        if hasattr(self.directionvalue_range[0], '_type'):
             self.direction.set(snipe(self.center, *erina))
         else:
             self.direction.set(self.directionvalue_range[0])
@@ -530,8 +520,100 @@ class DanmakuAction():
         # low efficiency
         #exec(self.timerip)
 
+
+class DanmakuAction(AbstractAction):
+    def __init__(self, birth_place,
+                 birth_place_offset = (), 
+                 danmaku_layer = 0, 
+                 birth_speed = False, 
+                 direction = pi/2, 
+                 direction_offset = 0, 
+                 speedtime = (),
+                 speedvalue = (),
+                 directiontime = (),
+                 directionvalue = (),
+                 **kwargs):
+        """
+        using:
+
+            danmaku(self, birth_place, *args, 
+                 birth_place_offset = (0,0), 
+                 danmaku_layer = 0, 
+                 birth_speed = 0, 
+                 direction = pi/2, 
+                 direction_offset = 0, 
+                 time_rip = 'pass', 
+                 **kwargs):
+
+                birth_place: specify danmaku birth place
+                *args: fit mistakes
+                danmaku_layer = 0: defaulty on the top
+                birth_speed = 0: specify danmaku speed when birth
+                direction = pi/2: default direction is [0,2*pi]
+                                   if direction parament is a vector, lose acuricy
+                direction_offset = 0: a radium number
+                time_rip = False: if timerip set to true, use keyword argument.
+                **kwargs: specify speed and direction in time:
+                    format:
+                        speed_<speed timer> = <speed value>
+                        direction_<direction_timer1>[_<direction_timer2>] = (<direction_value>, <direction_offset>)
+                    for example:
+                    speed_20 = 4.0
+                       ^ ^ ^    ^
+                       |  |  |    |_____set value
+                       |  |  |_________set sprite timer, 60 frames per second default
+                       |  |____________stynax use
+                       |_______________speed or direction
+                                        when use direction mode, value can use a tuple for direction and offset
+
+                    direction_10 = pi/2         offset value
+                    direction_20 = (erina, pi/128)      static value
+                    direction_30 = [pi/64, pi/720]      dynamic offset value, rad/frame
+                    direction_40 = {'x':0, 'y':-1}     dynamic offset with different axis
+        """
+        super().__init__(self, birth_place = birth_place,
+                 birth_place_offset = birth_place_offset,
+                 birth_direction = direction, 
+                 birth_direction_offset = direction_offset,
+                 birth_speed = birth_speed
+                 speedtime = speedtime,
+                 speedvalue = speedvalue,
+                 directiontime = direcitontime,
+                 directionvalue = directionvalue,
+                 **kwargs
+                 ):
+        self.layer = danmaku_layer
+        #print('action instance:', self.speed, self.center, self.direction)
+
+
+class ElfAction(AbstractAction):
+    def __init__(self, birth_place,
+                 birth_place_offset,
+                 birth_speed,
+                 birth_direction, 
+                 birth_direction_offset, *args,
+                 speedtime = (),
+                 speedvalue = (),
+                 directiontime = (),
+                 directionvalue = (),
+                 **kwargs
+                 ):
+        super().__init__(self, birth_place = birth_place,
+                 birth_place_offset = birth_place_offset,
+                 birth_direction = direction, 
+                 birth_direction_offset = direction_offset,
+                 birth_speed = birth_speed,
+                 speedtime = speedtime,
+                 speedvalue = speedvalue,
+                 directiontime = direcitontime,
+                 directionvalue = directionvalue,
+                 **kwargs
+                 )
+        pass
+
 class OptionAction():
-    def __init__(self, birth_place = (0,0), 
+    def __init__(self, rank,
+                 birth_place = (0,0), 
                  selected_position = (0,0),
                  unselected_position = (0,0),
                  select_rate = 2.0,
@@ -549,12 +631,14 @@ class OptionAction():
             ?
             rate: easy-ease speed, high rate with low speed, at least 2.0
         """
+        self.rank = rank
         self.center = list(birth_place)
         self.rate_s = select_rate
         self.rate_io = moveio_rate
         self.birth_place = birth_place
         self.selected_position = selected_position
         self.unselected_position = unselected_position
+        self.move_in_time = 30 + rank
 
     def selected(self):
         speed = (self.selected_position[0] - self.center[0])/self.rate_s, (self.selected_position[1] - self.center[1])/self.rate_s
@@ -565,10 +649,16 @@ class OptionAction():
         self.center = [self.center[0]+speed[0], self.center[1]+speed[1]]
 
     def move_in(self):
-        speed = (self.unselected_position[0] - self.birth_place[0])/self.rate_io, 
-                (self.unselected_position[1] - self.birth_place[1])/self.rate_io
-        print(speed, random())
-        self.center = [self.center[0]-speed[0], self.center[1]-speed[1]]
+        if 0 < self.move_in_time < 30:
+            speed = (self.unselected_position[0] - self.center[0])/self.rate_io, (self.unselected_position[1] - self.center[1])/self.rate_io
+            self.center = [self.center[0]+speed[0], self.center[1]+speed[1]]
+        self.move_in_time -= 1
+        '''
+        speed = (2*self.unselected_position[0] - self.birth_place[0] - self.center[0])/self.rate_io, 
+                (2*self.unselected_position[1] - self.birth_place[1] - self.center[1])/self.rate_io
+        print(self.center)
+        self.center = [self.center[0]+speed[0], self.center[1]+speed[1]]
+        '''
 
     def move_out(self):
         L = self.birth_place[0]-self.unselected_position[0], self.birth_place[1]-self.unselected_position[1]

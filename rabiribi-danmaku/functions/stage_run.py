@@ -197,6 +197,8 @@ class Battle():
         self.erina.damage(self.damage_layer)
         for b in self.boss_layer:
             b.damage(self.damage_layer)
+        for e in self.elf_layer:
+            e.damage(self.damage_layer)
 
     def Debug(self, screen):
         debug_words_pos_left = 430
@@ -300,6 +302,7 @@ class Battle():
             else:
                 pass
             #self.clock.tick(60)
+            self.timer += 1
             self.clock.tick_busy_loop(60)
 
 class BossBattle(Battle):

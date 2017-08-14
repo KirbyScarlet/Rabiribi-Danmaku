@@ -145,7 +145,7 @@ opts = map(
         (640,220+mainmenuoptions.index(x)*20), 
         (400,220+mainmenuoptions.index(x)*20), 
         (420,220+mainmenuoptions.index(x)*20), 
-        2,10),
+        10,10),
     mainmenuoptions
     )
 main_menu.add(*opts)

@@ -5,6 +5,7 @@ import os
 import abc
 import functions
 from functions.action import DanmakuAction
+from functions.action import ElfAction
 from functions.action import direction
 from functions.values import screenborder
 from functions import snipe
@@ -117,6 +118,9 @@ class Damage(object):
         self.buff(layer)
         self.special_buff(layer)
         '''
+        if self.sprite.invincible:
+            self.sprite.invincible -= 1
+            return
         if self.buff_damage < self.sprite.hp:
             self.sprite.hp -= self.buff_damage
         self.sprite.hp -= self.all_damage
@@ -432,7 +436,6 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
                 birth_speed = 1.0, 
                 direction = pi/2, 
                 direction_offset = 0, 
-                time_rip = False, 
                 **kwargs):
         pygame.sprite.Sprite.__init__(self, birth_group)
         DanmakuAction.__init__(self, birth_place,
@@ -441,7 +444,6 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
                                 birth_speed=birth_speed, 
                                 direction=direction, 
                                 direction_offset=direction_offset, 
-                                time_rip=time_rip, 
                                 **kwargs)
         self.buff_catch = functions.buff_debuff.BuffGroup(*buff)
         """
@@ -652,24 +654,30 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
 
 ###
 
-class Elf(pygame.sprite.Sprite):
+class Elf(pygame.sprite.Sprite, ElfAction):
     __metaclass__ = abc.ABCMeta
     """
     use for almost all mid boss
     """
     _type = 'elf'
-    def __init__(self, name):
-        pygame.sprite.Sprite.__init__(self)
-        self.name = name
+    def __init__(self, elf_group,
+                *args,
+                **kwargs):
+        pygame.sprite.Sprite.__init__(self, elf_group)
+        ElfAction.__init__(self, *args, **kwargs)
+        #self.name = name
         self.buff = functions.buff_debuff.BuffGroup()
         self.invincible = 0
         self.frame_count = 0
         self.timer = 0
         #self.SetSource(file_name)
 
+    def SetLevel(self, erina, difficulty):
+        self.level = 0
+
     def SetSource(self):
         """
-        SetSource(file_name): return None
+        SetSource(): return None
         """
         #self.load_source(file_name)
         self.pixel_count = len(self.images['pixel'])
@@ -677,13 +685,13 @@ class Elf(pygame.sprite.Sprite):
         self.pixel_frame = 0
         self.image = self.pixel[self.pixel_count]
         self.rect = self.image.get_rect()
-        self.direction = direction()
-        self.temp_position = [-10.0,-10.0]
-        self.center = [-10.0, 10.0]
+        #self.direction = direction()
+        #self.temp_position = [-10.0,-10.0]
+        #self.center = [-10.0, 10.0]
         self.rect.top = self.center[0] - 10
         self.rect.left = self.center[1] - 10
 
-    def SetValue(self, max_hp, crash_damage, bonus_energy):
+    def SetValue(self, max_hp, crash_damage, bonus_energy, live_time = -1):
         """
         SetValue(max_hp, crash_damage, bonus_energy): return None
 
@@ -691,17 +699,18 @@ class Elf(pygame.sprite.Sprite):
         """
         self.max_hp = max_hp
         self.hp = int(self.max_hp)
+        self.damage = Damage(self)
         self.crash_damage = crash_damage
         self.bonus_energy = bonus_energy
         self.collide = True
         self.in_screen = False
-        self.live_time = -1
+        self.live_time = live_time
         self.speed = 0
         self.radius = 8
-        self.defense = 1.0
         self.damage = Damage(self)
 
     def move(self, *erina):
+        self.time_rip(*erina)
         distance = sqrt( \
                         (self.center[0] - self.temp_position[0]) ** 2 + \
                         (self.center[1] - self.temp_position[1]) ** 2 )

@@ -74,12 +74,12 @@ class defaultkey:
 
 # Local difficulty
 class difficulty:
-    EASY = 4
-    NORMAL = 8
-    HARD = 16
-    HELL = 32
-    BUNNY = 64
-    EXTRA = 48
+    EASY = 'easy'
+    NORMAL = 'normal'
+    HARD = 'hard'
+    HELL = 'hell'
+    BUNNY = 'bunny'
+    EXTRA = 'extra'
 
 # damage type
 class damagetype:

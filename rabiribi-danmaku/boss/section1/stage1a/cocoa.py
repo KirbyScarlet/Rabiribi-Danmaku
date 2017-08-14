@@ -48,7 +48,6 @@ class Spell_1(SpellCard):
                         birth_speed = 5, 
                         direction = erina,
                         direction_offset = offset*pi/320 + i*pi/32,
-                        time_rip = True,
                         speedtime = (60,120),
                         speedvalue = (0,1.5),
                         directiontime = (60,120),
@@ -82,7 +81,6 @@ class Spell_2(SpellCard):
                                   direction = angle,
                                   direction_offset = 2*pi*i/32,
                                   danmaku_layer = 1,
-                                  time_rip = True,
                                   speedtime = (20,),
                                   speedvalue = (2,)
                                   )
