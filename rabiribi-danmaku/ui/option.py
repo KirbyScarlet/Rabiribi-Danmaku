@@ -52,15 +52,15 @@ class Option(Sprite, OptionAction):
         """
         """
         Sprite.__init__(self)
-        OptionAction.__init__(self, birth_place,
+        OptionAction.__init__(self, rank, birth_place,
                        selected_position,
                        unselected_position,
                        rate_s,
                        rate_io)
-        self.rank = rank    # small rank on top
+        #self.rank = rank    # small rank on top
         self.select = False
         self.timer = 0
-        self.alpha = 255.0
+        self.alpha = 155.0
         self.name = name
         try:
             self.image = pygame.image.load('data/tmp/imgs/'+name+'.tmp').convert_alpha()
@@ -92,6 +92,8 @@ class Option(Sprite, OptionAction):
         return super().__setattr__(name, value)
 
     def print_screen(self, screen, *args, **kwargs):
+        self.rect.left, self.rect.top = self.center
+        print(self.center)
         self.surface.blit(screen, (self.rect.left-640, self.rect.top-480))
         self.surface.blit(self.image,(0,0))
         self.surface.set_alpha(self.alpha)
@@ -106,6 +108,7 @@ class OptionGroup(Group):
         self.key = Key()
         self.movein = 30  # max 30
         self.moveout = 0  # max 30
+        self.ret = None
 
     @classmethod
     def load_source(cls, name):
@@ -135,7 +138,6 @@ class OptionGroup(Group):
         else:
             self.movein = 30
             for opt in self:
-                opt.alpha = 255.0
                 if opt.rank == self.menu_rank: return opt.name
 
     def move(self, keys, screen):
@@ -148,6 +150,12 @@ class OptionGroup(Group):
             self.menu_rank += 1
         elif k == defaultkey.MOVE_RIGHT:
             self.menu_rank += 1
+        elif k == defaultkey.SHOUTING:
+            for opt in self:
+                if opt.rank == self.menu_rank:
+                    self.ret = opt.name
+        elif k == defaultkey.AMULET:
+            self.move_out = 30
         for opt in self:
             if opt.rank == self.menu_rank:
                 opt.select = True
