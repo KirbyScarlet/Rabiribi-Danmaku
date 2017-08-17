@@ -45,17 +45,17 @@ def vector(x, y):
 
         return a radian from a vector
     """
-    d = sprt(x**2 + y**2)
-    v = asin(y/b)
+    d = sqrt(x**2 + y**2)
+    v = asin(y/d)
     if x < 0:
         if y > 0:
             v = pi - v
-        elif delta_y < 0:
+        elif y < 0:
             v = -pi - v
-        elif delta_y == 0:
+        elif y == 0:
             v = pi
     elif x > 0:
-        snipe = temp_snipe
+        pass
     else:
         if y > 0:
            v = pi/2

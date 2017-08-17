@@ -333,16 +333,16 @@ class Boss(pygame.sprite.Sprite):
             self.damage.danmaku += each.damage
             #self.buff.add(each.buff.buffs())
 
-    def spell_attack(self, difficulty, erina, birth_group, boss_group, illustration_group, danmaku_group):
+    def spell_attack(self, difficulty, erina, birth_layer, boss_group, illustration_group, danmaku_layer):
         """
         prepared for every instance.
         """
         if self.hp > 0 and self.spell_group.__getattribute__('spell_' + str(self.spell_now)).timer < self.spell_group.__getattribute__('spell_' + str(self.spell_now)).spell_time:
-            self.spell_group.__getattribute__('spell_' + str(self.spell_now))(difficulty, erina, birth_group, boss_group, illustration_group)
+            self.spell_group.__getattribute__('spell_' + str(self.spell_now))(difficulty, erina, birth_layer, boss_group, illustration_group)
         elif self.hp <= 0 or self.spell_group.__getattribute__('spell_' + str(self.spell_now)).timer == self.spell_group.__getattribute__('spell_' + str(self.spell_now)).spell_time:
-            for sprite in danmaku_group:
+            for sprite in danmaku_layer:
                 sprite.kill()
-            for sprite in birth_group:
+            for sprite in birth_layer:
                 sprite.kill()
             self.hp = self.max_hp
             self.spell_now += 1
@@ -412,7 +412,8 @@ class Boss(pygame.sprite.Sprite):
                 misc_file = open(misc_name, 'wb')
             misc_file.write(sources['music'])
             misc_file.close()
-            self.bgm.load(misc_name)
+            self.music_name = misc_name
+            #self.bgm.load(misc_name)
         except:
             del self.bgm
 
@@ -429,7 +430,7 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
     """
     _type = 'danmaku'
     def __init__(self, 
-                birth_group, birth_place, *buff, 
+                birth_layer, birth_place, *buff, 
                 birth_time=10, lazer=-1,
                 birth_place_offset = ((0),0), 
                 danmaku_layer = 0, 
@@ -437,7 +438,7 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
                 direction = pi/2, 
                 direction_offset = 0, 
                 **kwargs):
-        pygame.sprite.Sprite.__init__(self, birth_group)
+        pygame.sprite.Sprite.__init__(self, birth_layer)
         DanmakuAction.__init__(self, birth_place,
                                 birth_place_offset=birth_place_offset, 
                                 danmaku_layer=danmaku_layer, 
@@ -660,15 +661,34 @@ class Elf(pygame.sprite.Sprite, ElfAction):
     use for almost all mid boss
     """
     _type = 'elf'
-    def __init__(self, elf_group,
-                *args,
-                **kwargs):
+    def __init__(self, elf_group, *args, 
+                 birth_place = (30, -30),
+                 birth_direction = pi/2, 
+                 birth_speed = 2,
+                 birth_place_offset = (0,0),
+                 birth_direction_offset = 0,
+                 speedtime = (),
+                 speedvalue = (),
+                 directiontime = (),
+                 directionvalue = (),
+                 **kwargs):
         pygame.sprite.Sprite.__init__(self, elf_group)
-        ElfAction.__init__(self, *args, **kwargs)
+        ElfAction.__init__(self, 
+                            birth_place = birth_place,
+                            birth_direction = birth_direction, 
+                            birth_speed = birth_speed,
+                            birth_place_offset = birth_place_offset,
+                            birth_direction_offset = birth_direction_offset,
+                            speedtime = speedtime,
+                            speedvalue = speedvalue,
+                            directiontime = directiontime,
+                            directionvalue = directionvalue,
+                            **kwargs
+                            )
         #self.name = name
         self.buff = functions.buff_debuff.BuffGroup()
         self.invincible = 0
-        self.frame_count = 0
+        #self.frame_count = 0
         self.timer = 0
         #self.SetSource(file_name)
 
@@ -683,7 +703,7 @@ class Elf(pygame.sprite.Sprite, ElfAction):
         self.pixel_count = len(self.images['pixel'])
         self.pixel = self.images['pixel']
         self.pixel_frame = 0
-        self.image = self.pixel[self.pixel_count]
+        self.image = self.pixel[self.pixel_count-1]
         self.rect = self.image.get_rect()
         #self.direction = direction()
         #self.temp_position = [-10.0,-10.0]
@@ -705,11 +725,12 @@ class Elf(pygame.sprite.Sprite, ElfAction):
         self.collide = True
         self.in_screen = False
         self.live_time = live_time
-        self.speed = 0
+        #self.speed = 0
         self.radius = 8
         self.damage = Damage(self)
 
     def move(self, *erina):
+        '''
         self.time_rip(*erina)
         distance = sqrt( \
                         (self.center[0] - self.temp_position[0]) ** 2 + \
@@ -724,6 +745,15 @@ class Elf(pygame.sprite.Sprite, ElfAction):
         self.rect.left = self.center[0] - 35
         self.rect.top = self.center[1] - 35 + 5*math.sin(6.28*self.frame_count/100)
         self.Frame_Count()
+        '''
+        self.time_rip(*erina)
+        self.image_change()
+        self.center[0] += self.speed * self.direction.x
+        self.center[1] += self.speed * self.direction.y
+        self.rect.left = self.center[0] - self.rect.width/2
+        self.rect.top = self.center[1] - self.rect.height/2 + 5*math.sin(6.28*self.timer/100)
+        self.timer += 1
+
 
     @classmethod
     def load_source(self, file_name):
@@ -742,32 +772,54 @@ class Elf(pygame.sprite.Sprite, ElfAction):
             img_file.close()
             self.images['pixel'].append(pygame.image.load(img_name).convert_alpha())
 
-    def change_image(self):
-        if not self.frame_count %12:
+    def image_change(self):
+        if not self.timer %12:
             self.pixel_frame += 1
             if self.pixel_frame >= self.pixel_count:
                 self.pixel_frame = 0
         self.image = self.pixel[self.pixel_frame]
         
-    def attack(self, difficulty, erina, birth_group, elf_group, danmaku_group):
+    def attack(self, difficulty, erina, birth_layer, elf_group, danmaku_layer):
         """
         specify attack methods
         """
-        self.__getattribute__("attack_"+difficulty)(difficulty, erina, birth_group, elf_group, danmaku_group)
+        self.__getattribute__("attack_"+difficulty)(difficulty, erina, birth_layer, elf_group, danmaku_layer)
 
-    def attack_easy(self, difficulty, erina, brith_group, elf_group, danmaku_group):
+    def buff_check(self, erina, *elf):
+        for buff in self.buff:
+            buff.check(erina, *elf)
+
+    def collide_check(self, shouting_group):
+        if self.collide:
+            temp = pygame.sprite.spritecollide(self, shouting_group, True, pygame.sprite.collide_circle)
+            self.damage_check(temp)
+
+    def damage_check(self, shoutings):
+        if self.hp <= 0:
+            return self.death()
+        for each in shoutings:
+            self.damage.danmaku += each.damage
+
+    def death(self):
+        # animation under development
+        self.kill()
+
+    def attack(self, difficulty, erina, birth_layer, elf_group, danmaku_layer):
+        self.__getattribute__('attack_'+difficulty)(erina, birth_layer, elf_group, danmaku_layer)
+
+    def attack_easy(self, erina, birth_layer, elf_group, danmaku_layer):
         pass
 
-    def attack_normal(self, difficulty, erina, brith_group, elf_group, danmaku_group):
+    def attack_normal(self, erina, birth_layer, elf_group, danmaku_layer):
         pass
 
-    def attack_hard(self, difficulty, erina, brith_group, elf_group, danmaku_group):
+    def attack_hard(self, erina, birth_layer, elf_group, danmaku_layer):
         pass
 
-    def attack_hell(self, difficulty, erina, brith_group, elf_group, danmaku_group):
+    def attack_hell(self, erina, birth_layer, elf_group, danmaku_layer):
         pass
 
-    def attack_bunny(self, difficulty, erina, brith_group, elf_group, danmaku_group):
+    def attack_bunny(self, erina, birth_layer, elf_group, danmaku_layer):
         pass
 
     def print_screen(self, screen):

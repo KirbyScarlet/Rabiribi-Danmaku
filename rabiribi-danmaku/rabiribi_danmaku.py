@@ -31,10 +31,11 @@ def main():
     #ui.welcome.opening(screen)
     #ui.menu.menu_switch(screen)
     difficulty = 'normal'
-    import ui.menu
-    ui.menu.menu(screen)
+    #import ui.menu
+    #ui.menu.menu(screen)
     import boss.section1.stage1a
-    boss.section1.stage1a.stage(me_erina, me_ribbon, difficulty, screen)
+    boss.section1.stage1a.stage_mid(me_erina, me_ribbon, difficulty, screen)
+    boss.section1.stage1a.stage_end(me_erina, me_ribbon, difficulty, screen)
 
 if __name__ == "__main__":
     try:

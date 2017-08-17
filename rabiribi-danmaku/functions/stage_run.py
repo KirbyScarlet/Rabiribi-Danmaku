@@ -7,6 +7,7 @@ import functions
 import sys
 import abc
 import multiprocessing
+import ui.face
 from functions.values import pausetypes
 
 #mpool = multiprocessing.Pool()
@@ -160,6 +161,7 @@ class Battle():
                     self.energy_layer,
                     self.item_layer,
                     self.boost_layer,
+                    self.elf_layer,
                     self.danmaku_layer,
                     self.erina.buff
                     )
@@ -192,6 +194,8 @@ class Battle():
         self.erina.collide_check(self.danmaku_layer, self.boss_layer)
         for b in self.boss_layer:
             b.collide_check(self.shouting_layer)
+        for e in self.elf_layer:
+            e.collide_check(self.shouting_layer)
 
     def DamageCheck(self):
         self.erina.damage(self.damage_layer)
@@ -223,28 +227,37 @@ class Battle():
         screen.blit(self.background, (0,0))
         for sprite in self.illustration_layer:
             sprite.print_screen(screen)
+
         for sprite in self.energy_layer:
             sprite.print_screen(screen)
+
         for sprite in self.shouting_layer:
             sprite.print_screen(screen)
         screen.blit(self.erina.image, self.erina.rect)
         screen.blit(self.ribbon.image, self.ribbon.rect)
+
+        for sprite in self.elf_layer:
+            sprite.print_screen(screen)
         for sprite in self.boss_layer:
             sprite.print_screen(screen)
         for sprite in self.item_layer:
             sprite.print_screen(screen)
+
         for sprite in self.birth_layer:
             sprite.print_screen(screen)
         for num in range(self.danmaku_layer_count-1,-1,-1):
             for sprite in self.__getattribute__('danmaku_layer_' + str(num)):
                 sprite.print_screen(screen)
+
         for sprite in self.erina.buff:
             sprite.print_screen(screen)
         for sprite in self.boss_layer:
             for b in sprite.buff:
                 b.print_screen(screen)
+
         for sprite in self.boost_layer:
             sprite.print_screen(screen)
+
         screen.blit(self.face.face, (0,0))
 
     def PauseCheck(self):
@@ -289,6 +302,10 @@ class Battle():
         self.erina = erina 
         self.ribbon = ribbon
         self.difficulty = difficulty
+        for b in self.boss_layer:
+            if hasattr(b, 'music_name'):
+                self.bgm.load(b.music_name)
+        self.bgm.play(-1)
         while self.part_run:
             functions.ExitCheck()
             self.KeyPress()
@@ -338,7 +355,8 @@ class MidBattle(Battle):
     """
     def __init__(self, danmaku_layer_count, *mid_boss, **kwargs):
         super().__init__(danmaku_layer_count, *mid_boss, **kwargs)
-        self.BackgroundMusic()
+        self.GroupInit(danmaku_layer_count)
+        #self.BackgroundMusic()
 
     @abc.abstractmethod
     def MidAttack(self, *args, **kwargs):

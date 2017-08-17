@@ -109,6 +109,7 @@ class AbstractAction():
     """
     def __init__(self, birth_place,
                  birth_place_offset,
+                 birth_speed,
                  birth_direction, 
                  birth_direction_offset, *args,
                  speedtime = (),
@@ -118,7 +119,7 @@ class AbstractAction():
                  **kwargs
                  ):
         self.SetPosition(birth_place, birth_place_offset)
-        self.SetDirection(direction, direction_offset)
+        self.SetDirection(birth_direction, birth_direction_offset)
         self.SetSpeed(birth_speed)
         self.timerip = False
         if speedtime or directiontime:
@@ -128,7 +129,7 @@ class AbstractAction():
     def SetPosition(self, birth_place, birth_place_offset):
         if isinstance(birth_place, Sprite):
             center = tuple(birth_place.center)
-        elif isinstance(birth_place, list):
+        elif isinstance(birth_place, (list, tuple)):
             center = tuple(birth_place)
         else:
             raise TypeError
@@ -571,45 +572,48 @@ class DanmakuAction(AbstractAction):
                     direction_30 = [pi/64, pi/720]      dynamic offset value, rad/frame
                     direction_40 = {'x':0, 'y':-1}     dynamic offset with different axis
         """
-        super().__init__(self, birth_place = birth_place,
-                 birth_place_offset = birth_place_offset,
-                 birth_direction = direction, 
-                 birth_direction_offset = direction_offset,
-                 birth_speed = birth_speed
+        super().__init__(birth_place,
+                 birth_place_offset,
+                 birth_speed,
+                 direction, 
+                 direction_offset,
                  speedtime = speedtime,
                  speedvalue = speedvalue,
-                 directiontime = direcitontime,
+                 directiontime = directiontime,
                  directionvalue = directionvalue,
                  **kwargs
-                 ):
+                 )
         self.layer = danmaku_layer
         #print('action instance:', self.speed, self.center, self.direction)
 
 
 class ElfAction(AbstractAction):
-    def __init__(self, birth_place,
-                 birth_place_offset,
-                 birth_speed,
-                 birth_direction, 
-                 birth_direction_offset, *args,
+    '''
+    def __init__(self, birth_place = (30, -30),
+                 birth_direction = pi/2, 
+                 birth_speed = 2,
+                 birth_place_offset = (0,0),
+                 birth_direction_offset = 0,
                  speedtime = (),
                  speedvalue = (),
                  directiontime = (),
                  directionvalue = (),
                  **kwargs
                  ):
-        super().__init__(self, birth_place = birth_place,
-                 birth_place_offset = birth_place_offset,
-                 birth_direction = direction, 
-                 birth_direction_offset = direction_offset,
-                 birth_speed = birth_speed,
-                 speedtime = speedtime,
-                 speedvalue = speedvalue,
-                 directiontime = direcitontime,
-                 directionvalue = directionvalue,
-                 **kwargs
-                 )
+        super().__init__(
+                        birth_place,
+                        birth_place_offset,
+                        birth_speed,
+                        birth_direction, 
+                        birth_direction_offset,
+                        speedtime = speedtime,
+                        speedvalue = speedvalue,
+                        directiontime = directiontime,
+                        directionvalue = directionvalue
+                        #**kwargs
+                        )
         pass
+    '''
 
 class OptionAction():
     def __init__(self, rank,

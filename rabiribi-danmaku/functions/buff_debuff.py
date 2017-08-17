@@ -624,5 +624,6 @@ class Ponised(Buff):
     Lose HP over time
     """
     # balance unfit
-    def check(self):
+    def check(self, *enemy):
         pass
+Ponised.SetImage('ponised')

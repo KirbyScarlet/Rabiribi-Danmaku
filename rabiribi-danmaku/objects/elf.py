@@ -1,8 +1,8 @@
 from objects.sprites import Elf
 
 class elf_blue_small(Elf):
-    def __init__(self):
-        super().__init__("elf_blue_small")
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.SetSource()
         self.SetValue(200,10,10)
 elf_blue_small.load_source("elf_blue_small")
