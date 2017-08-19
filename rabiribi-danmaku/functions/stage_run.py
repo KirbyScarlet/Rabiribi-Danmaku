@@ -120,7 +120,7 @@ class Battle():
         for b in self.boss_layer:
             for f in b.buff:
                 f.buff_check(self.erina, iter(self.elf_layer))
-        self.erina.buff_check(iter(self.boss_layer))
+        self.erina.buff_check(iter(self.boss_layer), iter(self.elf_layer))
 
     def UIAnimation(self):
         """

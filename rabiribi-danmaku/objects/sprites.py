@@ -8,6 +8,7 @@ from functions.action import DanmakuAction
 from functions.action import ElfAction
 from functions.action import direction
 from functions.values import screenborder
+from functions.values import damagetype
 from functions import snipe
 from math import pi
 import time
@@ -50,8 +51,10 @@ class Damage(object):
     def init(self):
         self.all_damage = 0 # except buff damage
         self.buff_damage = 0
+        self.get_buff = 0
         #=====================
         super().__setattr__('danmaku', 0)
+        super().__setattr__('magic', 0)
         #=====================
         super().__setattr__('crash', 0)
         #=====================
@@ -59,10 +62,10 @@ class Damage(object):
         super().__setattr__('cocoabomb', 0)
         super().__setattr__('boost', 0)
         #=====================
-        super().__setattr__('poison', 0)
+        super().__setattr__('poisond', 0)
         super().__setattr__('freeze', 0)
         super().__setattr__('burn', 0)
-        super().__setattr__('curse', 0)
+        super().__setattr__('cursed', 0)
         super().__setattr__('reflect', 0)
         #=====================
         super().__setattr__('endurance', 0)
@@ -101,7 +104,7 @@ class Damage(object):
         pass
 
     def __setattr__(self, name, value):
-        if name in ('poison', 'freeze', 'burn', 'curse', 'reflect'):
+        if name in ('poisond', 'freeze', 'burn', 'cursed', 'reflect'):
             super().__setattr__('buff_damage', self.buff_damage.__add__(value - self.__getattribute__(name)))
         elif name not in ('buff_damage', 'all_damage'):
             super().__setattr__('all_damage', self.all_damage.__add__(value - self.__getattribute__(name)))
@@ -123,6 +126,8 @@ class Damage(object):
             return
         if self.buff_damage < self.sprite.hp:
             self.sprite.hp -= self.buff_damage
+        else:
+            self.sprite.hp = 1
         self.sprite.hp -= self.all_damage
         self.init()
 
@@ -330,7 +335,10 @@ class Boss(pygame.sprite.Sprite):
             self.defense = 1
             '''
         for each in shouting_group:
-            self.damage.danmaku += each.damage
+            if each._type == damagetype.DANMAKU:
+                self.damage.danmaku += each.damage
+            elif each._type == damagetype.MAGIC:
+                self.damage.magic += each.damage
             #self.buff.add(each.buff.buffs())
 
     def spell_attack(self, difficulty, erina, birth_layer, boss_group, illustration_group, danmaku_layer):

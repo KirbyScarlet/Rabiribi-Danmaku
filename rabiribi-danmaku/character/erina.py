@@ -15,7 +15,7 @@ class Erina(pygame.sprite.Sprite):
         
     """
     _type = 'erina'
-    def __init__(self):
+    def __init__(self, ribbon):
         pygame.sprite.Sprite.__init__(self)
 
         self.name = 'Erina'
@@ -50,6 +50,8 @@ class Erina(pygame.sprite.Sprite):
         self.radius = 2
 
         self.invincible = 0
+
+        self.ribbon = ribbon
 
     def moveSpeed(self):
         if self.key_pressed[K_LSHIFT]:
@@ -164,7 +166,7 @@ class Erina(pygame.sprite.Sprite):
     '''
     def buff_check(self, *enemy):
         for b in self.buff:
-            b.check(*enemy)
+            b.check(self, *enemy)
                
     def image_change(self, frame_count):
         """

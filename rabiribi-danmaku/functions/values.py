@@ -81,10 +81,17 @@ class difficulty:
     BUNNY = 'bunny'
     EXTRA = 'extra'
 
+# sprite type
+class spritetype:
+    ERINA = 0x6572696e
+    BOSS = 0x626f7373
+    ELF = 0x00656c66
+
 # damage type
 class damagetype:
     # physical damage
     DANMAKU = 0x64706401
+    MAGIC = 0x64706411
     # accident damage
     CRASH = 0x64616302
     # weapen damage

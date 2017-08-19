@@ -1,11 +1,11 @@
 import pygame
 import math
 import platform
-import character.erina
 import random
 from math import *
 from pygame.locals import *
 from functions.values import screenborder
+from functions.values import damagetype
 
 class green_danmaku(pygame.sprite.Sprite):
     def __init__(self, me_ribbon):
@@ -27,6 +27,8 @@ class green_danmaku(pygame.sprite.Sprite):
         self.delete = False
         
         self.speed = 8 + random.random()*2
+
+        self._type = damagetype.MAGIC
     
     def move(self, *erina):
         self.center[0] += self.speed * self.direction[0]
@@ -62,6 +64,8 @@ class purple_danmaku(pygame.sprite.Sprite):
         self.delete = False
         
         self.speed = 10
+
+        self._type = damagetype.MAGIC
         
     def move(self, *erina):
         self.center[0] += self.speed * self.direction[0]

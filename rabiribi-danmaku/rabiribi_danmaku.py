@@ -21,8 +21,8 @@ import functions
 import character
 import ui
 
-me_erina = character.erina.Erina()
 me_ribbon = character.ribbon.Ribbon()
+me_erina = character.erina.Erina(me_ribbon)
 
 global difficulty
 

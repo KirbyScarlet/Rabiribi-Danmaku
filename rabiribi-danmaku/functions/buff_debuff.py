@@ -6,6 +6,7 @@ import random
 from functions.values import screenborder
 from operator import truth
 from objects.counter import BuffTimer
+from functions.values import defaultkey
 
 class AllBuffs:
     """
@@ -181,22 +182,27 @@ class Buff(pygame.sprite.Sprite):
             return cls._instance
     '''
 
-    def __init__(self, owner=None, time=-1):
+    def __init__(self, *buff_group, owner=None, time=-1):
         """
         __init__(owner=None, time=-1): return None
 
             buff group 
         """
-        super().__init__()
-        if owner: self.init(owner)
-        
+        super().__init__(*buff_group)
+        if owner: 
+            super().__setattr__('owner', owner)
+            self.init(owner)
         # buff effect: timellarger than 0 and equal -1
         self.time = time
+        self.s = {}
+
+    def stack(self, *args, **kwargs):
+        pass
 
     def init(self, owner):
         #self.owner = owner
         super().__setattr__('owner', owner)
-        self.stack = {} # temp value in this
+        #self.stack = {} # temp value in this
         self.timer = 0
         self.birth_time = 120
         self.death_time = 20 # max 30
@@ -303,7 +309,7 @@ class Buff(pygame.sprite.Sprite):
         self.opacity_check(erina)
         if self.time > 0:
             self.time -= 1
-        else:
+        elif self.time == 0:
             self.move_out()
         if self.birth_time: self.move_in()
         if self.moveup: self.move_up()
@@ -365,7 +371,7 @@ class Buff(pygame.sprite.Sprite):
             else: pass
         elif name == 'owner':
             self.init(value)
-            return
+            self.stack()
         return super().__setattr__(name, value)
 
     def __repr__(self):
@@ -411,6 +417,7 @@ class BuffGroup(pygame.sprite.Group):
                 key.invalid = False
                 return
         self.spritedict[sprite] = sprite.__class__.__name__
+        self.__setattr__(name, sprite)
 
     def has_internal(self, sprite):
         return (sprite in self.spritedict) or (sprite in self.spritedict.values())
@@ -418,12 +425,14 @@ class BuffGroup(pygame.sprite.Group):
     def remove_internal(self, sprite):
         if isinstance(sprite, pygame.sprite.Sprite):
             del self.spritedict[sprite]
+            self.__delattr__(sprite.__class__.__name__)
         elif isinstance(sprite, str):
             for key, value in self.spritedict.items():
-                if sprite == 'value':
+                if sprite == value:
                     r = key
                     break
             del self.spritedict[r]
+            self.__delattr__(sprite)
 '''
 class BuffGroup():
     """
@@ -563,16 +572,11 @@ class SpeedDown(Buff):
     """
     Speed lowered by 20%
     """
-    def __init__(self, *buff_group, owner=None, time=-1):
-        super().__init__(*buff_group, owner, time)
-        
+    def stack(self):
+        self.s['fast'] = self.owner.fast
+        self.s['slow'] = self.owner.slow
 
-    def init(self, owner):
-        super().init(owner)
-        self.stack['fast'] = self.owner.fast
-        self.stack['slow'] = self.owner.slow
-
-    def check(self, *enemy):
+    def check(self, erina, *enemy):
         if self.time==0:
             self.invalid = True
         if self.effective:
@@ -580,8 +584,8 @@ class SpeedDown(Buff):
             self.owner.slow = 1
             self.effective = False
         if self.invalid:
-            self.owner.fast = self.stack['fast']
-            self.owner.slow = self.stack['slow']
+            self.owner.fast = self.s['fast']
+            self.owner.slow = self.s['slow']
             self.invalid = False
             
 SpeedDown.SetImage('speed_down')
@@ -590,15 +594,12 @@ class Numb(Buff):
     """
     All movement ceases intermittently
     """
-    def __init__(self, *buff_group, owner=None, time=-1):
-        super().__init__(*buff_group, owner, time)
-        self._erina_only = True
-        self.stack['speed'] = self.owner.speed
-
+    def stack(self):
+        self.s['speed'] = self.owner.speed
         # balance unfit
         self.numb_timer = 20 + random.randint(-5,5)
 
-    def check(self, *enemy):
+    def check(self, erina, *enemy):
         if self.time==0:
             self.invalid = True
         if self.effective:
@@ -608,7 +609,7 @@ class Numb(Buff):
             else:
                 self.effective = False
         if self.invalid:
-            self.owner.speed = self.stack['speed']
+            self.owner.speed = self.s['speed']
 
     def __setattr__(self, name, value):
         if name == 'timer':
@@ -624,6 +625,744 @@ class Ponised(Buff):
     Lose HP over time
     """
     # balance unfit
-    def check(self, *enemy):
-        pass
+    p_timer = 0
+    def check(self, erina, *enemy):
+        if self.p_timer % 45 == 0:
+            self.owner.damage.poison -= 10
+        self.p_timer += 1
+
 Ponised.SetImage('ponised')
+
+class AttackDown(Buff):
+    """
+    Attack lowered by 25%
+    """
+    def stack(self):
+        self.s['attack'] = self.owner.atk
+
+    def check(self, erina, *enemy):
+        if self.time == 0:
+            self.invalid = True
+        if self.effective:
+            self.owner.atk -= (self.owner.atk/4).__int__()
+            self.effective = False
+        if self.invalid:
+            self.owner.atk = self.s['attack']
+        '''
+        if self.owner._type == 'erina':
+            for e in enemy:
+                r = e.damage.danmaku * 0.25
+                e.damage.danmaku -= r.__int__()
+        else:
+            # under development
+            r = erina.damage.danmaku * 0.25
+            erina.damage.danmaku -= r.__int__()
+        '''
+
+AttackDown.SetImage('attack_down')
+
+class DefenseDown(Buff):
+    """
+    Defense lowered by 25%
+    """
+    def check(self, erina, *enemy):
+        self.owner.damage.danmaku += (self.owner.damage.danmaku/4).__int__()
+        self.owner.damage.magic += (self.owner.damage.magic/4).__int__()
+
+DefenseDown.SetImage('defense_down')
+
+class Cursed(Buff):
+    """
+    Take 50% of damage given
+    Enemies with "Cursed" take 2% damage of their Max.Hp
+    with a maximum damage of 666 points
+    """
+    def check(self, erina, *enemy):
+        if self.owner._type == 'erina':
+            for e in *enemy:
+                self.owner.damage.cursed += e.damage.danmaku//2
+        else:
+            if erina.damage.danmaku or erina.damage.get_buff:
+                d = (self.owner.hp*0.02).__int__()
+                if d > 666:
+                    d = 666
+                self.owner.damage.cursed += d
+
+Cursed.SetImage('cursed')
+
+class Stunned(Buff):
+    """
+    All movement ceases
+    """
+    _erina_only = True
+    def stack(self):
+        self.s['fast'] = self.owner.fast
+        self.s['slow'] = self.owner.slow
+
+    def check(self, erina, *enemy):
+        if self.time == 0:
+            self.invalid = True
+        if self.effective:
+            self.owner.fast = 0
+            self.owner.slow = 0
+            self.effective = False
+        if self.invalid:
+            self.owner.fast = self.s['fast']
+            self.owner.slow = self.s['slow']
+            self.invalie = False
+
+Stunned.SetImage('cursed')
+
+class BanSkill(Buff):
+    """
+    Can't perform physical, non-magic attacks.
+    """
+    _erina_only = True
+    
+BanSkill.SetImage('ban_skill')
+
+class MonaDown(Buff):
+    """
+    Lose MP over time
+    """
+    _erina_only = True
+    def check(self, erina, *enemy):
+        self.owner.ribbon.mp -= 1
+        # balance unfit
+
+MonaDown.SetImage('mona_down')
+
+class Freeze(Buff):
+    """
+    When attacking, lose 3% HP every second
+    """
+    _erina_only = True
+    def init(self):
+        super().init()
+        self.delay_timer = 0
+
+    def check(self, erina, *enemy):
+        k = pygame.key.get_pressed()
+        if k[defaultkey.SHOUTING]:
+            self.delay_timer = 60
+        if self.delay_timer:
+            if self.delay_timer % 20 == 0:
+                self.owner.damage.freeze += (self.owner.hp*0.01).__int__()
+        
+Freeze.SetImage('freeze')
+
+class Burn(Buff):
+    """
+    Lose 15% HP every 2 seconds
+    Enemies with "Burn" lose 2-3 HP every 0.05 Seconds
+    """
+    def init(self):
+        super().init()
+
+    def check(self, erina, *enemy):
+        if self.owner._type == 'erina':
+            if self.timer % 40 == 0:
+                self.owner.damage.burn += (self.owner.hp*0.05).__int__()
+        else:
+            if self.timer % 3 == 0:
+                self.owner.damage.burn += random.randint(2,3)
+
+Burn.SetImage('burn')
+
+class AttackUp(Buff):
+    """
+    Attack raised by 25%
+    """
+    def stack(self):
+        self.s['attack'] = self.owner.atk
+    
+    def check(self, erina, *enemy):
+        if self.time == 0:
+            self.invalid = True
+        if self.effective:
+            self.owner.atk -= (self.owner.atk/4).__int__()
+            self.effective = False
+        if self.invalid:
+            self.owner.atk = self.s['attack']
+
+AttackUp.SetImage('attack_up')
+
+class DefenseUp(Buff):
+    """
+    Defense raised by 25%
+    """
+    def check(self, erina, *enemy):
+        self.owner.damage.danmaku -= (self.owner.damage.danmaku/4).__int__()
+        self.owner.damage.magic -= (self.owner.damage.magic/4).__int__()
+DefenseUp.SetImage('defense_up')
+
+class HPRecover(Buff):
+    """
+    Recover 1-3 HP every 0.25 seconds
+    """
+    def check(self, erina, *enemy):
+        if self.timer % 15 == 0:
+            hp = random.randint(1,3)
+            self.owner.hp += hp
+            if self.owner.hp >= self.owner.max_hp:
+                self.owner.hp = int(self.owner.max_hp)
+
+HPRecover.SetImage('hp_recover')
+
+class SPRecover(Buff):
+    """
+    Improve SP recovery rate
+    """
+    _erina_only = True
+    def check(self, erina, *enemy):
+        self.owner.ribbon.sp += 1
+
+SPRecover.SetImage('sp_recover')
+
+class Shrink(buff):
+    """
+    Speed increased by 30%, attack lowered by 15%
+    and damage taken increased by 30%
+    something else happens too
+    """
+    # under development
+    _erina_only = True
+    def stack(self):
+        self.s['fast'] = self.owner.fast
+        self.s['slow'] = self.owner.slow
+        self.s['attack'] = self.owner.atk
+        self.s['rect'] = self.owner.rect
+
+    def check(self, erina, *enemy):
+        if hasattr(self.owner.buff, 'Giant'):
+            self.owner.buff.Giant.time = 0
+        self.owner.damage.danmaku += (self.owner.damage.danmaku*0.3).__int__()
+        self.owner.damage.magic += (self.owner.damage.magec*0.3).__int__()
+        if self.time == 0:
+            self.invalid = True
+        if self.effective:
+            self.owner.fast += self.owner.fast*0.3
+            self.owner.slow += self.owner.slow*0.3
+            self.owner.atk -= (self.owner.atk*0.15).__int__()
+            '''
+            self.owner.rect = pygame.transform.scale(0.5)
+            '''
+            self.effective = False
+        if self.invalid:
+            self.owner.fast = self.s['fast']
+            self.owner.slow = self.s['slow']
+            self.owner.atk = self.s['attack']
+            '''
+            self.owner.rect = pygame.transform.scale(2)
+            '''
+
+Shrink.SetImage('shrink')
+
+class Giant(Buff):
+    """
+    Speed decreased by 50%
+    and damage taken reduced by 50%
+    Something else happens too
+    """
+    _erina_only = True
+    def stack(self):
+        self.s['fast'] = self.owner.fast
+        self.s['slow'] = self.owner.slow
+        self.s['attack'] = self.owner.atk
+        self.s['rect'] = self.owner.rect
+
+    def check(self, erina, *enemy):
+        if hasattr(self.owner.buff, 'Shrink'):
+            self.owner.buff.Shrink.time = 0
+        if self.time == 0:
+            self.invalid = True
+        if self.effective:
+            self.owner.fast /= 2
+            self.owner.slow /= 2
+            self.owner.atk = (self.onwer.atk/2).__int__()
+            '''
+            self.owner.rect = pygame.transform.scale(2)
+            '''
+            self.effective = False
+        if self.invalid:
+            self.owner.fast = self.s['fast']
+            self.owner.slow = self.s['slow']
+            self.owner.atk = self.s['attack']
+            '''
+            self.owner.rect = pygame.transform.scale(0.5)
+            '''
+
+Shrink.SetImage('shrink')
+
+class Arrest(Buff):
+    """
+    A chanse to slow down apponents by 20% when attacking
+    """
+    # under development
+    # maybe useless
+    _erina_only = True
+    def check(self, erina, *enemy):
+        if random.random() < 0.2:
+            self.owner.ribbon.buff.add(SpeedDown)
+
+Arrest.SetImage('arrest')
+
+class SpeedUp(Buff):
+    """
+    Speed increased by 25%
+    """
+    def stack(self):
+        if self.owner._type == 'erina':
+            self.s['fast'] = self.owner.fast
+            self.s['slow'] = self.owner.slow
+        else:
+            self.s['speed'] = self.owner.speed
+
+    def check(self, erina, *enemy):
+        if self.time == 0:
+            self.invalid = True
+        if self.effective:
+            if self.owner._type == 'erina':
+                self.owner.fast *= 1.25
+                self.owner.slow *= 1.25
+            else:
+                self.owner.speed *= 1.25
+            self.effective = False
+        if self.invalid:
+            for k,v in self.s.items():
+                self.owner.__setattr__(k,v)
+
+SpeedUp.SetImage('speed_up')
+
+class BadgeCopy(Buff):
+    """
+    Opponent's badge perks are replicated
+    """
+    _boss_only = True
+    _special_only = 'miriam'
+    def check(self, erina, *enemy):
+        if self.effective:
+            self.owner.badge.add(erina,badge)
+            self.effective = False
+
+BadgeCopy.SetImage('badge_copy')
+
+class NullMelee(Buff):
+    """
+    No damage taken from physical attacks
+    Damage taken from carrot bomb increased by 62.5%
+    """
+    # under development
+    # maybe useless
+    _boss_only = True
+    def check(self, erina, *enemy):
+        self.owner.damage.danmaku = 0
+
+NullMelee.SetImage('null_melee')
+
+class DefenseBoost(Buff):
+    """
+    Damage taken reduced by 50%
+    25% in Boss Rush mode
+    """
+    def check(self, erina, *enemy):
+        self.owner.damage.danmaku -= self.owner.damage.danmaku//2
+        self.owner.damage.magic -= self.owner.damage.magic//2
+
+DefenseBoost.SetImage('defense_boost')
+
+class DefenseDrop(Buff):
+    """
+    Damage taken increased by 100%-300%
+    """
+    def check(self, erina, *enemy):
+        rate = 1+random.random()*2
+        self.owner.damage.danmaku += (self.owner.damage.danmaku*rate).__int__()
+        self.owner.damage.magic += (self.owner.damage.magic*rate).__int__()
+
+DefenseDrop.SetImage('defense_drop')
+
+class StaminaDown(Buff):
+    """
+    SP consumption increased by 325%
+    """
+    # useless
+    def check(self, erina, *enemy):
+        '''just for fun'''
+
+StamiaDown.SetImage('stamina_down')
+
+class NullSlow(Buff):
+    """
+    Cannot be slowed down
+    """
+    # under development
+    def check(self, erina, *enemy):
+        if isinstance(self.owner.timer, float):
+            self.owner.timer = self.owner.timer.__int__()+1
+
+NullSlow.SetImage('null_slow')
+
+class SuperArmour(Buff):
+    """
+    No stun effect after being damaged
+    """
+    # useless
+    def check(self, erina, *enemy):
+        '''just for fun'''
+        # maybe effects
+
+SuperArmour.SetImage('super_armour')
+
+class QuadDamage(Buff):
+    """
+    Attack raised by 400%
+    """
+    def stack(self):
+        self.s['attack'] = self.owner.atk
+
+    def check(self, erina, *enemy):
+        if self.time == 0:
+            self.invalid = True
+        if self.effective:
+            self.owner.atk *= 4
+            self.effective = False
+        if self.invalid:
+            self.owner.atk = self.s['attack']
+            
+QuadDamage.SetImage('quad_damage')
+
+class DoubleDamage(Buff):
+    """
+    Attack raised by 200%
+    """
+    def stack(self):
+        self.s['attack'] = self.owner.atk
+
+    def check(self, erina, *enemy):
+        if self.time == 0:
+            self.invalid = True
+        if self.effective:
+            self.owner.atk *= 2
+            self.effective = False
+        if self.invalid:
+            self.owner.atk = self.s['attack']
+
+DoubleDamage.SetImage('double_damage')
+
+class Speedy(Buff):
+    """
+    Movement speed increased by 20%
+    """
+    def stack(self):
+        if self.owner._type == 'erina':
+            self.s['fast'] = self.owner.fast
+            self.s['slow'] = self.owner.slow
+        else:
+            self.s['speed'] = self.owner.speed
+
+    def check(self, erina, *enemy):
+        if self.time == 0:
+            self.invalid = Ture
+        if self.effective:
+            if self.owner._type == 'erina':
+                self.owner.fast *= 1.2
+                self.owner.slow *= 1.2
+            else:
+                self.owner.speed *= 1.2
+            self.effective = False
+        if self.invalid:
+            for k,v in self.s.items():
+                self.owner.__setattr__(k,v)
+
+Speedy.SetImage('speedy')
+
+class MaxHPUp(Buff):
+    """
+    Max.HP increased proportional to characters unlocked.
+    Enemies with this status have a 10% MaxHP increase
+    """
+    # under development
+    def stack(self):
+        self.s['maxhp'] = self.owner.max_hp
+
+    def check(self, erina, *enemy):
+        if self.time == 0:
+            self.invalid = True
+        if self.effective:
+            self.owner.max_hp += self.owner.max_hp//10
+            self.effective = False
+        if self.invalid:
+            self.owner.max_hp == self.s['maxhp']
+            if self.owner.hp > self.owner.max_hp:
+                self.owner.hp = int(self.owner.max_hp)
+
+MaxHPUp.SetImage('maxhp_up')
+
+def MaxMPUp(Buff):
+    """
+    Max. MP increased proportional to characters unlocked
+    Enemis with this status have greater attack frequency
+    """
+    # maybe useless
+    _erina_only = True
+    _special_only = 'miriam'
+    def stack(self):
+        self.s['maxmp'] = self.owner.max_mp
+
+    def check(self, erina, *enemy):
+        if self.time == 0:
+            self.invalid = True
+        if self.effective:
+            self.owner.max_mp += self.owner.max_mp//10
+            self.effective = False
+        if self.invalid:
+            self.owner.max_mp = self.s['maxmp']
+
+MaxMPUp.SetImage('maxmp_up')
+
+class AmuletCut(Buff):
+    """
+    Amulet consumption lowered by 25%
+    """
+    # under development
+    _erina_only = True
+    _special_only = 'miriam'
+    def check(self, erina, *enemy):
+        if self.time == 0:
+            self.invalid = True
+        if self.effective:
+            self.owner.amulet_consume = 750
+            self.effective = False
+        if self.invalid:
+            self.owner.amulet_consume = 1000
+
+AmuletCut.SetImage('amulet_cut')
+
+class HPRegen(Buff):
+    """
+    Recover 2 HP every 1.5 seconds.abcEnemies with this status recover 2% of Max. HP
+    """
+    def check(self, erina, *enemy):
+        if self.owner._type == 'erina':
+            if self.timer % 90 == 0:
+                self.owner.hp += 2  # balance unfit
+        else:
+            if self.timer % 90 == 0:
+                self.owner.hp += self.owner.max_hp//50
+
+HPRegen.SetImage('hp_regen')
+
+class MPRegen(Buff):
+    """
+    Recover 2 MP every second
+    """
+    # under deveopment
+    # balance unfit
+    # maybe useless
+    _erina_only = True
+    def check(self, erina, *enemy):
+        self.owner.ribbon.mp += 2
+
+MPRegen.SetImage('mp_regen')
+
+class GiveAtkDown(Buff):
+    """
+    A chance to give opponents "Attack Down" when attacking
+    """
+    # under development
+    # maybe useless
+    _erina_only = True
+    def check(self, erina, *enemy):
+        if random.random() < 0.2:
+            self.owner.ribbon.buff.add(AttackDown)
+
+GiveAtkDown.SetImage('give_atk_down')
+
+class GiveDefDown(Buff):
+    """
+    A chance to give opponents "Defense Down" when attacking
+    """
+    # under development
+    # maybe useless
+    _erina_only = True
+    def check(self, erina, *enemy):
+        if random.random() < 0.2:
+            self.owner.ribbon.buff.add(DefenseDown)
+
+GiveDefDown.SetImage('give_def_down')
+
+class Unstable(Buff):
+    """
+    Speed changes randomly
+    """
+    _erina_only = True
+    def stack(self):
+        self.s['fast'] = self.owner.fast
+        self.s['slow'] = self.owner.slow
+    
+    def check(self, erina, *enemy);
+        if self.time == 0:
+            self.invalid = True
+        if self.effective:
+            r = random.random()
+            self.owner.fast += -1 + 3*r
+            self.owner.slow += -1 + 2*r
+            self.effective = False
+        if self.invalid:
+            self.owner.fast = self.s['fast']
+            self.owner.slow = self.s['slow']
+            self.invalid = False
+
+    def __setattr__(self, name, value):
+        if name == 'timer':
+            if value % 300 == 0:
+                self.effective = True
+            elif (value + 150) % 300 == 0:
+                self.invalid = True
+        return super().__setattr__(name, value)
+
+Unstable.SetImage('unstable')
+
+class BoostFail(Buff):
+    """
+    lose BP over time
+    """
+    # under development
+    # balance unfit
+    _erina_only = True
+    def check(self, erina, *enemy):
+        self.owner.ribbon.mp -= 2
+
+BoostFail.SetImage('boost_fail')
+
+class HexCancel(Buff):
+    """
+    No damage taken from every 6th attack
+    """
+    def init(self):
+        super().init()
+        self.damage_count = 0
+
+    def check(self, erina, *enemy):
+        if self.owner.damage.danmaku or self.owner.damage.magic:
+            self.damage_count += 1
+            if self.damage_count == 6:
+                self.owner.damage.danmaku = 0
+                self.owner.damage.magic = 0
+                self.damage_count = 0
+
+HexCancel.SetImage('hex_cancel')
+
+class LuckySeven(Buff):
+    """
+    Every 7th successful attack inflicts 7% or 77% more damage
+    """
+    def init(self):
+        super().init()
+        self.successful_attack = 0
+
+    def check(self, erina, *enemy):
+        if self.owner._type == 'erina':
+            for e in enemy:
+                if e.damage.danmaku or e.damage.magic:
+                    self.successful_attack += 1
+                    if self.successful_attakc == 7:
+                        e.damage.danmaku += (e.damage.danmaku*0.77).__int__()
+                        e.damage.magic += (e.damage.magic*0.77).__int__()
+        else:
+            if erina.damage.danamku:
+                self.successful_attack += 1
+                if self.successful_attack == 7:
+                    erina.damage.danmaku = (erina.damage.danmaku*0.77).__int__()
+
+LuckySeven.SetImage('lucky_seven')
+
+class QuickReflex(Buff):
+    """
+    Lowers stun time by 75%
+    """
+    # useless
+    # maybe add effects
+
+QuickReflex.SetImage('quick_reflex')
+
+class DefenseLargeBoost(Buff):
+    """
+    Damage taken reduced by 50-100%
+    25-50% in Boss Rash
+    """
+    # balance unfit
+    _boss_only = True
+    def check(self, erina, *enemy):
+        self.owner.damage.danmaku -= (self.owner.damage.danmaku*0.8).__int__()
+        self.owner.damage.magic -= (self.owner.damage.magic*0.8).__int__()
+        self.owner.damage.amulet -= (self.owner.damage.amulet*0.8).__int__()
+        self.owner.damage.cocoabomb -= (self.owner.damage.cocoabomb*0.8).__int__()
+        self.owner.damage.boost -= (self.owner.damage.boost*0.8).__int__()
+
+DefenseLargeBoost.SetImage('defense_large_boost')
+
+class Endurance(Buff):
+    """
+    Immune to all attacks, but lose HP over time
+    """
+    _boss_only = True
+    def check(self, erina, *enemy):
+        self.owner.damage.danmaku = 0
+        self.owner.damage.magic = 0
+        self.owner.damage.amulet = 0
+        self.owner.damage.cocoabomb = 0
+        self.owner.damage.boost = 0
+        self.owner.damage.endurance = 2
+
+class Fatigue(Buff):
+    """
+    Speed and jump[?] height lowered by 20%
+    """
+    # useless 
+    # maybe under water
+
+Fatigue.SetImage('fatigue')
+
+class Reflect99(Buff):
+    """
+    100% of damage taken reflected back to opponent
+    Only applicable for attacks above 99 points
+    Opponent's health will not fal below 1 HP
+    """
+    # under development
+    def check(self, erina, *enemy):
+        if self.owner._type == 'erina':
+            if self.owner.damage.danmaku > 99:
+                for e in enemy:
+                    e.damage.reflect = self.owner.damage.danmaku
+        else:
+            d = self.owner.damage.danmaku + self.owner.damage.magic
+            if d > 99:
+                erina.damage.reflect = d
+
+Reflect99.SetImage('reflect_99')
+
+class SurvivalInstinct(Buff):
+    """
+    HP cannot fall below 1
+    """
+    def check(self, erina, *enemy):
+        if self.owner._type == 'erina':
+            if self.owner.hp > 1:
+                self.time = 0
+        else:
+            self.owner.damage.all_damage = 0
+            
+SurvivalInstinct.SetImage('survival_instinct')
+
+class AmuletDrain(Buff):
+    """
+    Lose amulet charge over time
+    """
+    _erina_only = True
+    def check(self, erina, *enemy):
+        self.owner.amulet = 0
+
+AmuletDrain.SetImage('amulet_drain')
