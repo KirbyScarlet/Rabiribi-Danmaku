@@ -1099,7 +1099,7 @@ class MaxHPUp(Buff):
 
 MaxHPUp.SetImage('maxhp_up')
 
-def MaxMPUp(Buff):
+class MaxMPUp(Buff):
     """
     Max. MP increased proportional to characters unlocked
     Enemis with this status have greater attack frequency
@@ -1267,7 +1267,7 @@ class LuckySeven(Buff):
             for e in enemy:
                 if e.damage.danmaku or e.damage.magic:
                     self.successful_attack += 1
-                    if self.successful_attakc == 7:
+                    if self.successful_attack == 7:
                         e.damage.danmaku += (e.damage.danmaku*0.77).__int__()
                         e.damage.magic += (e.damage.magic*0.77).__int__()
         else:
@@ -1366,3 +1366,283 @@ class AmuletDrain(Buff):
         self.owner.amulet = 0
 
 AmuletDrain.SetImage('amulet_drain')
+
+class Mortality(Buff):
+    """
+    Lose all invulnerablity when performing any movement
+    """
+    def check(self, erina, *enemy):
+        if self.owner.invincible:
+            self.owner.invincible = 1
+
+Mortality.SetImage('mortality')
+
+class NoBadges(Buff):
+    """
+    Lose effects from equipped badges
+    """
+    # under development
+    _erina_only = True
+    def stack(self):
+        self.s['badges'] = self.owner.badges.copy()
+
+    def check(self, erina, *enemy):
+        if self.time == 0:
+            self.invalid = True
+        if self.effective:
+            self.owner.badges.empty()
+            self.effective = False
+        if self.invalid:
+            self.owner.badges.add(self.s['badges'])
+
+Nobadges.SetImage('no_badges')
+
+class InstantDeath(Buff):
+    """
+    All attacks cause 4444 points of damage
+    """
+    def check(self, erina, *enemy):
+        if self.owner._type == 'erina':
+            if self.owner.damage.danmaku:
+                self.owner.damage.danmaku = 0
+                self.owner.damage.instant = 4444
+        else:
+            if self.owner.damage.danmaku or self.owenr.damage.magic:
+                self.owner.damage.danmaku, self.owenr.damage.magic = 0, 0
+                self.owner.damage.instant = 4444
+
+InstantDeath.SetImage('instant_death')
+
+class HealthAbsorb(Buff):
+    """
+    Absorb HP equal to 2 times the damage given
+    """
+    _boss_only = True
+    def check(self, erina, *enemy):
+        if erina.damage.danmaku:
+            self.owner.hp += erina.damage.danmaku*2
+            if self.owner.hp > self.owner.max_hp:
+                self.owner.hp = int(self.owner.max_hp)
+
+HealthAbsorb.SetImage('health_absorb')
+
+class PowerAbsorb(Buff):
+    """
+    Inflict a 100%SP, 33% MP, and 25 BP reduction in the opponent
+    """
+    # under development
+    _boss_only = True
+    def check(self, erina, *enemy):
+        if erina.damage.danmaku:
+            erina.ribbon.mp -= erina.ribbon.mp // 3
+
+PowerAbsorb.SetImage('power_absorb')
+
+class Revenge300(Buff):
+    """
+    "Instant death" status dealt to opponent.
+    triggered when damage taken from one attack >300 points
+    """
+    _boss_only = True
+    _special_only = 'irisu'
+    def init(self):
+        super().init()
+        self.effective = False
+
+    def check(self, erina, *enemy):
+        if self.owner.damage.danmaku > 300:
+            self.effective = True
+        elif self.owner.damage.magic > 300:
+            self.effective = True
+        elif self.owner.damage.boost > 300:
+            self.effective = True
+        elif self.owner.damage.cocoabomb > 300:
+            self.effective = True
+        # under development
+        elif self.owner.damage.amulet > 300:
+            self.effective = True
+        if self.effective:
+            erina.buff.add(InstantDeath())
+
+Revenge300.SetImage('revenge_300')
+
+class BunnyLover(Buff):
+    """
+    Damage taken reduced by 50% when the opponent is a bunny
+    """
+    def init(self):
+        super().init()
+        self.bunny = 'erina', 'irisu'
+
+    def check(self, erina, *enemy):
+        if self.owner._type == 'erina':
+            for e in enemy:
+                if e.name in self.bunny:
+                    e.damage.all_damage = e.damage.all_damage//2
+        else:
+            erina.damage.all_damage = erina.damage.all_damage//2
+
+BunnyLover.SetImage('bunny_lover')
+
+class Healing(Buff):
+    """
+    Recover HP over time
+    """
+    def check(self, erina, *enemy):
+        if self.owner._type == 'erina':
+           if self.timer % 30 == 0:
+               self.owner.hp += 2
+               if self.owenr.hp > self.owner.max_hp:
+                   self.owenr.hp = int(self.owenr.max_hp)
+        else:
+            self.owner.hp += 2
+            if self.owenr.hp > self.owner.max_hp:
+                self.owner.hp = int(self.owner.max_hp)
+
+Healing.SetImage('healing')
+
+class AttackBoost(Buff):
+    """
+    Bullet hell density increased
+    """
+    _boss_only = True
+    _special_only = '?'
+    # under development
+    # maybe useless
+    def check(self, erina, *enemy):
+        '''
+        it's hard to describe
+        '''
+        
+AttackBoost.SetImage('attack_boost')
+
+class TMinusOne(Buff):
+    """
+    Gain "Attack Boost" status after a successful attack
+    """
+    _boss_only = True
+    _special_only = '?'
+    # under development
+    # maybe useless
+    def check(self, erina, *enemy):
+        if self.damage.danamku:
+            self.owner.buff.add(AttackBoost())
+            self.time = 0
+
+TMinusOne.SetImage('t_minus_one')
+
+class TMinusTwo(Buff):
+    """
+    Gain "T Minus One" status after a successful attack
+    """
+    _boss_only = True
+    _special_only = '?' 
+    # under development
+    # maybe useless
+    def check(self, erina, *enemy):
+        if erina.damage.danmaku:
+            self.owner.buff.add(TMinusOne())
+            self.time = 0
+
+TMinusTwo.SetImage('t_minus_two')
+
+class ZeroOffence(Buff):
+    """
+    Attack reduced by 100%
+    """
+    _boss_only = True
+    def check(self, erina, *enemy):
+        self.owner.damage.danmaku = 0
+        self.owner.damage.magic = 0
+        self.owner.damage.amulet = 0
+        self.owner.damage.cocoabomb = 0
+        self.owner.damage.boost = 0
+
+class HaloBuff(Buff):
+    """
+    Damage taken reduced by 10% after three "Game Over"
+    Status removed after "Halo Boost" expires.
+    [?] Does not apply above Normal difficulty [?]
+    """
+    # under development
+    _erina_only = True
+    def check(self, erina, *enemy):
+        self.owner.damage.all_damage -= self.owner.damage.all_damage//10
+
+HaloBuff.SetImage('halo_buff')
+
+class HaloBuffLv1(Buff):
+    """
+    Damage taken -15%. Amulet recharges 33% faster.
+    Recover 1 HP for every three[?] successful attacks.
+    Gained after 3-4 "Game Over", No buff above "Normal"
+    """
+    # under development
+    _erina_only = True
+    def init(self):
+        super().init()
+        self.successful_attack = 0
+
+    def check(self, erina, *enemy):
+        for e in *enemy:
+            if enemy.damage.danmaku:
+                self.successful_attack += 1
+            if enemy.damage.magic:
+                self.successful_attack += 1
+            if self.successful_attack >= 3:
+                self.owner.hp += 1
+                self.successfun_attack -= 3
+        self.owner.damage.all_damage -= (self.owner.damage.all_damage*0.15).__int__()
+        self.owner.amulet += 1
+
+HaloBuffLv1.SetImage('halo_buff_lv1')
+
+class HaloBuffLv2(Buff):
+    """
+    Damage taken -27.5%. Amulet recharges 67% faster.
+    Recover 1 HP for every two successful attacks.
+    Gained after 5-6 "Game Over", No buff above "Noraml"
+    """
+    # under development
+    _erina_only = True
+    def init(self):
+        super().init()
+        self.successful_attack = 0
+
+    def check(self, erina, *enemy):
+        for e in *enemy:
+            if enemy.damage.danmaku:
+                self.successful_attack += 1
+            if enemy.damage.magic:
+                self.successful_attack += 1
+            if self.successful_attack >= 2:
+                self.owner.hp += 1
+                self.successfun_attack -= 2
+        self.owner.damage.all_damage -= (self.owner.damage.all_damage*0.275).__int__()
+        self.owner.amulet += 2
+
+HaloBuffLv1.SetImage('halo_buff_lv2')
+
+class HaloBuffLv2(Buff):
+    """
+    Damage taken -40%. Amulet recharges 100% faster.
+    Recover 1 HP for every successful attack.
+    Gained after 7+ "Game Over", No buff above "Normal"
+    """
+    # under development
+    _erina_only = True
+    def init(self):
+        super().init()
+        self.successful_attack = 0
+
+    def check(self, erina, *enemy):
+        for e in *enemy:
+            if enemy.damage.danmaku:
+                self.successful_attack += 1
+            if enemy.damage.magic:
+                self.successful_attack += 1
+            self.owner.hp += self.successful_attack
+        self.owner.damage.all_damage -= (self.owner.damage.all_damage*0.275).__int__()
+        self.owner.amulet += 2
+
+HaloBuffLv1.SetImage('halo_buff_lv2')
