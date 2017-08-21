@@ -172,6 +172,8 @@ class Buff(pygame.sprite.Sprite):
     _boss_only = False
     _special_only = None
 
+    _item_mode = False
+
     '''
     def __new__(cls, *buff_group, owner=None, time=-1):
         if owner and timer > 0:
@@ -233,9 +235,9 @@ class Buff(pygame.sprite.Sprite):
 
     @classmethod
     def SetImage(cls, buff_name):
-        buff_name = 'data/tmp/imgs/'+ buff_name +'.tmp'
+        _buff_name = 'data/tmp/imgs/'+ buff_name +'.tmp'
         try:
-            cls.image_temp = pygame.image.load(buff_name).convert_alpha()
+            cls.image_temp = pygame.image.load(_buff_name).convert_alpha()
         except pygame.error:
             filename = 'data/objs/items/buffs.rbrb'
             with open(filename, 'rb') as f:
@@ -244,7 +246,7 @@ class Buff(pygame.sprite.Sprite):
                 filename = 'data/tmp/imgs/'+key+'.tmp'
                 with open(filename, 'wb') as f:
                     f.write(value)
-            cls.image_temp = pygame.image.load(buff_name).convert_alpha()
+            cls.image_temp = pygame.image.load(_buff_name).convert_alpha()
 
     def move_elf(self):
         self.rect.center = self.owner.center

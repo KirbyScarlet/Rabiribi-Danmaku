@@ -36,8 +36,69 @@ def ExitCheck():
             functions.clear_cache()
             exit()
 
-class SnipeError(TypeError):
-    pass
+class HP(object):
+    """
+    HP(max_hp): return HP
+
+        HP.add(value)
+        HP.sub(value)
+        HP.full(value)
+        HP.empty()
+        HP.maxhp(value)
+    """
+    def __init__(self, maxhp):
+        self.maxhp = maxhp
+        self.hp = int(self.max_hp)
+
+    def add(self, value):
+        self.hp += value
+
+    def sub(self, value):
+        self.hp -= value
+
+    def full(self, value):
+        self.hp = int(self.maxhp)
+
+    def empty(self, value):
+        self.hp = 0
+
+    def __setattr__(self, name, value):
+        if name == 'hp':
+            if value > self.maxhp:
+                value = self.maxhp
+        return super().__setattr__(name, value)
+
+class MP(object):
+    """
+    MP(max_mp):
+
+        MP.add(value)
+        MP.sub(value)
+        MP.full(value)
+        MP.empty(value)
+        MP.boost()
+    """
+    def __init__(self, max_mp):
+        self.maxmp = max_mp
+        self.mp = int(self.max_mp)
+
+    def add(self, value):
+        self.mp += value
+
+    def sub(self, value):
+        self.mp -= value
+
+    def full(self, value):
+        self.mp = int(self.maxmp)
+
+    def empty(self, value):
+        self.mp = 0
+
+    def __setattr__(self, name, value):
+        if name == 'mp':
+            if value > self.maxhp:
+                value = self.max_hp
+        return super().__setattr__(name, value)
 
 def vector(x, y):
     """
@@ -83,6 +144,9 @@ def angle(vector1, vector2):
     while v >= pi:
         v -= 2*pi
     return v
+
+class SnipeError(TypeError):
+    pass
 
 def snipe(origin, destination, type='rad'):
     """
