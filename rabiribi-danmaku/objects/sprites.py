@@ -51,7 +51,7 @@ class Damage(object):
     def init(self):
         self.all_damage = 0 # except buff damage
         self.buff_damage = 0
-        self.get_buff = 0
+        super().__setattr__('get_buff', 0)
         #=====================
         super().__setattr__('danmaku', 0)
         super().__setattr__('magic', 0)

@@ -630,7 +630,7 @@ class Ponised(Buff):
     p_timer = 0
     def check(self, erina, *enemy):
         if self.p_timer % 45 == 0:
-            self.owner.damage.poison -= 10
+            self.owner.damage.poisond += 1
         self.p_timer += 1
 
 Ponised.SetImage('ponised')
@@ -681,7 +681,7 @@ class Cursed(Buff):
     """
     def check(self, erina, *enemy):
         if self.owner._type == 'erina':
-            for e in *enemy:
+            for e in enemy:
                 self.owner.damage.cursed += e.damage.danmaku//2
         else:
             if erina.damage.danmaku or erina.damage.get_buff:
@@ -821,7 +821,7 @@ class SPRecover(Buff):
 
 SPRecover.SetImage('sp_recover')
 
-class Shrink(buff):
+class Shrink(Buff):
     """
     Speed increased by 30%, attack lowered by 15%
     and damage taken increased by 30%
@@ -992,7 +992,7 @@ class StaminaDown(Buff):
     def check(self, erina, *enemy):
         '''just for fun'''
 
-StamiaDown.SetImage('stamina_down')
+StaminaDown.SetImage('stamina_down')
 
 class NullSlow(Buff):
     """
@@ -1203,7 +1203,7 @@ class Unstable(Buff):
         self.s['fast'] = self.owner.fast
         self.s['slow'] = self.owner.slow
     
-    def check(self, erina, *enemy);
+    def check(self, erina, *enemy):
         if self.time == 0:
             self.invalid = True
         if self.effective:
@@ -1397,7 +1397,7 @@ class NoBadges(Buff):
         if self.invalid:
             self.owner.badges.add(self.s['badges'])
 
-Nobadges.SetImage('no_badges')
+NoBadges.SetImage('no_badges')
 
 class InstantDeath(Buff):
     """
@@ -1573,7 +1573,7 @@ class HaloBuff(Buff):
 
 HaloBuff.SetImage('halo_buff')
 
-class HaloBuffLv1(Buff):
+class HaloBoostLv1(Buff):
     """
     Damage taken -15%. Amulet recharges 33% faster.
     Recover 1 HP for every three[?] successful attacks.
@@ -1586,7 +1586,7 @@ class HaloBuffLv1(Buff):
         self.successful_attack = 0
 
     def check(self, erina, *enemy):
-        for e in *enemy:
+        for e in enemy:
             if enemy.damage.danmaku:
                 self.successful_attack += 1
             if enemy.damage.magic:
@@ -1597,9 +1597,9 @@ class HaloBuffLv1(Buff):
         self.owner.damage.all_damage -= (self.owner.damage.all_damage*0.15).__int__()
         self.owner.amulet += 1
 
-HaloBuffLv1.SetImage('halo_buff_lv1')
+HaloBoostLv1.SetImage('halo_boost_lv1')
 
-class HaloBuffLv2(Buff):
+class HaloBoostLv2(Buff):
     """
     Damage taken -27.5%. Amulet recharges 67% faster.
     Recover 1 HP for every two successful attacks.
@@ -1612,7 +1612,7 @@ class HaloBuffLv2(Buff):
         self.successful_attack = 0
 
     def check(self, erina, *enemy):
-        for e in *enemy:
+        for e in enemy:
             if enemy.damage.danmaku:
                 self.successful_attack += 1
             if enemy.damage.magic:
@@ -1623,9 +1623,9 @@ class HaloBuffLv2(Buff):
         self.owner.damage.all_damage -= (self.owner.damage.all_damage*0.275).__int__()
         self.owner.amulet += 2
 
-HaloBuffLv1.SetImage('halo_buff_lv2')
+HaloBoostLv1.SetImage('halo_boost_lv2')
 
-class HaloBuffLv2(Buff):
+class HaloBoostLv3(Buff):
     """
     Damage taken -40%. Amulet recharges 100% faster.
     Recover 1 HP for every successful attack.
@@ -1638,7 +1638,7 @@ class HaloBuffLv2(Buff):
         self.successful_attack = 0
 
     def check(self, erina, *enemy):
-        for e in *enemy:
+        for e in enemy:
             if enemy.damage.danmaku:
                 self.successful_attack += 1
             if enemy.damage.magic:
@@ -1647,4 +1647,4 @@ class HaloBuffLv2(Buff):
         self.owner.damage.all_damage -= (self.owner.damage.all_damage*0.275).__int__()
         self.owner.amulet += 2
 
-HaloBuffLv1.SetImage('halo_buff_lv2')
+HaloBoostLv1.SetImage('halo_boost_lv3')
