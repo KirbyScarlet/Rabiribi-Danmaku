@@ -6,6 +6,8 @@ import pickle
 import objects
 import abc
 import random
+from functions.action import ItemAction
+from functions.values import screenborder
 
 class AllBadges:
     health_plus = 0         
@@ -79,7 +81,7 @@ class Badge(pygame.sprite.Sprite):
     _item_mode = True
     _miriam_mode = False  # miriam's badge copy buff
 
-    def __init__(self, *badge_group):
+    def __init__(self, *badge_group, miriam=None):
         """
         __init__(self, *badge_group):
 
@@ -94,21 +96,144 @@ class Badge(pygame.sprite.Sprite):
         self.temp_position = [0,0]
         
         self.delete = False
+
+        self.rect = self.image.get_rect()
+        self.temp_position = [0,0]
+        self.s = {}
+
+    def stack(self):
+        pass
+
+    def init(self):
+        self.effective = True
+        self.invalid = False
         
     @classmethod
-    def SefImage(cls, badge_name):
+    def SetImage(cls, badge_name):
         _badge_name = 'data/tmp/imgs/' + badge_name + '.tmp'
         try:
             cls.image_temp = pygame.image.load(_badge_name).convert_alpha()
         except pygame.error:
-            filename = 'data/objs/items.badges.rbrb'
+            filename = 'data/objs/items/badges.rbrb'
             with open(filename, 'rb') as f:
                 images = pickle.load(f)
             for key,value in images.items():
-                filename = 'data/tmp/imgs'+key+'.tmp'
+                filename = 'data/tmp/imgs/'+key+'.tmp'
                 with open(filename, 'wb') as f:
                     f.write(value)
             cls.image_temp = pygame.image.load(_badge_name)
 
-    def fall_down(self):
+    def remove(self):
+        if self.rect.top > screenborder.SCREEN_BOTTOM:
+            self.kill()
+
+    @abc.abstractmethod
+    def check(self, erina, *enemy):
+        raise NotImplementedError
+
+    def print_item(self, screen):
+        screen.blit(self.image_temp, self.rect)
+
+    def print_esc(self, screen):
+        pass
+
+    def print_screen(self, screen):
+        if self._item_mode:
+            self.print_item(screen)
+        else:
+            self.print_esc(screen)
+
+    def __setattr__(self, name, value):
+        if name == 'owner':
+            self.init()
+        return super().__setattr__(name, value)
         
+    def __repr__(self):
+        return '< badge ' + self.__class__.__name__ + ' >'
+
+class BadgeGroup(pygame.sprite.Group):
+    def add_internal(self, sprite):
+        name = sprite.__class__.__name__
+        for key, value in self.spritedict.items():
+            if value == name:
+                key.effective = True
+                key.invalid = False
+                return
+        self.spritedict[sprite] = name
+        self.__setattr__(name, sprite)
+
+    def has_internal(self, sprite):
+        return (sprite in self.spritedict) or (sprite in self.spritedict.values())
+
+    def remove_internal(self, sprite):
+        if isinstance(sprite, pygame.sprite.Sprite):
+            del self.spritedict[sprite]
+            self.__delattr__(sprite.__class__.__name__)
+        elif isinstance(sprite, str):
+            r = False
+            for key, value in self.spritedict.items():
+                if sprite == value:
+                    r = key
+                    break
+            if r:
+                del self.spritedict[r]
+                self.__delattr__(r)
+
+class HealthPlus(Badge):
+    """
+    Max. Health +7.5%
+    """
+    def stack(self):
+        self.s['base_hp'] = self.owner.hp.base_hp
+        self.s['add'] = 0
+
+    def check(self, erina):
+        if erina.hp.base_hp != self.s['base_hp']:
+            self.effective = True
+            self.s['base_hp'] = erina.hp.base_hp
+        if self.effective:
+            self.s['add'] = (erina.base_hp * 0.075).__int__()
+            erina.hp.max_hp += self.s['add']
+            self.effective = False
+        if self.invalid:
+            erina.hp.max_hp -= self.s['add']
+            self.invalid = False
+
+    def miriam_check(self, miriam):
+        if self.effective:
+            miriam.hp.max_hp += miriam.hp.base_hp * 0.075
+            self.effective = False
+
+HealthPlus.SetImage('health_plus')
+
+class HealthSurge(Badge):
+    """
+    Max. Health +12.5%
+    """
+    def stack(self):
+        self.s['base_hp'] = self.owner.hp.base_hp
+        self.s['add'] = 0
+
+    def check(self, erina):
+        if erina.hp.base_hp != self.s['base_hp']:
+            self.effective = True
+            self.s['base_hp'] = erina.hp.base_hp
+        if self.effective:
+            self.s['add'] = erina.base_hp * 0.125
+            erina.max_hp += self.s['add']
+            self.effective = False
+        if self.invalid:
+            erina.hp.max_hp -= self.s['add']
+            self.invalid = False
+
+    def miriam_check(self, miriam):
+        if self.effective:
+            miriam.hp.max_hp += miriam.hp.base_hp * 0.125
+            self.effective = False
+
+HealthSurge.SetImage('health_surge')
+
+class ManaPlus(Badge):
+    """
+    Max. MP += 12.5%
+    """

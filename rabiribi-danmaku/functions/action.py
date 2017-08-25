@@ -674,3 +674,40 @@ class OptionAction():
             if value < 2:
                 raise AttributeError("rate value must larger than 2\n")
         return super().__setattr__(name, value)
+
+class ItemAction(object):
+    """
+    specify items movement
+    """
+    def __init__(self, birth_place
+                 birth_place_offset,
+                 *args,
+                 **kwargs
+                 ):
+        self.timer = 0
+        self.SetPosition(birth_place, birth_place_offset)
+        self.itemline = False
+
+    def SetPosition(self, birth_place, offset):
+        if isinstance(birth_place, Sprite):
+            center = birth_place.center
+        elif isinstance(birth_place, (list, tuple)):
+            center = birth_place
+        if offset:
+            x,y = offset[1]*cos(offset[0]), offset[1]*sin(offset[0])
+        self.center = [center[0]+x, center[1]+y]
+
+    def birth_move(self):
+        self.speed = self.timer*3/40
+        self.center[1] += self.speed
+
+    def regular_move(self):
+        self.speed = 1.5
+        self.center[1] += 1.5
+
+    def snipe_move(self, erina):
+        self.speed = 2
+        self.direction = snipe(self,center, erina)
+        self.center = [self.speed*self.direction[0], self.speed*self.direction[1]]
+
+    

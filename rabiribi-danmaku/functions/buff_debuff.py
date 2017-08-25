@@ -418,7 +418,7 @@ class BuffGroup(pygame.sprite.Group):
                 key.effective = True
                 key.invalid = False
                 return
-        self.spritedict[sprite] = sprite.__class__.__name__
+        self.spritedict[sprite] = name
         self.__setattr__(name, sprite)
 
     def has_internal(self, sprite):
@@ -429,12 +429,14 @@ class BuffGroup(pygame.sprite.Group):
             del self.spritedict[sprite]
             self.__delattr__(sprite.__class__.__name__)
         elif isinstance(sprite, str):
+            r = False
             for key, value in self.spritedict.items():
                 if sprite == value:
                     r = key
                     break
-            del self.spritedict[r]
-            self.__delattr__(sprite)
+            if r:
+                del self.spritedict[r]
+                self.__delattr__(sprite)
 '''
 class BuffGroup():
     """
@@ -739,8 +741,8 @@ class Freeze(Buff):
     When attacking, lose 3% HP every second
     """
     _erina_only = True
-    def init(self):
-        super().init()
+    def init(self, owner):
+        super().init(owner)
         self.delay_timer = 0
 
     def check(self, erina, *enemy):
@@ -758,8 +760,8 @@ class Burn(Buff):
     Lose 15% HP every 2 seconds
     Enemies with "Burn" lose 2-3 HP every 0.05 Seconds
     """
-    def init(self):
-        super().init()
+    def init(self, owner):
+        super().init(owner)
 
     def check(self, erina, *enemy):
         if self.owner._type == 'erina':
@@ -1242,8 +1244,8 @@ class HexCancel(Buff):
     """
     No damage taken from every 6th attack
     """
-    def init(self):
-        super().init()
+    def init(self, owner):
+        super().init(owner)
         self.damage_count = 0
 
     def check(self, erina, *enemy):
@@ -1260,8 +1262,8 @@ class LuckySeven(Buff):
     """
     Every 7th successful attack inflicts 7% or 77% more damage
     """
-    def init(self):
-        super().init()
+    def init(self, owner):
+        super().init(owner)
         self.successful_attack = 0
 
     def check(self, erina, *enemy):
@@ -1447,8 +1449,8 @@ class Revenge300(Buff):
     """
     _boss_only = True
     _special_only = 'irisu'
-    def init(self):
-        super().init()
+    def init(self, owner):
+        super().init(owner)
         self.effective = False
 
     def check(self, erina, *enemy):
@@ -1472,8 +1474,8 @@ class BunnyLover(Buff):
     """
     Damage taken reduced by 50% when the opponent is a bunny
     """
-    def init(self):
-        super().init()
+    def init(self, owner):
+        super().init(owner)
         self.bunny = 'erina', 'irisu'
 
     def check(self, erina, *enemy):
@@ -1581,8 +1583,8 @@ class HaloBoostLv1(Buff):
     """
     # under development
     _erina_only = True
-    def init(self):
-        super().init()
+    def init(self, owner):
+        super().init(owner)
         self.successful_attack = 0
 
     def check(self, erina, *enemy):
@@ -1607,8 +1609,8 @@ class HaloBoostLv2(Buff):
     """
     # under development
     _erina_only = True
-    def init(self):
-        super().init()
+    def init(self, owner):
+        super().init(owner)
         self.successful_attack = 0
 
     def check(self, erina, *enemy):
@@ -1633,8 +1635,8 @@ class HaloBoostLv3(Buff):
     """
     # under development
     _erina_only = True
-    def init(self):
-        super().init()
+    def init(self, owner):
+        super().init(owner)
         self.successful_attack = 0
 
     def check(self, erina, *enemy):

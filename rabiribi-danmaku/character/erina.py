@@ -6,6 +6,41 @@ import objects
 
 from pygame.locals import *
 
+class HP(object):
+    """
+    specify erina hp
+    """
+    _base_hp = 100
+    def __init__(self, erina):
+        self.erina = erina
+        self.hp = 100
+        self.max_hp = 100
+        self.base_hp = 100
+
+    def __setattr__(self, name, value):
+        if name in ('hp','max_hp'):
+            if self.hp > self.max_hp:
+                super.().__setattr__('hp', self.max_hp)
+        value = value.__int__()
+        return super.__setattr__(name, value)
+
+    def add(self, value):
+        self.hp += value
+
+    def sub(self, value):
+        self.hp -= value
+        if self.hp < 0:
+            self.erina.death = True
+
+    def full(self):
+        self.hp = self.max_hp
+
+    def __repr__(self):
+        return '< Erina HP: %d/%d >' % (self.hp, self.max_hp)
+
+    def __str__(self):
+        return "HP: %d,\n MaxHP: %d,\n BaseHP: %d,\n" % (self.hp, self.max_hp, self.base_hp)
+        
 class Erina(pygame.sprite.Sprite):
     """ 
     Erina kawaii

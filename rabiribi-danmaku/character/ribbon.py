@@ -7,6 +7,52 @@ from pygame.locals import *
 from functions.values import screenborder
 from functions.values import damagetype
 
+class MP(object):
+    """
+    specify ribbon mana value
+    """
+    _base_mp = 10000
+    def __init__(self, ribbon):
+        self.ribbon = ribbon
+        self.mp = 10000
+        self.max_mp = 10000
+        self.base_mp = 10000
+
+    def __setattr__(self, name, value):
+        value = value.__int__()
+        if name in 'max_mp':
+            if self.mp > self.max_mp:
+                self.mp = self.max_mp
+        return super().__setattr__(name, value)
+
+    def add(self, value):
+        self.mp += value
+
+    def sub(self, value):
+        self.mp -= value
+
+    def full(self):
+        self.mp = self.max_mp
+
+    def empty(self):
+        self.mp = 0
+
+    def boost(self, max_boost=False):
+        h = self.max_mp//2
+        if self.mp > h:
+            self.mp -= h
+        elif self.mp == self.max_mp:
+            if self.max_boost:
+                self.empty()
+            else:
+                self.mp -= h
+
+    def __repr__(self):
+        return "< ribbon MP: %d/%d >" % (self.mp, self.max_mp)
+
+    def __str__(self):
+        return "MP: %d\nMaxMP: %d\nBaseMP: %d" % (self.mp, self.max_mp, self.base_mp)
+
 class green_danmaku(pygame.sprite.Sprite):
     def __init__(self, me_ribbon):
         pygame.sprite.Sprite.__init__(self)
