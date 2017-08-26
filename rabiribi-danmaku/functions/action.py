@@ -679,7 +679,7 @@ class ItemAction(object):
     """
     specify items movement
     """
-    def __init__(self, birth_place
+    def __init__(self, birth_place,
                  birth_place_offset,
                  *args,
                  **kwargs

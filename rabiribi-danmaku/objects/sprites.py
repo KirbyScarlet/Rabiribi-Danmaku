@@ -51,6 +51,7 @@ class Damage(object):
     def init(self):
         self.all_damage = 0 # except buff damage
         self.buff_damage = 0
+        self.physical_damage = 0
         super().__setattr__('get_buff', 0)
         #=====================
         super().__setattr__('danmaku', 0)
@@ -104,9 +105,14 @@ class Damage(object):
         pass
 
     def __setattr__(self, name, value):
-        if name in ('poisond', 'freeze', 'burn', 'cursed', 'reflect'):
+        value = value.__int__()
+        if value < 0:
+            value = 0
+        if name in ('damage', 'magic', 'crash', 'amulet', 'cocoabomb', 'boost'):
+            super().__setattr__('physical_damage', self.physical_damage.__add__(value - self.__getattribute__(name)))
+        elif name in ('poisond', 'freeze', 'burn', 'cursed', 'reflect'):
             super().__setattr__('buff_damage', self.buff_damage.__add__(value - self.__getattribute__(name)))
-        elif name not in ('buff_damage', 'all_damage'):
+        elif name not in ('buff_damage', 'all_damage', 'physical_damage'):
             super().__setattr__('all_damage', self.all_damage.__add__(value - self.__getattribute__(name)))
         return super().__setattr__(name, value)
 

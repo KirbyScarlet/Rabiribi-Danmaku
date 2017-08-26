@@ -100,6 +100,20 @@ class MP(object):
                 value = self.max_hp
         return super().__setattr__(name, value)
 
+class ATK(object):
+    """
+    ?
+    """
+    # under development
+    def __init__(self, sprite, atk):
+        self.sprite = sprite
+        self.atk = atk
+        self.base_atk = atk
+
+    def __setattr__(self, name, value):
+        value = value.__int__()
+        return super().__setattr__(name, value)
+
 def vector(x, y):
     """
     vector(x, y): return float

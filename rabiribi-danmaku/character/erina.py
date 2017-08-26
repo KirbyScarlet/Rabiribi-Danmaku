@@ -20,9 +20,9 @@ class HP(object):
     def __setattr__(self, name, value):
         if name in ('hp','max_hp'):
             if self.hp > self.max_hp:
-                super.().__setattr__('hp', self.max_hp)
+                super().__setattr__('hp', self.max_hp)
         value = value.__int__()
-        return super.__setattr__(name, value)
+        return super().__setattr__(name, value)
 
     def add(self, value):
         self.hp += value

@@ -21,7 +21,7 @@ class AllBadges:
     crisis_boost = 0         
     # Attack +25% when HP <20%
     atk_grow = 0           
-    # Attack damage output +1~2. Faster BPO recovery if >10 badges equipped.
+    # Attack damage output +1~2. Faster BP recovery if >10 badges equipped.
     def_grow = 0           
     # All damage taken -1~2. Drop a recovery carrot if >10 badges equipped.
     atk_trade = 0          
@@ -187,10 +187,11 @@ class HealthPlus(Badge):
         self.s['base_hp'] = self.owner.hp.base_hp
         self.s['add'] = 0
 
-    def check(self, erina):
+    def check(self, erina, *enemy):
         if erina.hp.base_hp != self.s['base_hp']:
             self.effective = True
             self.s['base_hp'] = erina.hp.base_hp
+            erina.hp.max_hp -= self.s['add']
         if self.effective:
             self.s['add'] = (erina.base_hp * 0.075).__int__()
             erina.hp.max_hp += self.s['add']
@@ -199,7 +200,7 @@ class HealthPlus(Badge):
             erina.hp.max_hp -= self.s['add']
             self.invalid = False
 
-    def miriam_check(self, miriam):
+    def miriam_check(self, miriam, erina):
         if self.effective:
             miriam.hp.max_hp += miriam.hp.base_hp * 0.075
             self.effective = False
@@ -214,10 +215,11 @@ class HealthSurge(Badge):
         self.s['base_hp'] = self.owner.hp.base_hp
         self.s['add'] = 0
 
-    def check(self, erina):
+    def check(self, erina, *enemy):
         if erina.hp.base_hp != self.s['base_hp']:
             self.effective = True
             self.s['base_hp'] = erina.hp.base_hp
+            erina.hp.max_hp -= self.s['add']
         if self.effective:
             self.s['add'] = erina.base_hp * 0.125
             erina.max_hp += self.s['add']
@@ -226,7 +228,7 @@ class HealthSurge(Badge):
             erina.hp.max_hp -= self.s['add']
             self.invalid = False
 
-    def miriam_check(self, miriam):
+    def miriam_check(self, miriam, erina):
         if self.effective:
             miriam.hp.max_hp += miriam.hp.base_hp * 0.125
             self.effective = False
@@ -237,3 +239,271 @@ class ManaPlus(Badge):
     """
     Max. MP += 12.5%
     """
+    # mp under development
+    def stack(self):
+        self.s['base_mp'] = self.owner.mp.base_mp
+        self.s['add'] = 0
+
+    def check(self, erina, *enemy):
+        if erina.ribbon.mp.base_mp != self.s['base_mp']:
+            self.effective = True
+            self.s['base_mp'] = erina.base_mp
+            erina.ribbon.mp.max_mp -= self.s['add']
+        if self.effective:
+            self.s['add'] = erina.ribbion.base_mp * 0.125
+            erina.ribbion.mp.max_mp += self.s['add']
+            self.effective = False
+        if self.invalid:
+            erina.ribbion.mp.max_mp -= self.s['add']
+            self.invalid = False
+
+    def miriam_check(self, miriam, erina):
+        if self.effective:
+            miriam.mp.max_mp += miriam.mp.base_mp * 0.125
+            self.effective = False
+
+ManaPlus.SetImage('mana_plus')
+
+class ManaSurge(Badge):
+    """
+    Max. MP +20%
+    """
+    def stack(self):
+        self.s['base_mp'] = self.owner.mp.base_mp
+        self.s['add'] = self.owner.mp.base_mp
+
+    def check(self, erina, *enemy):
+        if erina.mp.base_mp != self.s['base_mp']:
+            self.effective = True
+            self.s['base_mp'] = erina.ribbon.mp.base_mp
+            erina.ribbon.mp.max_mp -= self.s['add']
+        if self.effective:
+            self.s['add'] = erina.ribbon.base_mp * 0.2
+            erina.ribbon.mp.max_mp += self.s['add']
+            self.effective = False
+        if self.invalid:
+            erina.ribbon.mp.max_mp -= self.s['add']
+            self.invalid = False
+
+    def miriam_check(self, miriam, erina):
+        if self.effective:
+            miriam.mp.max_mp += miriam.mp.base_mp * 0.2
+            self.effective = False
+
+ManaSurge.SetImage('mana_surge')
+
+class CrisisBoost(Badge):
+    """
+    Attack + 25% when HP <20%
+    """
+    def stack(self):
+        self.s['base_atk'] = self.owner.attack.base_atk
+        self.s['add'] = 0
+
+    def check(self, erina, *enemy):
+        if erina.hp.hp < erina.hp.max_hp//5:
+            if erina.atk.base_atk != self.s['base_atk']:
+                self.effective = True
+                self.s['base_atk'] = erina.attack.base_atk
+                erina.attack.atk -= self.s['add']
+            if self.effective:
+                self.s['add'] = (erina.attack.base_atk * 0.25).__int__()
+                erina.attack.atk += self.s['add']
+                self.effective = False
+        else:
+            if not self.invalid:
+                self.invalid = True
+        if self.invalid:
+            erina.attack.atk -= self.s['add']
+            self.invalid = False
+
+    def miriam_check(self, miriam, erina):
+        if miriam.hp.hp < miriam.hp.max_hp//5:
+            if miriam.attack.base_atk != self.s['base_atk']:
+                self.effective = True
+                self.s['base_atk'] = miriam.attack.base_atk
+            if self.effective:
+                self.s['add'] = (miriam.attack.base_atk * 0.25).__int__()
+                miriam.attack.atk += self.s['add']
+                self.effective = False
+        else:
+            if not self.invalid:
+                self.invaled = True
+        if self.invalid:
+            miriam.attack.atk -= self.s['add']
+            self.invalid = False
+
+CrisisBoost.SetImage('crisis_boost')
+
+class ATKGrow(Badge):
+    """
+    All damage output +1~2, Faster BP recovery if >10 badges equipped
+    """
+    def check(self, erina, *enemy):
+        if len(erina.badges) >= 10:
+            for e in *enemy:
+                if e.damage.danmaku:
+                    e.damage.danmaku += random.randint(1,2)
+                    erina.ribbon.mp += 1
+                elif e.damage.magic:
+                    e.damage.magic += random.randint(1,2)
+                    erina.ribbon.mp += 1
+    
+    def miriam_check(self, miriam, erina):
+        if len(miriam.badges) >= 10:
+            for e in enemy:
+                if e.damage.danmaku:
+                    e.damage.danmaku += random.randint(1,2)
+                    miriam.mp += 100
+
+ATKGrow.SetImage('atk_trade')
+
+class DEFGrow(Badge):
+    """
+    All damage taken -1~2, Drop a recovery carrot if >10 badges equipped
+    """
+    def check(self, erina, *enemy):
+        if len(erina.badges) >= 10:
+            if erina.damage.danmaku:
+                erina.damage.danmaku -= random.randint(1,2)
+        
+        # carrot under development
+
+    def miriam_check(self, miriam, erina):
+        if len(miriam.badges) >= 10:
+            if miriam.damage.danmaku:
+                miriam.damage.danmaku -= random.randint(1,2)
+            elif miriam.damage.magic:
+                miriam.damage.magic -= random.randint(1,2)
+
+DEFGrow.SetImage('def_grow')
+
+class ATKTrade(Badge):
+    """
+    Attack +25%, Damage taken +50%
+    """
+    def stack(self):
+        self.s['base_atk'] = self.owner.attack.base_atk
+        self.s['add'] = 0
+
+    def check(self, erina, *enemy):
+        if erina.attack.base_atk != self.s['base_atk']:
+            self.s['base_atk'] = erina.attack.base_atk
+            erina.attack.atk -= self.s['add']
+            self.effective = True
+        if self.effective:
+            self.s['add'] = erina.attack.base_atk//4
+            erina.attack.atk += self.s['add']
+            self.effective = False
+        if self.invalid:
+            erina.attack.atk -= self.s['add']
+            self.s['add'] = 0
+            self.invalid = False
+        if erina.damage.danmaku:
+            erina.damage.danmaku *= 1.5
+
+    def miriam_check(self, miriam, erina):
+        if miriam.attack.base_atk != self.s['base_atk']:
+            self.s['base_atk'] = miriam.attack.base_atk
+            miriam.attack.atk -= self.s['add']
+            self.effective = True
+        if self.effective:
+            self.s['add'] = miriam.attack.base_atk//4
+            miriam.attack.atk += self.s['add']
+            self.effective = False
+        if self.invalid:
+            miriam.attack.atk -= self.s['add']
+            self.s['add'] = 0
+            self.invalid = False
+        if miriam.damage.physical_damage:
+            miriam.damage.physical_damage *= 1.5
+
+ATKTrade.SetImage('atk_trade')
+
+class DEFTrade(Badge):
+    """
+    Damage taken -20%, Attack -15%
+    """
+    def stack(self):
+        self.['base_atk'] = self.owner.attack.base_atk
+        self.['sub'] = 0
+
+    def check(self, erina, *enemy):
+        if erina.attack.base_atk != self.['base_atk']:
+            self.s['base_atk'] = erina.attack.base_atk
+            erina.attack.base_atk += self,['sub']
+            self.effective = True
+        if self.effective:
+            self.['sub'] = (erina.attack.base_atk*0.15).__int__()
+            erina.attack.atk -= self.['sub']
+            self.effective = False
+        if self.invalid:
+            erina.attack.atk += self.['sub']
+            self.['sub'] = 0
+            self.invalid = False
+        if erina.damage.danmaku:
+            erina.damage.danmaku *= 0.8
+
+    def miriam_check(self, miriam, erina):
+        miriam.attack.atk -= miriam.attack.base_atk * 0.15
+        if miriam.damage.physical_damage:
+            miriam.damage.physical_damage *= 0.8
+
+DEFTrade.SetImage('def_trade')
+
+class ArmStrength(Badge):
+    """
+    Piko Hammer attack +15%
+    """
+    # maybe useless
+
+ArmStrength.SetImage('arm_strength')
+
+class CarrotBoost(Badge):
+    """
+    Carrot Bomb attack +10% and more SP recover from Carrot Bombs
+    """
+    # maybe useless
+
+CarrotBoost.SetImage('carrot_boost')
+
+class Weaken(Badge):
+    """
+    Reduce enemies' invincibility time after getting hit
+    """
+    def check(self, erina, *enemy):
+        pass
+
+    def miriam_check(self, miriam, erina):
+        if erina.invincible > 90:
+            erina.invincible -= 1
+
+Weaken.SetImage('weaken')
+
+class SelfDefense(Badge):
+    """
+    Increase Erina's invincibility time after getting hit
+    """
+    def check(self, erina, *enemy):
+        if erina.invincible:
+            erina.invincible += 0.5
+
+    def miriam_check(self, miriam, erina):
+        pass
+
+SelfDefense.SetImage('self_defense')
+
+class Armored(Badge):
+    """
+    Reduce knockback from attacks and reduce collision damage
+    """
+    def check(self, erina, *enemy):
+        if erina.damage.crash:
+            erina.damage.crash *= 0.8
+        
+    def miriam_check(self, miriam, erina):
+        if miriam.damage.crash:
+            miriam.damage.crash *= 0.8
+
+Armored.SetImage('armored')
+
