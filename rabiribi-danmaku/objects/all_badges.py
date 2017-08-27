@@ -507,3 +507,332 @@ class Armored(Badge):
 
 Armored.SetImage('armored')
 
+class LuckySeven_badge(Badge):
+    """
+    Deal 107% or 177% damage on every 7th hit
+    """
+    def check(self, erina, *enemy):
+        if self.effective:
+            erina.buff.add(functions.buff_debuff.LuckySeven(time=-1))
+            self.effective = False
+        if self.invalid:
+            erina.buff.LuckySeven.time = 1
+            self.invalid = False
+
+    def miriam_check(self, miriam, erina):
+        if self.effective:
+            miriam.buff.add(functions.buff_debuff.LuckySeven(time=-1))
+            self.effective = False
+        if self.invalid:
+            miriam.buff.LuckySeven.time = 1
+            self.invalid = False
+
+LuckySeven_badge.SetImage('lucky_seven_badge')
+
+class HexCancel_badge(Badge):
+    """
+    No damage for every 6th hit taken but amulet drained for 3 seconds
+    """
+    def check(self, erina, *enemy):
+        if self.effective:
+            erina.buff.add(functions.buff_debuff.HexCancel(time=-1))
+            self.effective = False
+        if self.invalid:
+            erina.buff.HexCancel.time = 1
+            self.invalid = False
+    
+    def miriam_check(self, miriam, erina):
+        if self.effective:
+            miriam.buff.add(functions.buff_debuff.HexCancel(time=-1))
+            self.effective = False
+        if self.invalid:
+            miriam.buff.HexCancel.time = 1
+            self.invalid = False
+
+HexCancel_badge.SetImage('hex_cancel_badge')
+
+class PureLove(Badge):
+    """
+    In Boss Battles, take almost no collision damage from female enemies
+    """
+    def check(self, erina, *enemy):
+        for e in *enemy:
+            if e._type == 'boss':
+                e.crash = 0
+
+    def stack(self):
+        self.s['fire_ore'] = 0
+
+    def miriam_check(self, miriam, erina):
+        # under development
+        if self.effective:
+            erina.item.fire_ore = 0
+            self.effective = False
+        elif self.invalid:
+            erina.item.fire_ore = self.s['fire_ore']
+            self.invalid = False
+
+PureLove.SetImage('pure_love')
+
+class ToxicStrike(Badge):
+    """
+    add a poison effect to all attacks
+    """
+    # under development
+    # balance unfit
+    def check(self, erina, *enemy):
+        for e in *enemy:
+            if e.damage.physical_damage:
+                e.buff.add(functions.buff_debuff.Poisond(time=301))
+
+    def miriam_check(self, miriam, erina):
+        if erina.damage.danmaku:
+            erina.buff.add(functions.buff_debuff.Poisond(time=1501))
+
+ToxicStrike.SetImage('toxic_strike')
+
+class FrameCancel(Badge):
+    """
+    Cancel the fifth Piko Hammer Combo by pressing [donw]
+    """
+    # useless
+
+FrameCancel.SetImage('frame_cancel')
+
+class HealthWager(Badge):
+    """
+    Max. MP +37.5%, Max. Health -25%
+    """
+    def init(self):
+        super().__init__()
+        self.eff_hp = True
+        self.eff_mp = True
+
+    def stack(self):
+        self.s['base_hp'] = 0
+        self.s['hp_add'] = 0
+        self.s['base_mp'] = 0
+        self.s['mp_add'] = 0
+
+    def check(self, erina, *enemy):
+        if self.s['base_hp'] != erina.hp.base_hp:
+            self.s['base_hp'] = erina.hp.base_hp
+            erina.hp.base_hp -= self.['hp_add']
+            self.eff_hp = True
+        if self.s['base_mp'] != erina.ribbon.mp.base_mp:
+            self.s['base_mp'] = erina.ribbon.mp.base_mp
+            erina.ribbon.mp.base_mp -= self.['mp_add']
+            self.eff_mp = True
+        if self.eff_hp:
+            self.s['hp_add'] = erina.hp.base_hp//4
+            erina.hp.sub(self.s['hp_add'])
+            self.eff_hp = False
+        if self.eff_mp:
+            self.s['mp_add'] = (erina.ribbon.mp.base_mp*0.375).__int__()
+            erina.ribbon.mp.add(self.s['mp_add'])
+            self.eff_mp = False
+        if self.invalid:
+            erina.hp.add(self.s['hp_add'])
+            erina.ribbon.mp.sub(self.s['hp_sub'])
+            self.s['hp_add'] = 0
+            self.s['hp_sub'] = 0
+            self.invalid = False
+
+    def miriam_check(self, miriam, erina):
+        if self.effective:
+            miriam.hp.sub(miriam.hp.base_hp*0.25)
+            miriam.mp.add(miriam.mp.max_mp*0.375)
+            self.effective = False
+
+HealthWager.SetImage('health_wager')
+
+class ManaWager(Badge):
+    """
+    Max. Health +17.5. Max. MP -32.5%
+    """
+    def init(self):
+        super().__init__()
+        self.eff_hp = True
+        self.eff_mp = True
+
+    def stack(self):
+        self.s['base_hp'] = 0
+        self.s['hp_add'] = 0
+        self.s['base_mp'] = 0
+        self.s['mp_add'] = 0
+
+    def check(self, erina, *enemy):
+        if self.s['base_hp'] != erina.hp.base_hp:
+            self.s['base_hp'] = erina.hp.base_hp
+            erina.hp.base_hp -= self.['hp_add']
+            self.eff_hp = True
+        if self.s['base_mp'] != erina.ribbon.mp.base_mp:
+            self.s['base_mp'] = erina.ribbon.mp.base_mp
+            erina.ribbon.mp.base_mp -= self.['mp_add']
+            self.eff_mp = True
+        if self.eff_hp:
+            self.s['hp_add'] = erina.hp.base_hp*0.175
+            erina.hp.add(self.s['hp_add'])
+            self.eff_hp = False
+        if self.eff_mp:
+            self.s['mp_add'] = (erina.ribbon.mp.base_mp*0.325).__int__()
+            erina.ribbon.mp.sub(self.s['mp_add'])
+            self.eff_mp = False
+        if self.invalid:
+            erina.hp.sub(self.s['hp_add'])
+            erina.ribbon.mp.add(self.s['hp_sub'])
+            self.s['hp_add'] = 0
+            self.s['hp_sub'] = 0
+            self.invalid = False
+
+    def miriam_check(self, miriam, erina):
+        if self.effective:
+            miriam.hp.add(miriam.hp.base_hp*0.175)
+            miriam.mp.sub(miriam.mp.max_mp*0.325)
+            self.effective = False
+
+ManaWager.SetImage('mana_wager')
+
+class StaminaPlus(Badge):
+    """
+    Reduce all SP usage by 25%
+    """
+    # useless
+
+StaminaPlus.SetImage('stamina_plus')
+
+class Blessed(Badge):
+    """
+    Increase Bunny Amulet recharge speed
+    """
+    def check(self, erina, *enemy):
+        if self.effective:
+            erina.amulet += 1
+
+    def miriam_check(self, miriam, erina):
+        '?'
+        # under development
+
+Blessed.SetImage('blessed')
+
+class HitboxDown(Badge):
+    """
+    Reduce Erina's hitbox size
+    """
+    # under development
+    def check(self, erina, *enemy):
+        if self.effective:
+            erina.radius = 1
+        
+    def miriam_check(self, miriam, *enemy):
+        miriam.radius = 10
+
+HitboxDown.SetImage('hitbox_down')
+
+class CashBack(Badge):
+    """
+    Increase EN gained from enemies
+    """
+    # under development
+    def check(self, erina, *enemy):
+        pass
+
+    def miriam_check(self, miriam, erina):
+        pass
+
+CashBack.SetImage('cashback')
+
+class Survival(Badge):
+    """
+    Endure a tatal hit if HP>1 point
+    """
+    def check(self, erina, *enemy):
+        if self.effective:
+            if erina.damage.all_damage:
+                if erina.damage.all_damage >= erina.hp.hp > 1:
+                    erina.damage.all_damage = erina.hp.hp-1
+
+    def miriam_check(self, miriam, erina):
+        if self.effective:
+            miriam.buff.add(functions.buff_debuff.SurvivalInstinct())
+            self.effective = False
+        if self.invalid:
+            miriam.buff.SurvivalInstinct.time = 1
+            self.invalid = False
+
+Survival.SetImage('survival')
+
+class TopForm(Badge):
+    """
+    Resist 'Speed Down', 'Attack Down', 'Defense Down', and 'Numb' effects
+    """
+    def stack(self):
+        self.ss = ('SpeedDown', 'AttackDown', 'DefenseDown', 'Numb')
+    
+    def check(self, erina, *enemy):
+        if erina.damage.get_buff:
+            for b in self.ss:
+                if b in erina.damage.get_buff:
+                    erina.damage.get_buff.remove(b)
+
+    def miriam_check(self, miriam, erina):
+        if miriam.damage.get_buff:
+            for b in self.ss:
+                if b in miriam.damage.get_buff:
+                    miriam.damage.get_buff.remove(b)
+
+TopForm.SetImage('top_form')
+
+class ToughSkin(Badge):
+    """
+    Resist 'Toxic', 'Curse', and 'Burn' effects
+    """
+    def stack(self):
+        self.ss = ('Ponised', 'Curse', 'Burn')
+
+    def check(self, erina, *enemy):
+        if erina.damage.get_buff:
+            for b in self.ss:
+                if b in erina.damage.get_buff:
+                    erina.damage.get_buff.remove(b)
+
+    def check(self, miriam, erina):
+        if miriam.damage.get_buff:
+            for b in self.ss:
+                if b in miriam.damage.get_buff:
+                    miriam.damage.get_buff.remove(b)
+
+ToughSkin.SetImage('tough_skin')
+
+class ErinaBadge(Badge):
+    """
+    Damage taken -10%. Item Effect +20%. 
+    """
+    # under development
+
+ErinaBadge.SetImage('erina_badge')
+
+class RibbonBadge(Badge):
+    """
+    MP usage -15%
+    """
+    # under developmetn
+
+RibbonBadge.SetImage('ribbon_badge')
+
+class AutoTrigger(Badge):
+    """
+    Auto use Bunny Amulet if charge is 2 or above
+    Drains all MP and SP
+    """
+    # maybe useless
+    # under development
+    def check(self, erina, *enemy):
+        if erina.damage.physical_damage:
+            erina.amulet(2)  # under developmet
+
+    def miriam_check(self, miriam, erina):
+        pass
+
+AutoTrigger.SetImage('auto_trigger')
+    

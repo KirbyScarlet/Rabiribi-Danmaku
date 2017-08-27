@@ -52,7 +52,7 @@ class Damage(object):
         self.all_damage = 0 # except buff damage
         self.buff_damage = 0
         self.physical_damage = 0
-        super().__setattr__('get_buff', 0)
+        super().__setattr__('get_buff', functions.buff_debuff.BuffGroup())
         #=====================
         super().__setattr__('danmaku', 0)
         super().__setattr__('magic', 0)
@@ -134,6 +134,7 @@ class Damage(object):
             self.sprite.hp -= self.buff_damage
         else:
             self.sprite.hp = 1
+        self.sprite.buff.add(self.get_buff)
         self.sprite.hp -= self.all_damage
         self.init()
 

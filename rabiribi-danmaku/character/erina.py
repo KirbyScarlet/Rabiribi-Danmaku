@@ -228,7 +228,7 @@ class Erina(pygame.sprite.Sprite):
                 print
                 for b in each.buff_catch:
                     b.owner = self
-                    self.buff.add(b)
+                    self.damage.get_buff.add(b)
                 self.damage.danmaku += each.damage
             for each in temp_boss:
                 # self.buff.add(each.buff_catch)
