@@ -8,10 +8,10 @@ import sys
 import os
 p = sys.argv[-1].split('/')
 l = len(p)
+syspath = os.path.abspath('.')
 if l > 1:
     if l == 2 and p[0]=='.': pass
     else:
-        syspath = os.path.abspath('.')
         for i in range(l-1):
             syspath += '/'
             syspath += p[i]

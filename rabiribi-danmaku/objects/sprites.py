@@ -49,9 +49,9 @@ class Damage(object):
         self.init()
 
     def init(self):
-        self.all_damage = 0 # except buff damage
-        self.buff_damage = 0
-        self.physical_damage = 0
+        super().__setattr__('all_damage', 0)
+        super().__setattr__('buff_damage', 0)
+        super().__setattr__('physical_damage', 0)
         super().__setattr__('get_buff', functions.buff_debuff.BuffGroup())
         #=====================
         super().__setattr__('danmaku', 0)
@@ -112,8 +112,7 @@ class Damage(object):
             super().__setattr__('physical_damage', self.physical_damage.__add__(value - self.__getattribute__(name)))
         elif name in ('poisond', 'freeze', 'burn', 'cursed', 'reflect'):
             super().__setattr__('buff_damage', self.buff_damage.__add__(value - self.__getattribute__(name)))
-        elif name not in ('buff_damage', 'all_damage', 'physical_damage'):
-            super().__setattr__('all_damage', self.all_damage.__add__(value - self.__getattribute__(name)))
+        super().__setattr__('all_damage', self.all_damage.__add__(value - self.__getattribute__(name)))
         return super().__setattr__(name, value)
 
     def __call__(self, layer):
@@ -135,7 +134,7 @@ class Damage(object):
         else:
             self.sprite.hp = 1
         self.sprite.buff.add(self.get_buff)
-        self.sprite.hp -= self.all_damage
+        self.sprite.hp -= self.physical_damage
         self.init()
 
 class Boss(pygame.sprite.Sprite):
@@ -442,17 +441,90 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
     specify most of danmaku type.
     only danmaku be defined there.
     lazer next
+    
+    Danmaku(damage, energy, birth_layer, birth_place, *buff,
+    image_change_fps=0, image_change_rotation=0, 
+    liveborder=(screenborder.SCREEN_LEFT, screenborder.SCREEN_RIGHT,
+    screenborder.SCREEN_TOP, screenborder.SCREEN_BOTTOM),
+    birth_time=5, lazer=-1, birth_place_offset=((0),0), danmaku_layer=0,
+    birth_speed=1.0, direction=pi/2, direction_offset=0, **kwargs): 
+    return Danmaku instance
+
+    usage:
+
+        damage:     type float
+            specify danmaku damage
+        energy:     type int
+            specify damaku bonus energy
+        birth_layer:    type Group
+            specify birth layer
+        birth_place:    type (tuple, list, Sprite)
+            specify danmaku birthplace
+            e.g. birth_place = cocoa
+                birth_place = [100,100]
+                birth_place = screenborder.SCREEN_CENTER
+        *buff:      type Buff
+            specify buff(s) on opponent when damage taken
+            e.g. buff = (SpeedDown(time=600))
+        image_change_fps = 0:
+            specify danmaku animation fps
+        image_change_rotation = 0:
+            specify damaku rotation speed per frame
+            e.g. image_change_rotation = pi/30
+        liveborder = (left<type int>, right<type int>, top<type int>, bottom<type int>):
+            specify danmaku death border.
+            default value will be the screen border
+        birth_time = 5:
+            when danmaku in birthing, no damage taken
+        lazer = -1:
+            if lazer value larger than 0,
+            danmaku will die after <lazer value> frames
+        birth_place_offset = (0,0):
+            value will format in (radian, distance)
+            e.g. birth_place_offset = (pi/3, 20)
+        danmaku_layer = 0:
+            specify danmaku in which screen layer
+            small value on top
+        birth_speed = 1.0:
+            specify initial danmaku running speed (pixel/frame)
+        direction = pi/2:
+            specify initial danmaku direction (radian)
+        direction_offset = 0:
+            specify initial direction offset (radian)
+        **kwargs:
+            for more details see actions.py
+            speedtime = (frame<type int>, frame<type int>, ...):
+                e.g. speedtime = (30, 120)
+            speedvalue = (<type float>, <type float>, ...)
+                e.g. speedvalue = (5, 2)
+            directiontime = (frame<type int>, frame<type int>, ...)
+                e.g. directiontime = (60,)
+            directionvalue = (<type float, tuple, list>, <type float, tuple, list>)
+                e.g. directionvalue = (pi/2, (erina, pi/64), [pi/96, pi/256])
     """
     _type = 'danmaku'
     def __init__(self, 
-                birth_layer, birth_place, *buff, 
-                birth_time=10, lazer=-1,
-                birth_place_offset = ((0),0), 
-                danmaku_layer = 0, 
-                birth_speed = 1.0, 
-                direction = pi/2, 
-                direction_offset = 0, 
-                **kwargs):
+                 damage,
+                 energy,
+                 birth_layer, 
+                 birth_place, 
+                 *buff, 
+                 image_change_fps = 0,
+                 image_change_rotation = 0,
+                 liveborder = (
+                               screenborder.SCREEN_LEFT, 
+                               screenborder.SCREEN_RIGHT, 
+                               screenborder.SCREEN_TOP, 
+                               screenborder.SCREEN_BOTTOM,
+                               ),
+                 birth_time=5, 
+                 lazer=-1,
+                 birth_place_offset = ((0),0), 
+                 danmaku_layer = 0, 
+                 birth_speed = 1.0, 
+                 direction = pi/2, 
+                 direction_offset = 0, 
+                 **kwargs):
         pygame.sprite.Sprite.__init__(self, birth_layer)
         DanmakuAction.__init__(self, birth_place,
                                 birth_place_offset=birth_place_offset, 
@@ -475,7 +547,9 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
         some lazer will use this
         """
         self.timer = 0
+        self.SetValue(damage, energy, image_change_fps, image_change_rotation)
         self.SetImage()
+        self.SetLiveCheck(*liveborder)
         #print('danmaku instance:', self.speed, self.center, self.direction)
 
         # music not specify
@@ -495,24 +569,27 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
         #    self.load_source(danmaku_name)
         #    self.read_source(danmaku_name, birth_frame, live_frame)
         #self.load_source(danmaku_name)
+        '''
         self.pixel = self.images['live']
         self.pixel_count = len(self.images['live'])
         self.birth = self.images['birth']
         self.birth_count = len(self.images['birth'])
 
         self.image = self.birth[0] # sometimes have more than 1 frame
+        
+        '''
         self.rect = self.image.get_rect()
 
         self.rect.left = self.center[0] - self.rect.width/2
         self.rect.top = self.center[1] - self.rect.height/2
 
-    def SetValue(self, damage, energy, radius, image_change_fps=0, image_change_rotation=0):
+    def SetValue(self, damage, energy, image_change_fps=0, image_change_rotation=0):
         """
         define local damage, removing energy, and birth position
         """
         self.damage = damage
         self.energy = energy
-        self.radius = radius
+        # self.radius = radius
 
         """
         special value
@@ -530,7 +607,7 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
                      right = screenborder.SCREEN_RIGHT, 
                      top = screenborder.SCREEN_TOP, 
                      bottom = screenborder.SCREEN_BOTTOM,
-                     live_time = -1):
+                     ):
         """
         when danmaku move out of this area,
         change delete count
@@ -540,8 +617,8 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
         self.right_border = right + self.rect.width/2
         self.top_border = top - self.rect.height/2
         self.bottom_border = bottom + self.rect.height/2
-        self.live_time = live_time
 
+    '''
     @classmethod
     def load_source(cls, danmaku_name):
         """
@@ -574,7 +651,21 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
             f.write(sources['live'][i])
             f.close()
             cls.images['live'].append(pygame.image.load(img_name).convert_alpha())
+    '''
 
+    @classmethod
+    def load_source(cls, danmaku_name, radius):
+        cls.images = []
+        try:
+            cls.image = pygame.image.load('data/tmp/imgs/'+danmaku_name+'.tmp')
+        except pygame.error:
+            with open('data/objs/danmaku.rbrb', 'rb') as file:
+                rbrb = pickle.load(file)
+            for key, value in rbrb.items():
+                with open('data/tmp/imgs/'+key+'.tmp', 'wb') as f:
+                    f.write(value)
+            cls.load_source(danmaku_name, radius)
+        cls.radius = radius
     '''
     def read_source(self):
         """
@@ -605,18 +696,20 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
     def image_change(self):
         """
         """
+        '''
         if self.birth_time:
             if self.birth_time > 2:
                 self.image = self.images['birth'][10-self.birth_time]
             else:
                 self.image = self.images['birth'][8]
         else:
-            if not self.image_change_fps:
-                pass
-            else:
-                if self.timer % fps == 0:
-                    self.image = self.images['live'][(self.timer/self.image_change_fps)%self.pixel_count]
-                    self.image = pygame.transform.rotate(self.image, self.rotation)
+            '''
+        if not self.image_change_fps:
+            pass
+        else:
+            if self.timer % fps == 0:
+                self.image = self.images['live'][(self.timer/self.image_change_fps)%self.pixel_count]
+                self.image = pygame.transform.rotate(self.image, self.rotation)
         if not self.image_change_rotation:
             pass
         else:

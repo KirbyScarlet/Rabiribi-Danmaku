@@ -6,30 +6,10 @@ from objects.sprites import Boss
 from objects.sprites import Danmaku
 from functions.spell_card import SpellCard
 from functions import snipe
-from objects.danmaku import mid_orange_circle
-from objects.danmaku import small_blue_circle
+from objects.danmaku import *
 from math import pi
 
 from functions.buff_debuff import SpeedDown
-
-class mid_orange_circle_cocoa_spell_1(mid_orange_circle):
-    def __init__(self, emitter):
-        super().__init__(emitter)
-
-    def time_rip(self):
-        if self.timer < 10:
-            self.speed = 6
-        elif 10 < self.timer < 20:
-            self.speed = -0.4*self.timer+10
-        else:
-            self.speed = 2
-
-class small_blue_circle_cocoa_spell_2(small_blue_circle):
-    def __init__(self, emitter):
-        super().__init__(emitter)
-
-    def time_rip(self):
-        pass
 
 class Spell_1(SpellCard):
     """
@@ -42,7 +22,7 @@ class Spell_1(SpellCard):
                 #temp_snipe = snipe(self.boss, erina)
                 offset = random.randint(-10,10)
                 for i in range(-15,16):
-                    mid_orange_circle(birth_group, self.boss,
+                    gray_glow_dot(5, 50, birth_group, self.boss,
                         SpeedDown(time=600),
                         birth_time = 10, lazer = -1,
                         birth_speed = 5, 
@@ -75,7 +55,7 @@ class Spell_2(SpellCard):
         if temp_time%15 == 1:
             angle = random.randint(0,628)/100
             for i in range(32):
-                mid_orange_circle(birth_group, self.boss,
+                gray_glow_dot(5, 50, birth_group, self.boss,
                                   birth_time = 10,
                                   birth_speed = 10,
                                   direction = angle,
@@ -97,7 +77,7 @@ class Spell_2(SpellCard):
             if temp_time % 2 == 1:
                 for i in range(10):
                     for j in -1,1:
-                        small_blue_circle(birth_group, self.boss,
+                        orange_glow_dot(5, 50, birth_group, self.boss,
                                           birth_speed = 3,
                                           direction = self.temp_snipe,
                                           direction_offset = 2*pi*i/10 + 2*pi*temp_time*j/314
