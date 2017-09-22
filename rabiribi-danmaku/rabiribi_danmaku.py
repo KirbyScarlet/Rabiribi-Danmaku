@@ -8,10 +8,10 @@ import sys
 import os
 p = sys.argv[-1].split('/')
 l = len(p)
-syspath = os.path.abspath('.')
 if l > 1:
     if l == 2 and p[0]=='.': pass
     else:
+        syspath = os.path.abspath('.')
         for i in range(l-1):
             syspath += '/'
             syspath += p[i]
@@ -26,7 +26,7 @@ pygame.mixer.init()
 bg_size = width, height = 640, 480
 screen = pygame.display.set_mode(bg_size, pygame.DOUBLEBUF)
 pygame.display.set_caption("RabiRibi-Danmaku demo")
-icon = pygame.image.load(syspath + "images/ribbon cover.png")
+icon = pygame.image.load("images/ribbon cover.png")
 pygame.display.set_icon(icon)
 
 import traceback

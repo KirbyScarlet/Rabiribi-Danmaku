@@ -56,10 +56,8 @@
     <Compile Include="data\tmp\mid\temp file with elfs.txt">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="objects\action.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="functions\all_badges.py" />
+    <Compile Include="functions\action.py" />
+    <Compile Include="functions\animation.py" />
     <Compile Include="functions\buff_debuff.py">
       <SubType>Code</SubType>
     </Compile>
