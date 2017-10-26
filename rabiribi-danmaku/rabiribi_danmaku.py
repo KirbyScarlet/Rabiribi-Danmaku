@@ -18,7 +18,7 @@ if l > 1:
             syspath += p[i]
 syspath += '/'
 '''
-syspath = os.path.splitdrive(__file__)[0]
+syspath = os.path.split(__file__)[0]
 os.chdir(syspath)
 
 import pygame
