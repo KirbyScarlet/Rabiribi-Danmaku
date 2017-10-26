@@ -19,7 +19,7 @@ class Number(pygame.sprite.Sprite):
 
     @classmethod    
     def SetImage(cls, number_type):
-        file_name = 'data/tmp/' + number_type + '.tmp'
+        file_name = 'data/tmp/imgs/' + number_type + '.tmp'
         try:
             cls.image = pygame.image.load(file_name).convert_alpha()
         except pygame.error:

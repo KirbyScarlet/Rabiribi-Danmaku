@@ -18,6 +18,7 @@ me_ribbon = character.ribbon.Ribbon()
 '''
 
 import platform
+import os
 from pygame.sprite import Sprite
 from math import sqrt
 from math import asin
@@ -65,7 +66,7 @@ class HP(object):
     def __setattr__(self, name, value):
         if name == 'hp':
             if value > self.maxhp:
-                value = self.maxhp
+                return super().__setattr__('hp', self.maxhp)
         return super().__setattr__(name, value)
 
 class MP(object):
@@ -96,8 +97,8 @@ class MP(object):
 
     def __setattr__(self, name, value):
         if name == 'mp':
-            if value > self.maxhp:
-                value = self.max_hp
+            if value > self.maxmp:
+                super().__setattr__('hp', self.maxmp)
         return super().__setattr__(name, value)
 
 class ATK(object):
@@ -251,6 +252,7 @@ def time_check(fun, *args, **kwargs):
     return ret
 
 def clear_cache(*dir):
+    '''
     if platform.system() == "Windows":
         if dir:
             for each in dir:
@@ -273,6 +275,8 @@ def clear_cache(*dir):
             system("rm data/tmp/imgs/*.tmp")
             system("rm data/tmp/mid/*.tmp")
             system("rm data/tmp/misc/*.tmp")
+    '''
+    
             
 import functions.action
 import functions.values

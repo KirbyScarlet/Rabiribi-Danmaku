@@ -75,6 +75,7 @@
     <Compile Include="images\elf\png2rbrb.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="objects\all_badges.py" />
     <Compile Include="objects\counter.py" />
     <Compile Include="objects\danmaku.py">
       <SubType>Code</SubType>
