@@ -9,7 +9,7 @@ import functions.buff_debuff
 import random
 
 from functions.buff_debuff import *
-from functions.values import screenborder
+from functions.values import *
 from random import random
 from math import pi
 from objects.elf import *
@@ -33,7 +33,7 @@ class elf_2(elf_red_small):
     def attack_normal(self, erina, birth_layer, elf_layer, danmaku_layer):
         if self.timer == 89:
             self.snipe = functions.snipe(self, erina)
-        elif 90 <= self.timer < 150:
+        elif 90 <= self.timer < 150 and not self.timer % 3:
             if self.timer < 103:
                 for i in range(-1,2):
                     green_glow_dot(5, 50,
@@ -58,7 +58,7 @@ class elf_2(elf_red_small):
                 )
         elif self.timer == 149:
             self.snipe = functions.snipe(self, erina)
-        elif 150 <= self.timer < 210:
+        elif 150 <= self.timer < 210 and not self.timer % 3:
             if self.timer < 163:
                 for i in range(-1,2):
                     green_glow_dot(5, 50,
@@ -109,7 +109,7 @@ class Stage1aMidBattle(functions.stage_run.MidBattle):
         elif self.timer == 600:
             elf_2(
                 self.elf_layer,
-                birth_place = (screenborder.SCREEN_LEFT + 30, -20),
+                birth_place = (BATTLE_SCREEN_LEFT + 30, -20),
                 birth_direction = pi/2,
                 birth_speed = 2,
                 speedtime = (80, 140, 180),
@@ -117,7 +117,7 @@ class Stage1aMidBattle(functions.stage_run.MidBattle):
             )
             elf_2(
                 self.elf_layer, 
-                birth_place = (screenborder.SCREEN_RIGHT - 30, -20),
+                birth_place = (BATTLE_SCREEN_RIGHT - 30, -20),
                 birth_direction = pi/2,
                 birth_speed = 2,
                 speedtime = (80, 140, 180),
@@ -127,3 +127,38 @@ class Stage1aMidBattle(functions.stage_run.MidBattle):
             self.bgm.fadeout(1000)
         elif self.timer == 1000:
             self.part_run = False
+
+def stage1amidbattle(stage):
+    #stage.bgm.load('data/bgm/rbs1s1am.ogg')
+    #stage.bgm.play(-1)
+    if 60 <= stage.timer <= 300:
+        if not stage.timer%30:
+            elf_1(
+                stage.elf_layer,
+                birth_place = (15+random()*20, -30),
+                birth_direction = pi/2,
+                birth_speed = 1,
+                directiontime = (120, 300),
+                directionvalue = ([-pi/360, 0], 0)
+            )
+    elif stage.timer == 600:
+        elf_2(
+            stage.elf_layer,
+            birth_place = (BATTLE_SCREEN_LEFT + 30, -20),
+            birth_direction = pi/2,
+            birth_speed = 2,
+            speedtime = (80, 140, 180),
+            speedvalue = (0, 0, 1)
+        )
+        elf_2(
+            stage.elf_layer, 
+            birth_place = (BATTLE_SCREEN_RIGHT - 30, -20),
+            birth_direction = pi/2,
+            birth_speed = 2,
+            speedtime = (80, 140, 180),
+            speedvalue = (0, 0, 1)
+        )
+    elif stage.timer == 940:
+        stage.bgm.fadeout(1000)
+    elif stage.timer == 1000:
+        stage.timer = 0

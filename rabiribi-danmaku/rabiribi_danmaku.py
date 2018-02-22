@@ -27,18 +27,38 @@ pygame.init()
 pygame.mixer.init()
 
 bg_size = width, height = 640, 480
-screen = pygame.display.set_mode(bg_size, pygame.DOUBLEBUF)
+window = pygame.display.set_mode(bg_size, pygame.DOUBLEBUF)
 pygame.display.set_caption("RabiRibi-Danmaku demo")
 icon = pygame.image.load("images/ribbon cover.png")
 pygame.display.set_icon(icon)
+
+'''
+class MainLoop():
+    """
+    one process use for print screen
+    """
+    bg_size = width, height = 640, 480
+    window = pygame.display.set_mode(bg_size, pygame.DOUBLEBUF)
+    pygame.display.set_caption("RabiRibi-Danmaku demo")
+    icon = pygame.image.load("images/ribbon cover.png")
+    pygame.display.set_icon(icon)
+    clock = pygame.time.Clock()
+
+    def blit(self, screens, position):
+        return self.window.blit(screens, position)
+
+    def update(self, fps=60):
+        pygame.display.update()
+        self.clock.tick_busy_loop(fps)
+''' # multi-process without testing
 
 import traceback
 import functions
 import character
 import ui
 
-me_ribbon = character.ribbon.Ribbon()
-me_erina = character.erina.Erina(me_ribbon)
+# me_ribbon = character.ribbon.Ribbon()
+# me_erina = character.erina.Erina(me_ribbon)
 
 global difficulty
 
@@ -49,10 +69,15 @@ def main():
     difficulty = 'normal'
     #import ui.menu
     #ui.menu.menu(screen)
+    '''
     import boss.section1.stage1a
-    boss.section1.stage1a.stage_mid(me_erina, me_ribbon, difficulty, screen)
-    boss.section1.stage1a.stage_end(me_erina, me_ribbon, difficulty, screen)
-
+    boss.section1.stage1a.stage_mid(me_erina, me_ribbon, difficulty, window)
+    boss.section1.stage1a.stage_end(me_erina, me_ribbon, difficulty, window)
+    '''
+    stage = functions.stage.Stage(difficulty)
+    import boss.section1.stage1a
+    boss.section1.stage1a.stage_mid
+    stage(window, boss.section1.stage1a.stage_mid, 1)
 if __name__ == "__main__":
     try:
         main()
@@ -60,6 +85,6 @@ if __name__ == "__main__":
         pass
     except:
         traceback.print_exc()
-        input()
         pygame.quit()
         functions.clear_cache()
+        input()

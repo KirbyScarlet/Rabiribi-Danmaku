@@ -7,8 +7,9 @@ import functions
 from functions.action import DanmakuAction
 from functions.action import ElfAction
 from functions.action import direction
-from functions.values import screenborder
-from functions.values import damagetype
+# from functions.values import screenborder
+# from functions.values import damagetype
+from functions.values import *
 from functions import snipe
 from math import pi
 import time
@@ -152,7 +153,7 @@ class Boss(pygame.sprite.Sprite):
         """
         the buffs boss have.
         """
-        self.bgm = pygame.mixer.music
+        self.bgm = pygame.mixer.music  # maybe useless
         """
         boss bgm specify
         """
@@ -512,10 +513,10 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
                  image_change_fps = 0,
                  image_change_rotation = 0,
                  liveborder = (
-                               screenborder.SCREEN_LEFT, 
-                               screenborder.SCREEN_RIGHT, 
-                               screenborder.SCREEN_TOP, 
-                               screenborder.SCREEN_BOTTOM,
+                               BATTLE_SCREEN_LEFT, 
+                               BATTLE_SCREEN_RIGHT, 
+                               BATTLE_SCREEN_TOP, 
+                               BATTLE_SCREEN_BOTTOM,
                                ),
                  birth_time=5, 
                  lazer=-1,
@@ -603,10 +604,10 @@ class Danmaku(pygame.sprite.Sprite, DanmakuAction):
         self.inscreen = True
         
     def SetLiveCheck(self, 
-                     left = screenborder.SCREEN_LEFT, 
-                     right = screenborder.SCREEN_RIGHT, 
-                     top = screenborder.SCREEN_TOP, 
-                     bottom = screenborder.SCREEN_BOTTOM,
+                     left = BATTLE_SCREEN_LEFT, 
+                     right = BATTLE_SCREEN_RIGHT, 
+                     top = BATTLE_SCREEN_TOP, 
+                     bottom = BATTLE_SCREEN_BOTTOM,
                      ):
         """
         when danmaku move out of this area,
@@ -891,7 +892,7 @@ class Elf(pygame.sprite.Sprite, ElfAction):
         """
         specify attack methods
         """
-        self.__getattribute__("attack_"+difficulty)(difficulty, erina, birth_layer, elf_group, danmaku_layer)
+        self.__getattribute__("attack_%s" % difficulty)(difficulty, erina, birth_layer, elf_group, danmaku_layer)
 
     def buff_check(self, erina, *elf):
         for buff in self.buff:
@@ -913,7 +914,7 @@ class Elf(pygame.sprite.Sprite, ElfAction):
         self.kill()
 
     def attack(self, difficulty, erina, birth_layer, elf_group, danmaku_layer):
-        self.__getattribute__('attack_'+difficulty)(erina, birth_layer, elf_group, danmaku_layer)
+        self.__getattribute__('attack_%s' % difficulty)(erina, birth_layer, elf_group, danmaku_layer)
 
     def attack_easy(self, erina, birth_layer, elf_group, danmaku_layer):
         pass

@@ -225,7 +225,7 @@ class Erina(pygame.sprite.Sprite):
         if temp_danmaku or temp_boss:
             self.invincible = 180
             for each in temp_danmaku:
-                print
+                print(each.damage)
                 for b in each.buff_catch:
                     b.owner = self
                     self.damage.get_buff.add(b)

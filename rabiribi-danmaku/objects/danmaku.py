@@ -1,6 +1,6 @@
 from objects.sprites import Danmaku
 from math import pi
-from functions.values import screenborder
+#from functions.values import screenborder
 
 '''
 class mid_orange_circle(Danmaku):

@@ -3,7 +3,8 @@ import pickle
 import objects
 import abc
 import random
-from functions.values import screenborder
+# from functions.values import screenborder
+from functions.values import *
 from operator import truth
 from objects.counter import BuffTimer
 from functions.values import defaultkey
@@ -224,12 +225,12 @@ class Buff(pygame.sprite.Sprite):
         self.delete = False
 
         if self.owner._type == 'erina':
-            self.temp_position[0] = screenborder.SCREEN_RIGHT
-            self.temp_position[1] = screenborder.SCREEN_BOTTOM - 30 - 15*self.rank
+            self.temp_position[0] = BATTLE_SCREEN_RIGHT
+            self.temp_position[1] = BATTLE_SCREEN_BOTTOM - 30 - 15*self.rank
             self.rect.left, self.rect.bottom = self.temp_position
         elif self.owner._type == 'boss':
-            self.temp_position[0] = screenborder.SCREEN_LEFT
-            self.temp_position[1] = screenborder.SCREEN_TOP + 30 + 15*self.rank
+            self.temp_position[0] = BATTLE_SCREEN_LEFT
+            self.temp_position[1] = BATTLE_SCREEN_TOP + 30 + 15*self.rank
         elif self.owner._type == 'elf':  # under development
             self.rect.center = owner.center
 
@@ -254,17 +255,17 @@ class Buff(pygame.sprite.Sprite):
     def move_in(self):
         if self.owner._type == 'erina':
             if self.birth_time > 30:
-                destination = screenborder.SCREEN_RIGHT-50
+                destination = BATTLE_SCREEN_RIGHT-50
             else:
-                destination = screenborder.SCREEN_RIGHT
+                destination = BATTLE_SCREEN_RIGHT
             speed = (self.rect.right - destination)/4 # problems unfit
             self.temp_position[0] -= speed
             self.rect.right, self.rect.bottom = self.temp_position
         elif self.owner._type == 'boss':
             if self.birth_time > 30:
-                destination = screenborder.SCREEN_LEFT+50
+                destination = BATTLE_SCREEN_LEFT+50
             else:
-                destination = screenborder.SCREEN_RIGHT+17
+                destination = BATTLE_SCREEN_RIGHT+17
             speed = (self.rect.left - destination)/4 # problems unfit
             self.temp_position[0] += speed
             self.rect.left, self.rect.top = self.temp_position
@@ -274,11 +275,11 @@ class Buff(pygame.sprite.Sprite):
 
     def move_out(self):
         if self.owner._type == 'erina':
-            speed = (screenborder.SCREEN_RIGHT+5 - self.rect.left)/2 # problems unfit
+            speed = (BATTLE_SCREEN_RIGHT+5 - self.rect.left)/2 # problems unfit
             self.temp_position[0] += speed
             self.rect.right, self.rect.bottom = self.temp_position
         elif self.owner._type == 'boss':
-            speed = (screenborder.SCREEN_LEFT - self.rect.right)/2 # problems unfit
+            speed = (BATTLE_SCREEN_LEFT - self.rect.right)/2 # problems unfit
             self.temp_position[0] -= speed
             self.rect.left, self.rect.bottom = self.temp_position
         else:
@@ -291,7 +292,7 @@ class Buff(pygame.sprite.Sprite):
         """
         only happened on boss side
         """
-        destination = screenborder.SCREEN_TOP + 30 + 15*self.rank
+        destination = BATTLE_SCREEN_TOP + 30 + 15*self.rank
         speed = (self.rect.top - destination)/2
         self.temp_position[1] -= speed
         self.rect.top, self.rect.left = self.temp_position
@@ -301,7 +302,7 @@ class Buff(pygame.sprite.Sprite):
         """
         only happened on erina side
         """
-        destination = screenborder.SCREEN_BOTTOM - 30 - 15*self.rank
+        destination = BATTLE_SCREEN_BOTTOM - 30 - 15*self.rank
         speed = (self.rect.bottom - destination)/2
         self.temp_position[1] -= speed
         self.rect.right, self.rect.bottom = self.temp_position
@@ -335,12 +336,12 @@ class Buff(pygame.sprite.Sprite):
         erina_rect = erina.rect
         count = len(self.owner.buff)
         if self.owner._type == 'erina':
-            if erina_rect.right >= screenborder.SCREEN_RIGHT-60 and erina_rect.bottom > screenborder.SCREEN_BOTTOM-40-15*count:
+            if erina_rect.right >= BATTLE_SCREEN_RIGHT-60 and erina_rect.bottom > BATTLE_SCREEN_BOTTOM-40-15*count:
                 self.opacity_down()
             else:
                 self.opacity_up()
         elif self.owner._type == 'boss':
-            if erina_rect.left <= screenborder.SCREEN_LEFT+60 and erian_rect.top > screenborder.SCREEN_TOP+40+15*count:
+            if erina_rect.left <= BATTLE_SCREEN_LEFT+60 and erian_rect.top > BATTLE_SCREEN_TOP+40+15*count:
                 self.opacity_down()
             else:
                 self.opacity_up()
