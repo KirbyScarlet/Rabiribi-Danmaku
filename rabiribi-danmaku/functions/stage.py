@@ -73,7 +73,7 @@ class Stage():
         for e in self.elf_layer:
             e.attack(self.difficulty, self.erina, self.birth_layer, self.elf_layer, self.danmaku_layer)
         for b in self.boss_layer:
-            b.attack(self,difficulty, self.erina, self.birth_layer, self.boss_layer, self.illustration_layer, self.danmaku_layer)
+            b.attack(self.difficulty, self.erina, self.birth_layer, self.boss_layer, self.illustration_layer, self.danmaku_layer)
 
     def _sprite_move(self, *layers):
         # mpool = multiprocessing.Pool()
@@ -98,7 +98,19 @@ class Stage():
                     self.erina.buff
                     )
         for boss in self.boss_layer:
-            self.sprite_move(boss.buff)
+            self._sprite_move(boss.buff)
+
+    '''
+    def spell_attack(self):
+        for b in self.boss_layer:
+            # if hasattr(b, 'spell_attack')
+            b.spell_attack(self.difficulty,
+                           self.erina,
+                           self.birth_layer,
+                           self.boss_layer,
+                           self.illustration_layer,
+                           self.danmaku_layer)
+    '''
 
     def switch_layer(self):
         for sprite in self.birth_layer:
@@ -130,8 +142,8 @@ class Stage():
             b.collide_check(self.shouting_layer)
 
     def damage_check(self):
-        print(self.erina.damage.danmaku)
-        print(self.erina.hp)
+        #print(self.erina.damage.danmaku)
+        #print(self.erina.hp)
         self.erina.damage(self.damage_value_layer)
         for b in self.boss_layer:
             b.damage(self.damage_value_layer)
@@ -142,16 +154,16 @@ class Stage():
         debug_words_pos_left = 430
         debug_words_pos_top = 300
         
-        erina_position = "erina position: " + str(round(self.erina.center[0], 2)) + " , " + str(round(self.erina.center[1], 2))
-        ribbon_position = "ribbon position: " + str(round(self.ribbon.center[0], 2)) + " , " + str(round(self.ribbon.center[1], 2))
-        erina_health = "erina hp: " + str(self.erina.hp) + "/" + str(self.erina.max_hp)
-        danmaku_count = "danmaku count:" + str(len(self.danmaku_layer) + len(self.birth_layer))
-        shouting_count = "shouting count:" + str(len(self.shouting_layer))
+        erina_position = "erina position: %2f , %2f" % (self.erina.center[0], self.erina.center[1])
+        ribbon_position = "ribbon position: %2f , %2f" % (self.ribbon.center[0], self.ribbon.center[1])
+        erina_health = "erina hp: %d/%d" % (self.erina.hp, self.erina.max_hp)
+        danmaku_count = "danmaku count: %d" % (len(self.danmaku_layer) + len(self.birth_layer))
+        shouting_count = "shouting count: %d" % len(self.shouting_layer)
 
         window.blit(functions.debug_font.render(erina_position, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top))
         window.blit(functions.debug_font.render(ribbon_position, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 20))
         window.blit(functions.debug_font.render(erina_health, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 40))
-        for b in self.boss_layer:
+        for num,b in enumerate(self.boss_layer):
             b.name = "boss_"+b.name
             window.blit(functions.debug_font.render(b.__class__.__name__ + ": " + str(b.hp) + "/" + str(b.max_hp), True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 60 + num*20))
         window.blit(functions.debug_font.render(danmaku_count, True, (255,0,0)), (debug_words_pos_left, debug_words_pos_top + 60 + len(self.boss_layer)*20))
@@ -247,7 +259,7 @@ class Stage():
                 self.pause()
             self.timer += 1
             pygame.display.update()  # multi-process under development
-            self.clock.tick_busy_loop(60)
+            if not self.key_pressed[K_LCTRL]: self.clock.tick_busy_loop(60)
         return 0
 
     def pause(self):

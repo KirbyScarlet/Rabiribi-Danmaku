@@ -1,5 +1,4 @@
 import pygame
-import math
 
 import objects.sprites
 import functions
@@ -81,7 +80,7 @@ class elf_2(elf_red_small):
                     speedtime = (30,),
                     speedvalue = (2,)
                 )
-            
+'''            
 class Stage1aMidBattle(functions.stage_run.MidBattle):
     """
     stage1a battle
@@ -127,7 +126,9 @@ class Stage1aMidBattle(functions.stage_run.MidBattle):
             self.bgm.fadeout(1000)
         elif self.timer == 1000:
             self.part_run = False
+'''
 
+'''
 def stage1amidbattle(stage):
     #stage.bgm.load('data/bgm/rbs1s1am.ogg')
     #stage.bgm.play(-1)
@@ -162,3 +163,4 @@ def stage1amidbattle(stage):
         stage.bgm.fadeout(1000)
     elif stage.timer == 1000:
         stage.timer = 0
+'''

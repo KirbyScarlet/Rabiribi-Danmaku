@@ -75,9 +75,9 @@ def main():
     boss.section1.stage1a.stage_end(me_erina, me_ribbon, difficulty, window)
     '''
     stage = functions.stage.Stage(difficulty)
-    import boss.section1.stage1a
-    boss.section1.stage1a.stage_mid
-    stage(window, boss.section1.stage1a.stage_mid, 1)
+    import boss.section1
+    boss.section1.section1_main(window, stage)
+
 if __name__ == "__main__":
     try:
         main()

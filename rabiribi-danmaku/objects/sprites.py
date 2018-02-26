@@ -348,13 +348,13 @@ class Boss(pygame.sprite.Sprite):
                 self.damage.magic += each.damage
             #self.buff.add(each.buff.buffs())
 
-    def spell_attack(self, difficulty, erina, birth_layer, boss_group, illustration_group, danmaku_layer):
+    def attack(self, difficulty, erina, birth_layer, boss_group, illustration_group, danmaku_layer):
         """
         prepared for every instance.
         """
-        if self.hp > 0 and self.spell_group.__getattribute__('spell_' + str(self.spell_now)).timer < self.spell_group.__getattribute__('spell_' + str(self.spell_now)).spell_time:
-            self.spell_group.__getattribute__('spell_' + str(self.spell_now))(difficulty, erina, birth_layer, boss_group, illustration_group)
-        elif self.hp <= 0 or self.spell_group.__getattribute__('spell_' + str(self.spell_now)).timer == self.spell_group.__getattribute__('spell_' + str(self.spell_now)).spell_time:
+        if self.hp > 0 and self.spell_group.__getattribute__('spell_%d' % self.spell_now).timer < self.spell_group.__getattribute__('spell_%s' % str(self.spell_now)).spell_time:
+            self.spell_group.__getattribute__('spell_%d' % self.spell_now)(difficulty, erina, birth_layer, boss_group, illustration_group)
+        elif self.hp <= 0 or self.spell_group.__getattribute__('spell_%d' % self.spell_now).timer == self.spell_group.__getattribute__('spell_%s' % str(self.spell_now)).spell_time:
             for sprite in danmaku_layer:
                 sprite.kill()
             for sprite in birth_layer:
