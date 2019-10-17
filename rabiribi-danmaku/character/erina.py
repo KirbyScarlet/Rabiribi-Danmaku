@@ -57,7 +57,7 @@ class Erina(pygame.sprite.Sprite):
 
         if platform.system()=='Windows':
             oimage = pygame.image.load("images\\character\\Erina\\Erina.png").convert_alpha()
-        if platform.system()=='Linux':
+        if platform.system()=='Linux' or platform.system()=='Darwin':
             oimage = pygame.image.load("images/character/Erina/Erina.png").convert_alpha()
 
         self.oimage = pygame.transform.scale(oimage, (40,50)) # load source under development

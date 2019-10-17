@@ -13,7 +13,7 @@ class cocoa_danmaku_1(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         if platform.system() == 'Windows':
             self.cocoa_danmaku_type1 = pygame.image.load("images\\boss\\Cocoa\\cocoa_danmaku_type1_00.png").convert_alpha()
-        if platform.system() == 'Linux':
+        if platform.system() == 'Linux' or platform.system()=='Darwin':
             self.cocoa_danmaku_type1 = pygame.image.load("images/boss/Cocoa/cocoa_danmaku_type1_00.png").convert_alpha()
         self.image = self.cocoa_danmaku_type1
         self.rect = self.image.get_rect()
@@ -74,7 +74,7 @@ class Cocoa(pygame.sprite.Sprite):
             oimage2 = pygame.image.load("images\\boss\\Cocoa\\Cocoa_01.png").convert_alpha()
             oimage3 = pygame.image.load("images\\boss\\Cocoa\\Cocoa_02.png").convert_alpha()
             #self.illustraction = pygame.image.load("image\\boss\\Cocoa\\Cocoa_tachie.png").convert_alpha()
-        if platform.system() == 'Linux':
+        if platform.system() == 'Linux' or platform.system()=='Darwin':
             oimage1 = pygame.image.load("images/boss/Cocoa/Cocoa_00.png").convert_alpha()
             oimage2 = pygame.image.load("images/boss/Cocoa/Cocoa_01.png").convert_alpha()
             oimage3 = pygame.image.load("images/boss/Cocoa/Cocoa_02.png").convert_alpha()
