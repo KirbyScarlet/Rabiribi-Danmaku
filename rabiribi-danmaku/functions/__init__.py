@@ -264,7 +264,7 @@ def clear_cache(*dir):
             system("del data\\tmp\\imgs\\*.tmp")
             system("del data\\tmp\\mid\\*.tmp")
             system("del data\\tmp\\misc\\*.tmp")
-    elif platform.system() == "Linux":
+    elif platform.system() == "Linux" or platform.system()=='Darwin':
         if dir:
             for each in dir:
                 ch = "rm data/tmp/" + each + "/*.tmp"
