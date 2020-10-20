@@ -9,7 +9,7 @@ from random import *
 
 class Menu_Main():
     def __init__(self):
-        if platform.system() == 'Linux':
+        if platform.system() == 'Linux' or platform.system()=='Darwin':
             self.image_start = pygame.image.load("images/title/main_menu/start.png").convert_alpha()
             self.image_extra_start = pygame.image.load("images/title/main_menu/extra_start.png").convert_alpha()
             self.image_practice_start = pygame.image.load("images/title/main_menu/practice_start.png").convert_alpha()
@@ -252,7 +252,7 @@ class Menu_Main():
                 
 class Menu_Start():
     def __init__(self):
-        if platform.system() == 'Linux':
+        if platform.system() == 'Linux' or platform.system()=='Darwin':
             self.image_casual = pygame.image.load("images/title/start/casual.png").convert_alpha()
             self.image_novice = pygame.image.load("images/title/start/novice.png").convert_alpha()
             self.image_normal = pygame.image.load("images/title/start/normal.png").convert_alpha()
@@ -465,7 +465,7 @@ class Menu_Start():
 class Menu_Extra_Start():
     def __init__(self):
         
-        if platform.system() == 'Linux':
+        if platform.system() == 'Linux' or platform.system()=='Darwin':
             self.image_extra = pygame.image.load("images/title/extra/extra.png").convert_alpha()
         if platform.system() == 'Windows':
             self.image_extra = pygame.image.load("images\\title\\extra\\extra.png").convert_alpha()
@@ -543,7 +543,7 @@ class Menu_Extra_Start():
 class Menu_Practice_start():
     def __init__(self):
         
-        if platform.system() == 'Linux':
+        if platform.system() == 'Linux' or platform.system()=='Darwin':
             self.image_section1_stage1a = pygame.image.load("images/title/spell_practice/section1_stage1a.png").convert_alpha()
             self.image_section1_stage1b = pygame.image.load("images/title/spell_practice/section1_stage1b.png").convert_alpha()
             self.image_section1_stage2a = pygame.image.load("images/title/spell_practice/section1_stage2a.png").convert_alpha()
@@ -657,7 +657,7 @@ class Menu_Practice_start():
 
 class Menu_Spell_Practice():
     def __init__(self):
-        if platform.system() == 'Linux':
+        if platform.system() == 'Linux' or platform.system()=='Darwin':
             self.image_section1 = pygame.image.load("images/title/spell_practice/section1.png").convert_alpha()
             self.image_section2 = pygame.image.load("images/title/spell_practice/section2.png").convert_alpha()
             self.image_extra = pygame.image.load("images/title/spell_practice/extra.png").convert_alpha()

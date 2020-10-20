@@ -57,7 +57,7 @@ class MP(object):
 class green_danmaku(pygame.sprite.Sprite):
     def __init__(self, me_ribbon):
         pygame.sprite.Sprite.__init__(self)
-        if platform.system() == 'Linux':
+        if platform.system() == 'Linux' or platform.system()=='Darwin':
             oimage = pygame.image.load("images/character/Ribbon/ribbon_green.png").convert_alpha()
         if platform.system() == 'Windows':
             oimage = pygame.image.load("images\\character\\Ribbon\\ribbon_green.png").convert_alpha()
@@ -94,7 +94,7 @@ class green_danmaku(pygame.sprite.Sprite):
 class purple_danmaku(pygame.sprite.Sprite):
     def __init__(self, me_ribbon):
         pygame.sprite.Sprite.__init__(self)
-        if platform.system() == 'Linux':
+        if platform.system() == 'Linux' or platform.system()=='Darwin':
             oimage = pygame.image.load("images/character/Ribbon/ribbon_purple.png").convert_alpha()
         if platform.system() == 'Windows':
             oimage = pygame.image.load("images\\character\\Ribbon\\ribbon_purple.png").convert_alpha()
@@ -133,7 +133,7 @@ class Ribbon(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         if platform.system()=='Windows':
             oimage = pygame.image.load("images\\character\\Ribbon\\Ribbon.png").convert_alpha()
-        if platform.system()=='Linux':
+        if platform.system()=='Linux' or platform.system()=='Darwin':
             oimage = pygame.image.load("images/character/Ribbon/Ribbon.png").convert_alpha()
         self.image = pygame.transform.scale(oimage, (16,20))
         self.rect = self.image.get_rect()

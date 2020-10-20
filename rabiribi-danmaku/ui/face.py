@@ -30,7 +30,7 @@ class Face(pygame.sprite.Sprite):
             pygame.image.load("images\\faces\\face_00018.png").convert_alpha(), \
             pygame.image.load("images\\faces\\face_00019.png").convert_alpha(), \
             ])
-        if platform.system()=='Linux':
+        if platform.system()=='Linux' or platform.system()=='Darwin':
             self.background = pygame.image.load("images/faces/bottom.png")
             self.face_list.extend([\
             pygame.image.load("images/faces/face_00000.png").convert_alpha(), \

@@ -12,7 +12,7 @@ class Irisu(pygame.sprite.Sprite):
         
         if platform.system()=='Windows':
             oimage = pygame.image.load("images\\boss\\Irisu\\Irisu.png")
-        if platform.system()=='Linux':
+        if platform.system()=='Linux' or platform.system()=='Darwin':
             oimage = pygame.image.load("images/boss/Irisu/Irisu.png")
         self.image = pygame.transform.scale(oimage, (60,75))
         self.rect = self.image.get_rect()
@@ -35,7 +35,7 @@ class Irisu_danmaku_type_1(pygame.sprite.Sprite):
         
         if platform.system()=='Windows':
             self.image = pygame.image.load("images\\boss\\Irisu\\Irisu_danmaku_1.png").convert_alpha()
-        if platform.system()=='Linux':
+        if platform.system()=='Linux' or platform.system()=='Darwin':
             self.image = pygame.image.load("images/boss/Irisu/Irisu_danmaku_1.png").convert_alpha()
         self.rect = self.image.get_rect()
         self.center = [float(boss_position[0]), float(boss_position[1])]
